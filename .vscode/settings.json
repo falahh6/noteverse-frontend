@@ -1,0 +1,37 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.singleQuote": true,
+  "prettier.semi": false,
+  "prettier.trailingComma": "all",
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false,
+  "prettier.printWidth": 80,
+  "prettier.bracketSpacing": true,
+  "prettier.jsxBracketSameLine": false,
+  "prettier.arrowParens": "always",
+  "prettier.endOfLine": "lf",
+  "prettier.proseWrap": "preserve",
+  "prettier.htmlWhitespaceSensitivity": "css",
+  "prettier.vueIndentScriptAndStyle": true
+}
