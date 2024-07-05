@@ -1,9 +1,19 @@
+import { BackgroundGrid } from '@/components/ui/BackgroundGrid'
+import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
+import { TypewriterEffectSmooth } from '@/components/ui/TypeWriterEffect'
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 gap-2 bg-background">
-      <p className="text-lg text-foreground">Noteverse</p>
-      <div className="w-24 h-[2px] bg-foreground" />
-      <p className="text-sm text-foreground">coming soon</p>
-    </main>
+    <BackgroundGrid>
+      <MaxWidthWrapper>
+        <div className="text-center text-sm flex items-center h-screen justify-center ">
+          <TypewriterEffectSmooth
+            words={[
+              { text: 'Noteverse', className: 'first-letter:text-blue-700' },
+            ]}
+          />
+        </div>
+      </MaxWidthWrapper>
+    </BackgroundGrid>
   )
 }
