@@ -1,10 +1,7 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import React from 'react'
-import { ThemeProvider } from '@/components/ui/ThemeProvider'
-
-const inter = Inter({ subsets: ['latin'] })
+import { GeistSans } from 'geist/font/sans'
 
 export const metadata: Metadata = {
   title: 'Noteverse',
@@ -18,13 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="light"
-        disableTransitionOnChange
-      >
-        <body className={inter.className}>{children}</body>
-      </ThemeProvider>
+      <body className={GeistSans.className}>{children}</body>
     </html>
   )
 }
