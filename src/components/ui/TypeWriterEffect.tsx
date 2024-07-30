@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/utils/cn'
+import { cn } from '@/lib/utils'
 import { motion, stagger, useAnimate, useInView } from 'framer-motion'
 import { useEffect } from 'react'
 
@@ -156,7 +156,7 @@ export const TypewriterEffectSmooth = ({
         }}
       >
         <div
-          className="text-xs sm:text-base md:text-xl lg:text:3xl xl:text-5xl font-bold"
+          className="max-sm:text-3xl text-5xl font-bold"
           style={{
             whiteSpace: 'nowrap',
           }}
@@ -178,7 +178,7 @@ export const TypewriterEffectSmooth = ({
           repeatType: 'reverse',
         }}
         className={cn(
-          'block rounded-sm w-[4px]  h-4 sm:h-6 xl:h-12 bg-blue-500',
+          'block rounded-sm w-[4px]  h-10 sm:h-6 xl:h-12 bg-blue-500',
           cursorClassName,
         )}
       ></motion.span>
