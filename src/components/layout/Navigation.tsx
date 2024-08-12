@@ -1,73 +1,141 @@
 'use client'
-import React, { useState } from 'react'
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useMotionValueEvent,
-} from 'framer-motion'
-import { cn } from '@/utils/cn'
+import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  LogOut,
+  Menu,
+  Settings,
+  SquareDashedBottomCode,
+  User,
+  User2Icon,
+} from 'lucide-react'
+import { signOut } from 'next-auth/react'
+import { DefaultSession } from 'next-auth'
 
-const Navigation = ({ className }: { className?: string }) => {
-  const { scrollYProgress } = useScroll()
-
-  const navItems = [
-    {
-      name: 'Create',
-      link: '/',
-    },
-    {
-      name: 'Explore',
-      link: '/about',
-    },
-  ]
-
-  const [visible, setVisible] = useState(false)
-
-  useMotionValueEvent(scrollYProgress, 'change', (current) => {
-    // Check if current is not undefined and is a number
-    if (typeof current === 'number') {
-      let direction = current! - scrollYProgress.getPrevious()!
-
-      if (scrollYProgress.get() < 0.05) {
-        setVisible(false)
-      } else {
-        if (direction < 0) {
-          setVisible(true)
-        } else {
-          setVisible(false)
-        }
-      }
-    }
-  })
-
+const Navigation = ({
+  className,
+  session,
+}: {
+  className?: string
+  session: DefaultSession | null
+}) => {
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        className={cn(
-          'flex max-w-fit fixed top-10 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full dark:bg-black bg-red-50 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] z-[5000] pr-2 pl-8 py-2  items-center justify-center space-x-4 backdrop-blur-sm',
-          className,
-        )}
-      >
-        {navItems.map((navItem: any, idx: number) => (
-          <Link
-            key={`link=${idx}`}
-            href={navItem.link}
-            className={cn(
-              'relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500',
+    <div className="min-h-[10vh] px-20 max-sm:px-8 w-full bg-gradient-to-b from-gray-300  to-transparent fixed top-0 left-0 right-0 flex flex-row justify-between items-center">
+      <div className="flex flex-row gap-2 items-center">
+        <a href={'/'} className="flex flex-row items-center">
+          <Image
+            src={'/noteverse-logo-full.svg'}
+            alt="logo-sm"
+            height={48}
+            width={200}
+            className="max-sm:hidden"
+          />
+          <Image
+            src={'/logo-sm.svg'}
+            alt="logo-sm"
+            height={48}
+            width={48}
+            className="max-sm:block hidden"
+          />{' '}
+        </a>
+      </div>
+
+      <div>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="border border-gray-300 p-2 rounded-full h-fit bg-gray-100 flex flex-row items-center gap-1 ring-0 outline-none">
+            {session?.user ? (
+              <User className="h-4 w-4" />
+            ) : (
+              <Menu className="h-4 w-4" />
             )}
-          >
-            <span className="block">{navItem.icon}</span>
-            <span className=" sm:block text-sm font-bold">{navItem.name}</span>
-          </Link>
-        ))}
-        <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-1 rounded-full">
-          <span>Login</span>
-          <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent  h-px" />
-        </button>
-      </motion.div>
-    </AnimatePresence>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[20vw] max-sm:w-[50vw] rounded-2xl mr-20 max-sm:mr-8 bg-white">
+            {session?.user ? (
+              <DropdownMenuLabel className="p-4">
+                <div className="text-base">{session.user.name}</div>
+                <Link
+                  href={`mailto:${session.user.email}`}
+                  className="text-sm font-normal text-gray-500"
+                >
+                  {session.user.email}
+                </Link>
+              </DropdownMenuLabel>
+            ) : (
+              <DropdownMenuItem
+                className="p-3 hover:bg-gray-100 hover:cursor-pointer rounded-md rounded-tl-xl rounded-tr-xl"
+                asChild
+              >
+                <Link href={'/signin'} className="flex flex-row items-center">
+                  <User className="h-4 w-4 mr-2 inline-block" />{' '}
+                  <p className="text-sm">Login</p>
+                </Link>
+              </DropdownMenuItem>
+            )}
+
+            {session?.user && (
+              <>
+                <DropdownMenuSeparator className="bg-gray-200" />
+                <DropdownMenuItem
+                  asChild
+                  className="p-3 hover:bg-gray-100 hover:cursor-pointer rounded-md"
+                >
+                  <Link
+                    href={'/profile'}
+                    className="flex flex-row items-center"
+                  >
+                    <User2Icon className="h-4 w-4 mr-2 inline-block" />{' '}
+                    <p className="text-sm">Profile</p>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  asChild
+                  className="p-3 hover:bg-gray-100 hover:cursor-pointer rounded-md"
+                >
+                  <Link
+                    href={'/setting'}
+                    className="flex flex-row items-center"
+                  >
+                    <Settings className="h-4 w-4 mr-2 inline-block" />{' '}
+                    <p className="text-sm">Setting</p>
+                  </Link>
+                </DropdownMenuItem>
+              </>
+            )}
+            <DropdownMenuSeparator className="bg-gray-200" />
+            <DropdownMenuItem
+              asChild
+              className="p-3 hover:bg-gray-100 hover:cursor-pointer rounded-md"
+            >
+              <Link href={'/developers'} className="flex flex-row items-center">
+                <SquareDashedBottomCode className="h-4 w-4 mr-2 inline-block" />{' '}
+                <p className="text-sm">Developers</p>
+              </Link>
+            </DropdownMenuItem>
+            {session?.user && (
+              <>
+                <DropdownMenuSeparator className="bg-gray-200" />
+                <DropdownMenuItem
+                  className="p-3 hover:bg-gray-100 hover:cursor-pointer rounded-md rounded-bl-xl rounded-br-xl"
+                  onClick={() => signOut()}
+                >
+                  <LogOut className="h-4 w-4 mr-2 inline-block" />{' '}
+                  <p className="text-sm">Logout</p>
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
   )
 }
 
