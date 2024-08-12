@@ -16,13 +16,7 @@ const Page = ({
     console.log(params.email)
   }, [])
 
-  const sendEmail = async () => {
-    const response = await fetch('/api/send-email', {
-      method: 'POST',
-    })
-
-    console.log(response)
-  }
+  const sendEmail = async () => {}
 
   return (
     <MaxWidthWrapper className="h-full w-full flex flex-col items-center justify-center rounded-lg">
