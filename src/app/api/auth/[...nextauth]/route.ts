@@ -1,3 +1,4 @@
+import { baseURL } from '@/lib/utils'
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
@@ -12,14 +13,45 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const user = { id: '1', name: 'Falah', email: 'falah@dev.com' }
+        const user = {
+          name: 'Falah',
+          email: 'falah@dev.com',
+          emailVerified: false,
+        }
 
-        return user
-        // if (credentials?.email === user.email) {
-        //   return user
-        // } else {
-        //   return null
-        // }
+        const response = await fetch(`${baseURL}/login/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: credentials?.email,
+            password: credentials?.password,
+          }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          console.log(data)
+          return {
+            id: '1',
+            email: credentials?.email,
+            name: 'ANYTHING',
+            emailVerified: false,
+            accessToken: data.access,
+            refreshToken: data.refresh,
+          }
+        } else {
+          const errorData = await response.json()
+          console.log(errorData)
+          if (response.status === 401) {
+            throw new Error('Invalid email or password')
+          } else {
+            throw new Error(
+              errorData.message || 'An error occurred during login',
+            )
+          }
+        }
       },
     }),
   ],
@@ -31,13 +63,18 @@ export const authOptions: NextAuthOptions = {
     newUser: '/signup', // New users will be directed here on first sign in (leave the property out if not of interest)
   },
   callbacks: {
-    session: ({ session, token }) => {
-      console.log('Session Callback : ', { session, token })
-      return session
-    },
-    jwt: ({ token, user }) => {
-      console.log('JWT Callback : ', { token, user })
+    async jwt({ token, user }) {
+      if (user) {
+        token.accessToken = user.accessToken
+        token.refreshToken = user.refreshToken
+      }
       return token
+    },
+    async session({ session, token }) {
+      session.accessToken = token.accessToken
+      session.refreshToken = token.refreshToken
+
+      return session
     },
   },
   session: {

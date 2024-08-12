@@ -21,6 +21,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
       if (ref && typeof ref === 'object' && ref.current) {
         ref.current.focus()
+        const length = ref.current.value.length
+        ref.current.selectionStart = ref.current.selectionEnd = length
       }
     }
 
@@ -33,6 +35,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       mouseX.set(clientX - left)
       mouseY.set(clientY - top)
     }
+
     return (
       <motion.div
         style={{
@@ -59,7 +62,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           focus-visible:outline-none focus-visible:ring-[2px]  focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600
            disabled:cursor-not-allowed disabled:opacity-50
            dark:shadow-[0px_0px_1px_1px_var(--neutral-700)]
-           group-hover/input:shadow-none transition duration-400
+           group-hover/input:shadow-none transition duration-400  ${type === 'password' && 'pr-10'}
            `,
             className,
           )}
@@ -69,7 +72,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {type === 'password' && (
           <Button
             type="button"
-            className="absolute right-1.5 top-[7px] h-fit w-fit p-1 m-0 hover:bg-gray-100 border border-transparent hover:border-gray-300 "
+            // variant={'outline'}
+            className="absolute right-1.5 top-[7px] h-fit w-fit p-1 m-0 hover:bg-gray-100 border border-transparent hover:border-gray-300 bg-transparent"
             onClick={showPasswordHandler}
             onMouseDown={(e) => e.preventDefault()}
           >

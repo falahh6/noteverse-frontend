@@ -1,17 +1,16 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/Input'
-import { ArrowRight, CircleCheck } from 'lucide-react'
+import { ArrowRight, CircleCheck, Loader } from 'lucide-react'
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import Link from 'next/link'
 import * as yup from 'yup'
-import { signIn } from 'next-auth/react'
-import { redirect, useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface IFormInput {
   name: string
@@ -20,7 +19,7 @@ interface IFormInput {
 }
 
 const Page = () => {
-  const router = useRouter()
+  const [submitLoading, setSubmitLoading] = useState(false)
   const signupSchema = yup.object().shape({
     name: yup.string().required('Name is required'),
     email: yup
@@ -42,31 +41,37 @@ const Page = () => {
   })
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
+    setSubmitLoading(true)
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
 
-    if (res.status === 201) {
-      router.push(`/verify/${data.email}`)
-
-      // // window.location.href = '/'
-      // const result = await signIn('credentials', {
-      //   redirect: false,
-      //   email: data.email,
-      //   password: data.password,
-      // })
-
-      // if (result?.ok) {
-      //   window.location.href = '/'
-      // } else {
-      //   alert('Signin failed')
-      // }
-    } else {
-      alert('Signup failed')
+      if (res.status === 201) {
+        window.location.href = `/verify/${data.email}` //xau_8uR93fY4H4qv9jnNo3vt1vVjIz15dfRR6
+        // router.replace(`/verify/${data.email}`)
+        // // window.location.href = '/'
+        // const result = await signIn('credentials', {
+        //   redirect: false,
+        //   email: data.email,
+        //   password: data.password,
+        // })
+        // if (result?.ok) {
+        //   window.location.href = '/'
+        // } else {
+        //   alert('Signin failed')
+        // }
+      } else {
+        toast.error('Signup failed, Please try again.')
+      }
+    } catch (error) {
+      toast.error('Signup failed, Please try again.')
+    } finally {
+      setSubmitLoading(false)
     }
   }
 
@@ -77,7 +82,7 @@ const Page = () => {
           Sign Up to Noteverse
         </h2>
         <p className="text-neutral-600 text-sm max-sm:text-xs max-w-sm mt-2 dark:text-neutral-300">
-          Secure access to your account with ease with Noteverse.
+          Effortlessly secure access to your account with Noteverse.
         </p>
 
         <form className="mt-6 max-sm:mt-4" onSubmit={handleSubmit(onSubmit)}>
@@ -133,7 +138,11 @@ const Page = () => {
             type="submit"
           >
             Sign Up{' '}
-            <ArrowRight className="h-5 w-5 inline transition-all duration-300 ease-in-out group-hover:ml-4" />
+            {submitLoading ? (
+              <Loader className="h-5 w-5 inline animate-spin" />
+            ) : (
+              <ArrowRight className="h-5 w-5 inline transition-all duration-300 ease-in-out group-hover:ml-4" />
+            )}
             <BottomGradient />
           </button>
 
