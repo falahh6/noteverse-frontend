@@ -52,7 +52,7 @@ const Page = () => {
       })
 
       if (res.status === 201) {
-        window.location.href = `/verify/${data.email}` //xau_8uR93fY4H4qv9jnNo3vt1vVjIz15dfRR6
+        // window.location.href = `/verify/${data.email}` //xau_8uR93fY4H4qv9jnNo3vt1vVjIz15dfRR6
         // router.replace(`/verify/${data.email}`)
         // // window.location.href = '/'
         // const result = await signIn('credentials', {
