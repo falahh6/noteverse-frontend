@@ -1,9 +1,22 @@
-export default function Home() {
+import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
+import { TypewriterEffectSmooth } from '@/components/ui/TypeWriterEffect'
+import { getServerSession } from 'next-auth'
+import { authOptions } from './api/auth/[...nextauth]/route'
+
+export default async function Home() {
+  const session = await getServerSession(authOptions)
+
+  console.log('HHHHH', session)
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 gap-2">
-      <p className="text-lg">Noteverse</p>
-      <div className="w-24 h-[2px] bg-gray-400" />
-      <p className="text-sm">coming soon</p>
-    </main>
-  );
+    <MaxWidthWrapper>
+      <div className="text-center text-sm flex items-center min-h-screen justify-center flex-col">
+        <TypewriterEffectSmooth
+          words={[
+            { text: 'Noteverse', className: 'first-letter:text-blue-700' },
+          ]}
+        />
+      </div>
+    </MaxWidthWrapper>
+  )
 }
