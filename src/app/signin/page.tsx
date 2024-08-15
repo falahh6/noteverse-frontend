@@ -43,7 +43,7 @@ const Page = () => {
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     setSubmitLoading(true)
-
+    console.log(data)
     try {
       const response = await signIn('credentials', {
         redirect: false,
@@ -69,7 +69,7 @@ const Page = () => {
   }
 
   return (
-    <MaxWidthWrapper className="h-full w-full flex flex-col items-center justify-center rounded-lg">
+    <MaxWidthWrapper className="h-screen w-full flex flex-col items-center justify-center rounded-lg">
       <div className="max-w-md max-sm:max-w-[80%] w-full mx-auto rounded-lg md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black border border-gray-300">
         <h2 className="font-bold text-xl max-sm:text-lg text-neutral-800 dark:text-neutral-200">
           Welcome back!

@@ -1,14 +1,14 @@
 import './globals.css'
 import React from 'react'
 import { GeistSans } from 'geist/font/sans'
-import { BackgroundGrid } from '@/components/ui/BackgroundGrid'
 import { AuthProvider } from './api/auth/providers'
 import Navigation from '@/components/layout/Navigation'
 import { ThemeProvider } from '@/components/ui/ThemeProvider'
 import { constructMetadata } from '@/lib/utils'
 import { getServerSession } from 'next-auth'
-import { authOptions } from './api/auth/[...nextauth]/route'
 import { Toaster } from '@/components/ui/sonner'
+import { AntdRegistry } from '@ant-design/nextjs-registry'
+import { authOptions } from './api/auth/[...nextauth]/authoptions'
 
 export const metadata = constructMetadata()
 
@@ -24,15 +24,17 @@ export default async function RootLayout({
       <body className={GeistSans.className}>
         {' '}
         <AuthProvider>
-          <ThemeProvider defaultTheme="light">
-            <BackgroundGrid className="">
+          <AntdRegistry>
+            <ThemeProvider defaultTheme="light">
+              {/* <BackgroundGrid className="min-w-full"> */}
               <>
                 <Navigation session={session} />
                 {children}
               </>
-              <Toaster richColors closeButton />
-            </BackgroundGrid>
-          </ThemeProvider>
+              <Toaster richColors closeButton className="z-[999]" />
+              {/* </BackgroundGrid> */}
+            </ThemeProvider>
+          </AntdRegistry>
         </AuthProvider>
       </body>
     </html>
