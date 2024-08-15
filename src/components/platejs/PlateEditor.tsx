@@ -38,6 +38,7 @@ import {
   ELEMENT_IMAGE,
   createMediaEmbedPlugin,
   ELEMENT_MEDIA_EMBED,
+  ELEMENT_PLACEHOLDER,
 } from '@udecode/plate-media'
 import {
   createExcalidrawPlugin,
@@ -153,6 +154,10 @@ import { withPlaceholders } from '@/components/plate-ui/placeholder'
 import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { EmojiInputElement } from '@/components/plate-ui/emoji-input-element'
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
+import MaxWidthWrapper from '../layout/MaxwidthWrapper'
+import { useCallback, useEffect } from 'react'
+import { baseURL } from '@/lib/utils'
+import { NotesSchemaTypeOne, NotesSchemaTypeTwo } from '@/lib/types/notes'
 
 const plugins = createPlugins(
   [
@@ -356,35 +361,78 @@ const plugins = createPlugins(
   },
 )
 
-const initialValue = [
-  {
-    id: '1',
-    type: 'p',
-    children: [{ text: 'Hello, World!' }],
-  },
-]
+function debounce(func: (title: any, body: any) => void, wait: number) {
+  let timeout: NodeJS.Timeout
+  return function (...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout)
+      //@ts-ignore
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
 
-const textVal = [
-  {
-    children: [
-      {
-        text: 'Hey there',
-      },
-    ],
-    type: 'p',
-  },
-  {
-    children: [
-      {
-        text: 'How you doing?',
-      },
-    ],
-    type: 'p',
-    id: 't66rw',
-  },
-]
+export function PlateEditor({
+  value,
+  notesId,
+  authToken,
+}: {
+  value: (
+    | {
+        children: {
+          text: string
+        }[]
+        type: string
+        id?: undefined
+      }
+    | {
+        children: {
+          text: string
+        }[]
+        type: string
+        id: string
+      }
+  )[]
+  notesId: string
+  authToken: string
+}) {
+  const saveNotes = useCallback(
+    debounce(
+      async (
+        title: NotesSchemaTypeOne | NotesSchemaTypeTwo,
+        body: NotesSchemaTypeOne | NotesSchemaTypeTwo[],
+      ) => {
+        const response = await fetch(`${baseURL}/notes/${notesId}/`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({
+            title: title.children[0].text ? title.children[0].text : 'Untitled',
+            data: JSON.stringify(body),
+          }),
+        })
 
-export function PlateEditor() {
+        if (response.ok) {
+          const responseData = await response.json()
+          console.log('Note saved:', responseData)
+        }
+      },
+      1000,
+    ),
+    [],
+  )
+
+  const handleNotesChange = (
+    notesTitle: NotesSchemaTypeOne | NotesSchemaTypeTwo,
+    notesBody: (NotesSchemaTypeOne | NotesSchemaTypeTwo)[],
+  ) => {
+    saveNotes(notesTitle, notesBody)
+  }
+
   return (
     <TooltipProvider>
       <DndProvider backend={HTML5Backend}>
@@ -392,15 +440,28 @@ export function PlateEditor() {
           <Plate
             onChange={(val) => {
               console.log(val)
+
+              const title = val.filter((val) => val.type === 'h1')[0]
+              console.log('TITLE', title)
+
+              const body = val.filter((val) => val.id !== 'title')
+              console.log('BODY', body)
+
+              console.log('AGG Data : ', [title, ...body])
+              handleNotesChange(title, body)
             }}
             plugins={plugins}
-            initialValue={textVal}
+            initialValue={value}
           >
-            <FixedToolbar className="fixed rounded-none">
-              <FixedToolbarButtons />
-            </FixedToolbar>
+            <MaxWidthWrapper className="mt-[10vh] px-10 max-sm:px-4">
+              <div className="h-[88vh] overflow-scroll no-scrollbar border rounded-md scroll-m-0">
+                <FixedToolbar>
+                  <FixedToolbarButtons />
+                </FixedToolbar>
 
-            <Editor className="overflow-scroll fixed left-0 right-0 bottom-0 top-[2.5rem]" />
+                <Editor autoFocus focusRing={false} variant="ghost" />
+              </div>
+            </MaxWidthWrapper>
 
             <FloatingToolbar>
               <FloatingToolbarButtons />

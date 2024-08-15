@@ -11,6 +11,7 @@ import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import Link from 'next/link'
 import * as yup from 'yup'
 import { toast } from 'sonner'
+import { signIn, useSession } from 'next-auth/react'
 
 interface IFormInput {
   name: string
@@ -42,6 +43,7 @@ const Page = () => {
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     setSubmitLoading(true)
+    console.log(data)
     try {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
@@ -52,19 +54,17 @@ const Page = () => {
       })
 
       if (res.status === 201) {
-        // window.location.href = `/verify/${data.email}` //xau_8uR93fY4H4qv9jnNo3vt1vVjIz15dfRR6
-        // router.replace(`/verify/${data.email}`)
-        // // window.location.href = '/'
-        // const result = await signIn('credentials', {
-        //   redirect: false,
-        //   email: data.email,
-        //   password: data.password,
-        // })
-        // if (result?.ok) {
-        //   window.location.href = '/'
-        // } else {
-        //   alert('Signin failed')
-        // }
+        const response = await signIn('credentials', {
+          redirect: false,
+          email: data.email,
+          password: data.password,
+        })
+
+        if (response?.ok) {
+          window.location.href = '/'
+        } else {
+          toast.error('Signup failed, Please try again.')
+        }
       } else {
         toast.error('Signup failed, Please try again.')
       }
@@ -76,7 +76,7 @@ const Page = () => {
   }
 
   return (
-    <MaxWidthWrapper className="h-full w-full flex flex-col items-center justify-center rounded-lg">
+    <MaxWidthWrapper className="h-screen w-full flex flex-col items-center justify-center rounded-lg">
       <div className="max-w-md max-sm:max-w-[80%] w-full mx-auto rounded-lg md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black border border-gray-300">
         <h2 className="font-bold text-xl max-sm:text-lg text-neutral-800 dark:text-neutral-200">
           Sign Up to Noteverse

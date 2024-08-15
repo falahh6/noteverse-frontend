@@ -1,24 +1,24 @@
-import React from 'react';
+import React from 'react'
 
-import { cn, withRef } from '@udecode/cn';
+import { cn, withRef } from '@udecode/cn'
 import {
   PlateElement,
   useElement,
   useRemoveNodeButton,
-} from '@udecode/plate-common';
+} from '@udecode/plate-common'
 import {
   ELEMENT_COLUMN,
   type TColumnElement,
   useColumnState,
   useDebouncePopoverOpen,
-} from '@udecode/plate-layout';
-import { useReadOnly } from 'slate-react';
+} from '@udecode/plate-layout'
+import { useReadOnly } from 'slate-react'
 
-import { Icons } from '@/components/icons';
+import { Icons } from '@/components/icons'
 
-import { Button } from './button';
-import { Popover, PopoverAnchor, PopoverContent } from './popover';
-import { Separator } from './separator';
+import { Button } from './button'
+import { Popover, PopoverAnchor, PopoverContent } from './popover'
+import { Separator } from './separator'
 
 export const ColumnGroupElement = withRef<typeof PlateElement>(
   ({ children, className, ...props }, ref) => {
@@ -28,12 +28,12 @@ export const ColumnGroupElement = withRef<typeof PlateElement>(
           <div className={cn('flex size-full gap-4 rounded')}>{children}</div>
         </ColumnFloatingToolbar>
       </PlateElement>
-    );
-  }
-);
+    )
+  },
+)
 
 export function ColumnFloatingToolbar({ children }: React.PropsWithChildren) {
-  const readOnly = useReadOnly();
+  const readOnly = useReadOnly()
 
   const {
     setDoubleColumn,
@@ -41,15 +41,15 @@ export function ColumnFloatingToolbar({ children }: React.PropsWithChildren) {
     setLeftSideDoubleColumn,
     setRightSideDoubleColumn,
     setThreeColumn,
-  } = useColumnState();
+  } = useColumnState()
 
-  const element = useElement<TColumnElement>(ELEMENT_COLUMN);
+  const element = useElement<TColumnElement>(ELEMENT_COLUMN)
 
-  const { props: buttonProps } = useRemoveNodeButton({ element });
+  const { props: buttonProps } = useRemoveNodeButton({ element })
 
-  const isOpen = useDebouncePopoverOpen();
+  const isOpen = useDebouncePopoverOpen()
 
-  if (readOnly) return <>{children}</>;
+  if (readOnly) return <>{children}</>
 
   return (
     <Popover modal={false} open={isOpen}>
@@ -89,5 +89,5 @@ export function ColumnFloatingToolbar({ children }: React.PropsWithChildren) {
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx'
 import { Metadata } from 'next'
 import { twMerge } from 'tailwind-merge'
+import { SchemaChildNode } from './types/notes'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -50,4 +51,33 @@ export function constructMetadata({
   }
 }
 
-export const baseURL = 'http://noteverse.aadil611.live/api'
+export function debounce(func: (noteContent: any) => void, wait: number) {
+  let timeout: NodeJS.Timeout
+  return function (...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout)
+      //@ts-ignore
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+export function extractText(nodes: SchemaChildNode[]): string {
+  let result = ''
+
+  for (const node of nodes) {
+    if (node.text) {
+      result += node.text
+    }
+    if (node.children && node.children.length > 0) {
+      result += extractText(node.children)
+    }
+  }
+
+  console.log('TEXT EXTRACTED RESULST : ', result)
+  return result
+}
+
+export const baseURL = 'http://apis.noteverse.aadil611.live/api'

@@ -1,7 +1,7 @@
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { TypewriterEffectSmooth } from '@/components/ui/TypeWriterEffect'
 import { getServerSession } from 'next-auth'
-import { authOptions } from './api/auth/[...nextauth]/route'
+import { authOptions } from './api/auth/[...nextauth]/authoptions'
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
