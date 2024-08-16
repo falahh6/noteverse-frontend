@@ -47,12 +47,15 @@ export default function Note({
 
   const handleDeleteNotes = async (notesId: string) => {
     if (authToken) {
-      const response = await fetch(`${baseURL}/notes/${notesId}/`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${authToken}`,
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/notes/${notesId}/`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
         },
-      })
+      )
 
       if (response.ok) {
         toast.warning('Deleted your notes.')
