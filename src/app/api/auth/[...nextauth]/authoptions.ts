@@ -17,19 +17,16 @@ export const authOptions: NextAuthOptions = {
           emailVerified: false,
         }
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/login/`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: credentials?.email,
-              password: credentials?.password,
-            }),
+        const response = await fetch(`${baseURL}/login/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        )
+          body: JSON.stringify({
+            email: credentials?.email,
+            password: credentials?.password,
+          }),
+        })
 
         if (response.ok) {
           const data = await response.json()

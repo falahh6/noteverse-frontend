@@ -50,19 +50,16 @@ export default function AddNoteDialog({
   async function onSubmit(input: CreateNoteSchema) {
     setLoading(true)
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/notes/`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({
-            title: input.title,
-          }),
+      const response = await fetch(`${baseURL}/notes/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
         },
-      )
+        body: JSON.stringify({
+          title: input.title,
+        }),
+      })
 
       if (response.ok) {
         const responseData = await response.json()
