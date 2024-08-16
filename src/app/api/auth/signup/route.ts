@@ -4,17 +4,20 @@ import { NextRequest, NextResponse } from 'next/server'
 export const POST = async (request: NextRequest) => {
   const { email, password } = await request.json()
 
-  const response = await fetch(`${baseURL}/signup/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/signup/`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        password1: password,
+        password2: password,
+      }),
     },
-    body: JSON.stringify({
-      email: email,
-      password1: password,
-      password2: password,
-    }),
-  })
+  )
 
   console.log(response)
   if (response.ok) {

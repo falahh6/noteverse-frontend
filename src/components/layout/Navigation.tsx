@@ -23,6 +23,7 @@ import { signOut } from 'next-auth/react'
 import { DefaultSession } from 'next-auth'
 import { Button } from '../ui/button'
 import { usePathname } from 'next/navigation'
+import { Badge } from '../ui/badge'
 
 const Navigation = ({
   className,
@@ -106,18 +107,23 @@ const Navigation = ({
                 <DropdownMenuItem
                   asChild
                   className="p-3 hover:bg-gray-100 hover:cursor-pointer rounded-md"
+                  disabled
                 >
                   <Link
                     href={'/profile'}
                     className="flex flex-row items-center"
                   >
                     <User2Icon className="h-4 w-4 mr-2 inline-block" />{' '}
-                    <p className="text-sm">Profile</p>
+                    <p className="text-sm">Profile</p>{' '}
+                    <Badge className="ml-2" variant={'outline'}>
+                      Coming soon
+                    </Badge>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   asChild
                   className="p-3 hover:bg-gray-100 hover:cursor-pointer rounded-md"
+                  disabled
                 >
                   <Link
                     href={'/setting'}
@@ -125,6 +131,9 @@ const Navigation = ({
                   >
                     <Settings className="h-4 w-4 mr-2 inline-block" />{' '}
                     <p className="text-sm">Setting</p>
+                    <Badge className="ml-2" variant={'outline'}>
+                      Coming soon
+                    </Badge>
                   </Link>
                 </DropdownMenuItem>
               </>
@@ -133,10 +142,14 @@ const Navigation = ({
             <DropdownMenuItem
               asChild
               className="p-3 hover:bg-gray-100 hover:cursor-pointer rounded-md"
+              disabled
             >
               <Link href={'/developers'} className="flex flex-row items-center">
                 <SquareDashedBottomCode className="h-4 w-4 mr-2 inline-block" />{' '}
-                <p className="text-sm">Developers</p>
+                <p className="text-sm">Developers</p>{' '}
+                <Badge className="ml-2" variant={'outline'}>
+                  Coming soon
+                </Badge>
               </Link>
             </DropdownMenuItem>
             {session?.user && (

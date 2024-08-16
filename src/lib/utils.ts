@@ -79,4 +79,4 @@ export function extractText(nodes: SchemaChildNode[]): string {
   return result
 }
 
-export const baseURL = 'https://aadil611.live/api'
+export const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL

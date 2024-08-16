@@ -31,12 +31,15 @@ const Notes = () => {
     setLoading(true)
     if (authToken) {
       try {
-        const response = await fetch(`${baseURL}/notes/`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authToken}`,
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/notes/`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
           },
-        })
+        )
 
         if (response.ok) {
           const responseData = await response.json()

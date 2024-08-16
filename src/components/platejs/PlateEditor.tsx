@@ -408,19 +408,22 @@ export function PlateEditor({
         title: NotesSchemaTypeOne | NotesSchemaTypeTwo,
         body: NotesSchemaTypeOne | NotesSchemaTypeTwo[],
       ) => {
-        const response = await fetch(`${baseURL}/notes/${notesId}/`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`,
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/notes/${notesId}/`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify({
+              title: title?.children[0]?.text
+                ? title.children[0].text
+                : 'Untitled',
+              data: JSON.stringify(body),
+            }),
           },
-          body: JSON.stringify({
-            title: title?.children[0]?.text
-              ? title.children[0].text
-              : 'Untitled',
-            data: JSON.stringify(body),
-          }),
-        })
+        )
 
         if (response.ok) {
           const responseData = await response.json()
