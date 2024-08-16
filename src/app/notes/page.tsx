@@ -1,6 +1,6 @@
 'use client'
 
-import AddEditNoteDialog from '@/components/common/AddEditNoteDialog'
+import AddNoteDialog from '@/components/common/AddNoteDialog'
 import Note from '@/components/common/Note'
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { Button } from '@/components/ui/button'
@@ -28,6 +28,7 @@ const Notes = () => {
   const { data, status } = useSession()
 
   const getNotesList = async (authToken: string | undefined) => {
+    setLoading(true)
     if (authToken) {
       try {
         const response = await fetch(`${baseURL}/notes/`, {
@@ -67,10 +68,8 @@ const Notes = () => {
   }
 
   useEffect(() => {
-    console.log(data, status)
     if (status === 'authenticated') {
       getNotesList(data.accessToken)
-      console.log(data.accessToken)
     }
   }, [status])
 
@@ -99,7 +98,12 @@ const Notes = () => {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {allNotes.map((note) => (
-              <Note key={note.id} note={note} />
+              <Note
+                key={note.id}
+                note={note}
+                authToken={data?.accessToken}
+                getNotesList={getNotesList}
+              />
             ))}
             {allNotes.length === 0 && (
               <div className="col-span-full text-center">
@@ -122,7 +126,7 @@ const Notes = () => {
         )}
       </div>
       {data?.accessToken && (
-        <AddEditNoteDialog
+        <AddNoteDialog
           authToken={data?.accessToken}
           open={dialogOpen}
           setOpen={setDialogOpen}

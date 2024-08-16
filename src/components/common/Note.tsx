@@ -8,44 +8,100 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Edit } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { useRouter } from 'next/navigation'
+import { Edit, Trash } from 'lucide-react'
 import { NoteProps } from '@/lib/types/notes'
+import { Button as AntdButton, Popconfirm } from 'antd'
+import { toast } from 'sonner'
+import { baseURL } from '@/lib/utils'
+import Link from 'next/link'
 
-export default function Note({ note }: { note: NoteProps }) {
+const trucateNotesContent = (content: string | null) => {
+  if (content && content.length > 100) {
+    return content.slice(0, 100) + '...'
+  } else {
+    return content
+  }
+}
+
+const truncateNotesTitle = (title: string) => {
+  if (title.length > 30) {
+    return title.slice(0, 30) + '...'
+  } else {
+    return title
+  }
+}
+
+export default function Note({
+  note,
+  authToken,
+  getNotesList,
+}: {
+  note: NoteProps
+  authToken: string | undefined
+  getNotesList: (authToken: string) => {}
+}) {
   const wasUpdated = note.updatedAt > note.createdAt
   const createdUpdatedAtTimestamp = (
     wasUpdated ? note.updatedAt : note.createdAt
   ).toDateString()
 
-  const router = useRouter()
+  const handleDeleteNotes = async (notesId: string) => {
+    if (authToken) {
+      const response = await fetch(`${baseURL}/notes/${notesId}/`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
+
+      if (response.ok) {
+        toast.warning('Deleted your notes.')
+        getNotesList(authToken)
+      } else {
+        toast.error('Error deleting your notes, Please try again.')
+      }
+    }
+  }
 
   return (
     <>
       <Card className="flex cursor-pointer flex-col justify-between transition-shadow hover:shadow-lg">
         <div>
           <CardHeader>
-            <CardTitle>{note.title}</CardTitle>
+            <CardTitle>{truncateNotesTitle(note.title)}</CardTitle>
             <CardDescription>
               {createdUpdatedAtTimestamp}
               {wasUpdated && ' (updated)'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="whitespace-pre-line">{note.content}</p>
+            <p className="whitespace-pre-line">
+              {trucateNotesContent(note.content)}
+            </p>
           </CardContent>
         </div>
-        <CardFooter className="place-self-end">
-          <Button
-            onClick={() => {
-              router.push(`/notes/${note.id}`)
+        <CardFooter className="place-self-end flex flex-row gap-2">
+          <Popconfirm
+            placement="topRight"
+            title={<b>Are you sure to delete this notes?</b>}
+            onConfirm={() => {
+              handleDeleteNotes(note.id)
             }}
-            variant="outline"
-            className="border border-gray-300"
+            okText="Yes"
+            cancelText="No"
           >
-            <Edit className="mr-2 h-5 w-5" /> Edit
-          </Button>
+            <AntdButton className="h-fit p-0" danger>
+              <Trash className=" h-4 w-4" />
+            </AntdButton>
+          </Popconfirm>
+          <Link href={`/notes/${note.id}`}>
+            <AntdButton
+              type="primary"
+              className="border border-gray-300 h-fit p-0"
+            >
+              <Edit className=" h-4 w-4" /> Edit
+            </AntdButton>
+          </Link>
         </CardFooter>
       </Card>
     </>

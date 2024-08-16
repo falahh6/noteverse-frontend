@@ -3,11 +3,9 @@
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { PlateEditor } from '@/components/platejs/PlateEditor'
 import { baseURL } from '@/lib/utils'
-import { Skeleton } from 'antd'
-import { Loader } from 'lucide-react'
+import { Empty, Skeleton } from 'antd'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
 
 const Notes = ({
   params,
@@ -37,10 +35,10 @@ const Notes = ({
   >([])
 
   const { data, status } = useSession()
+  const [error, setError] = useState(false)
 
   const getNotes = async (authToken: string | undefined) => {
     if (authToken) {
-      console.log('API CALLED')
       try {
         const response = await fetch(`${baseURL}/notes/${params.id}`, {
           method: 'GET',
@@ -51,9 +49,7 @@ const Notes = ({
 
         if (response.ok) {
           const responseData = await response.json()
-          console.log(responseData)
           const data = responseData.data && JSON.parse(responseData.data)
-          console.log('DATA : ', data)
           const parsedTitle = {
             type: 'h1',
             children: [{ text: responseData.title }],
@@ -65,10 +61,12 @@ const Notes = ({
           } else {
             setNotesData([parsedTitle])
           }
+        } else {
+          setError(true)
         }
       } catch (error) {
         console.log(error)
-        toast.error('Error Fetching your notes, Please Refresh.')
+        setError(true)
       } finally {
         setLoading(false)
       }
@@ -78,28 +76,53 @@ const Notes = ({
   }
 
   useEffect(() => {
-    console.log(data, status)
     if (status === 'authenticated') {
       getNotes(data.accessToken)
-      console.log(data.accessToken)
     }
   }, [status])
 
   return (
     <>
+      {error && (
+        <MaxWidthWrapper className="mt-[10vh] px-0 md:px-2 lg:px-8 sm:px-2">
+          <div className="h-full w-full pt-28 flex flex-col gap-6 overflow-hidden">
+            {' '}
+            <Empty
+              description={
+                <p className="z-[999]">
+                  No notes found for this Id, Please check the link or try{' '}
+                  <span
+                    onClick={() => {
+                      window.location.reload()
+                    }}
+                    className="text-blue-600 hover:cursor-pointer"
+                  >
+                    refresh.
+                  </span>
+                </p>
+              }
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />{' '}
+          </div>
+        </MaxWidthWrapper>
+      )}
       {loading ? (
         <MaxWidthWrapper className="mt-[10vh] px-0 md:px-2 lg:px-8 sm:px-2">
-          <div className="h-screen w-full pt-10 flex flex-col gap-6 overflow-hidden">
+          <div className="h-full w-full pt-10 flex flex-col gap-6 overflow-hidden">
             <Skeleton.Button active block />
             <Skeleton.Button className="py-[15rem] -mt-[8rem]" active block />
           </div>
         </MaxWidthWrapper>
       ) : (
-        <PlateEditor
-          value={notesData}
-          notesId={params.id}
-          authToken={data?.accessToken!}
-        />
+        <>
+          {!error && (
+            <PlateEditor
+              value={notesData}
+              notesId={params.id}
+              authToken={data?.accessToken!}
+            />
+          )}
+        </>
       )}
     </>
   )

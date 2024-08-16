@@ -44,6 +44,7 @@ import {
   createExcalidrawPlugin,
   ELEMENT_EXCALIDRAW,
 } from '@udecode/plate-excalidraw'
+import { createSelectOnBackspacePlugin } from '@udecode/plate-select'
 import { createTogglePlugin, ELEMENT_TOGGLE } from '@udecode/plate-toggle'
 import {
   createColumnPlugin,
@@ -173,6 +174,9 @@ const plugins = createPlugins(
     }),
     createImagePlugin(),
     createExcalidrawPlugin(),
+    createSelectOnBackspacePlugin({
+      options: { query: { allow: [ELEMENT_EXCALIDRAW] } },
+    }),
     createTogglePlugin(),
     createColumnPlugin(),
     createMediaEmbedPlugin(),
@@ -411,7 +415,9 @@ export function PlateEditor({
             Authorization: `Bearer ${authToken}`,
           },
           body: JSON.stringify({
-            title: title.children[0].text ? title.children[0].text : 'Untitled',
+            title: title?.children[0]?.text
+              ? title.children[0].text
+              : 'Untitled',
             data: JSON.stringify(body),
           }),
         })
@@ -439,33 +445,34 @@ export function PlateEditor({
         <CommentsProvider users={{}} myUserId="1">
           <Plate
             onChange={(val) => {
-              console.log(val)
-
+              const editorElement = document.getElementById('editor')
+              editorElement?.scrollBy(0, 500)
               const title = val.filter((val) => val.type === 'h1')[0]
-              console.log('TITLE', title)
-
               const body = val.filter((val) => val.id !== 'title')
-              console.log('BODY', body)
-
-              console.log('AGG Data : ', [title, ...body])
               handleNotesChange(title, body)
             }}
             plugins={plugins}
             initialValue={value}
           >
             <MaxWidthWrapper className="mt-[10vh] px-10 max-sm:px-4">
-              <div className="h-[88vh] overflow-scroll no-scrollbar border rounded-md scroll-m-0">
+              <div className="h-[88vh] overflow-scroll no-scrollbar border-2 rounded-md scroll-m-0">
                 <FixedToolbar>
                   <FixedToolbarButtons />
                 </FixedToolbar>
 
-                <Editor autoFocus focusRing={false} variant="ghost" />
+                <Editor
+                  id="editor"
+                  className="max-h-full overflow-ellipsis"
+                  autoFocus
+                  focusRing={false}
+                  variant="ghost"
+                />
               </div>
             </MaxWidthWrapper>
 
-            <FloatingToolbar>
+            {/* <FloatingToolbar>
               <FloatingToolbarButtons />
-            </FloatingToolbar>
+            </FloatingToolbar> */}
             <CommentsPopover />
           </Plate>
         </CommentsProvider>

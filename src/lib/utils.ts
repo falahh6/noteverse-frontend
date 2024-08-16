@@ -76,7 +76,6 @@ export function extractText(nodes: SchemaChildNode[]): string {
     }
   }
 
-  console.log('TEXT EXTRACTED RESULST : ', result)
   return result
 }
 

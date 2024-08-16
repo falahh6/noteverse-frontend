@@ -30,11 +30,11 @@ export const authOptions: NextAuthOptions = {
 
         if (response.ok) {
           const data = await response.json()
-          console.log(data)
+          console.log('Logged In User : ', data)
           return {
             id: '1',
             email: credentials?.email,
-            name: 'ANYTHING',
+            name: data.name,
             emailVerified: false,
             accessToken: data.access,
             refreshToken: data.refresh,

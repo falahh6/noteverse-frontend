@@ -9,6 +9,7 @@ import { getServerSession } from 'next-auth'
 import { Toaster } from '@/components/ui/sonner'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { authOptions } from './api/auth/[...nextauth]/authoptions'
+import ProgressBarProvider from '@/components/ui/Progressbar'
 
 export const metadata = constructMetadata()
 
@@ -24,17 +25,17 @@ export default async function RootLayout({
       <body className={GeistSans.className}>
         {' '}
         <AuthProvider>
-          <AntdRegistry>
-            <ThemeProvider defaultTheme="light">
-              {/* <BackgroundGrid className="min-w-full"> */}
-              <>
-                <Navigation session={session} />
-                {children}
-              </>
-              <Toaster richColors closeButton className="z-[999]" />
-              {/* </BackgroundGrid> */}
-            </ThemeProvider>
-          </AntdRegistry>
+          <ProgressBarProvider>
+            <AntdRegistry>
+              <ThemeProvider defaultTheme="light">
+                <>
+                  <Navigation session={session} />
+                  {children}
+                </>
+                <Toaster richColors closeButton className="z-[999]" />
+              </ThemeProvider>
+            </AntdRegistry>
+          </ProgressBarProvider>
         </AuthProvider>
       </body>
     </html>

@@ -39,11 +39,6 @@ import { EmojiDropdownMenu } from './emoji-dropdown-menu'
 
 export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly()
-  // const [] = useColorDropdownMenu()
-
-  useEffect(() => {
-    console.log(readOnly)
-  }, [readOnly])
 
   return (
     <div className="w-full overflow-hidden">
@@ -120,6 +115,14 @@ export function FixedToolbarButtons() {
               <MoreDropdownMenu />
             </ToolbarGroup>
           </>
+        )}
+
+        {readOnly && (
+          <ToolbarGroup noSeparator>
+            <p className="ml-2 text-sm max-sm:text-xs">
+              Your are currently viewing this notes.
+            </p>
+          </ToolbarGroup>
         )}
 
         <div className="grow" />
