@@ -23,19 +23,19 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { baseURL } from '@/lib/utils'
 
-interface AddEditNoteDialogProps {
+interface AddNoteDialogProps {
   open: boolean
   setOpen: (open: boolean) => void
   noteToEdit?: any
   authToken: string | undefined
 }
 
-export default function AddEditNoteDialog({
+export default function AddNoteDialog({
   open,
   setOpen,
   noteToEdit,
   authToken,
-}: AddEditNoteDialogProps) {
+}: AddNoteDialogProps) {
   const [deleteInProgress, setDeleteInProgress] = useState(false)
   const router = useRouter()
 
@@ -76,36 +76,13 @@ export default function AddEditNoteDialog({
     }
   }
 
-  // async function deleteNote() {
-  //   if (!noteToEdit) {
-  //     return
-  //   }
-  //   setDeleteInProgress(true)
-  //   try {
-  //     const response = await fetch('/api/notes', {
-  //       method: 'DELETE',
-  //       body: JSON.stringify({
-  //         id: noteToEdit.id,
-  //       }),
-  //     })
-  //     if (!response.ok) {
-  //       throw Error('Status code: ' + response.status)
-  //     }
-  //     router.refresh()
-  //     setOpen(false)
-  //   } catch (error) {
-  //     console.error(error)
-  //     toast.error('Something went wrong. Please try again.')
-  //   } finally {
-  //     setDeleteInProgress(false)
-  //   }
-  // }
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent>
+      <DialogContent className="max-sm:w-[80%] max-sm:rounded-lg">
         <DialogHeader>
-          <DialogTitle>{noteToEdit ? 'Edit Note' : 'Create Notes'}</DialogTitle>
+          <DialogTitle className="text-left">
+            {noteToEdit ? 'Edit Note' : 'Create Notes'}
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">

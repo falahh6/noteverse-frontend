@@ -22,6 +22,7 @@ import {
 import { signOut } from 'next-auth/react'
 import { DefaultSession } from 'next-auth'
 import { Button } from '../ui/button'
+import { usePathname } from 'next/navigation'
 
 const Navigation = ({
   className,
@@ -30,8 +31,10 @@ const Navigation = ({
   className?: string
   session: DefaultSession | null
 }) => {
+  const pathname = usePathname()
+
   return (
-    <div className="min-h-[10vh] px-20 max-sm:px-8 w-full bg-gradient-to-b from-gray-300  to-transparent fixed top-0 left-0 right-0 flex flex-row justify-between items-center backdrop:blur-0 backdrop-blur-lg">
+    <div className="min-h-[10vh] px-20 max-sm:px-8 w-full bg-gradient-to-b from-gray-300  to-transparent fixed top-0 left-0 right-0 flex flex-row justify-between items-center backdrop:blur-0 backdrop-blur-lg z-50">
       <div className="flex flex-row gap-2 items-center">
         <a href={'/'} className="flex flex-row items-center">
           <Image
@@ -56,7 +59,7 @@ const Navigation = ({
           <div>
             <Button
               variant={'outline'}
-              className="bg-transparent h-fit py-1 border border-gray-300"
+              className={`bg-transparent h-fit py-1 border border-gray-300 ${pathname === '/notes' && 'border-gray-400'}`}
               asChild
             >
               <Link href={'/notes'}>

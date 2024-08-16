@@ -76,8 +76,7 @@ export function extractText(nodes: SchemaChildNode[]): string {
     }
   }
 
-  console.log('TEXT EXTRACTED RESULST : ', result)
   return result
 }
 
-export const baseURL = 'http://apis.noteverse.aadil611.live/api'
+export const baseURL = 'https://aadil611.live/api'
