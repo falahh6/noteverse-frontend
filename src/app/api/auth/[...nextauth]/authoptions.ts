@@ -11,12 +11,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const user = {
-          name: 'Falah',
-          email: 'falah@dev.com',
-          emailVerified: false,
-        }
-
         const response = await fetch(`${baseURL}/login/`, {
           method: 'POST',
           headers: {
