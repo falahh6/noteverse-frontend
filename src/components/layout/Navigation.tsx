@@ -43,7 +43,6 @@ const Navigation = ({
   let Called = false
 
   useEffect(() => {
-    console.log('effect : ', pathname, type)
     if (
       !pages.some((page) => page.pathname.startsWith('/notes?type=')) &&
       !Called
@@ -56,14 +55,19 @@ const Navigation = ({
       })
     }
     Called = true
-    toogleActivePage(type ? pathname + `?type=${type}` : pathname)
-
-    console.log('@pages : ', pages)
+    toogleActivePage(
+      pathname === '/notes'
+        ? pathname + `?type=${type || 'featured'}`
+        : pathname,
+    )
   }, [pathname])
 
   //modify pathname
   useEffect(() => {
-    modifyPathname(`/notes?type=${type}`)
+    if (type) {
+      console.log('@modify_effect')
+      modifyPathname(`/notes?type=${type}`)
+    }
   }, [type])
 
   return (
