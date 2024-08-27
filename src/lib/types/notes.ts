@@ -5,6 +5,7 @@ export interface NoteProps {
   userId: string
   createdAt: Date
   updatedAt: Date
+  ownerEmail: string
 }
 
 export interface NotesSchemaTypeOne {

@@ -36,8 +36,17 @@ import { LinkToolbarButton } from './link-toolbar-button'
 import { MediaToolbarButton } from './media-toolbar-button'
 import { TableDropdownMenu } from './table-dropdown-menu'
 import { EmojiDropdownMenu } from './emoji-dropdown-menu'
+import { Eye, Share } from 'lucide-react'
+import { Button } from './button'
+import ShareWith from '../platejs/ShareWith'
 
-export function FixedToolbarButtons() {
+export function FixedToolbarButtons({
+  mode,
+  isOwner,
+}: {
+  mode: string
+  isOwner: boolean
+}) {
   const readOnly = useEditorReadOnly()
 
   return (
@@ -119,17 +128,26 @@ export function FixedToolbarButtons() {
 
         {readOnly && (
           <ToolbarGroup noSeparator>
-            <p className="ml-2 text-sm max-sm:text-xs">
-              Your are currently viewing this notes.
+            <p className="ml-2 py-2 text-sm max-sm:text-xs">
+              <Eye className="h-4 w-4 mr-1 inline" /> Your are currently viewing
+              this notes.
             </p>
           </ToolbarGroup>
         )}
 
         <div className="grow" />
 
-        <ToolbarGroup noSeparator>
-          <ModeDropdownMenu />
-        </ToolbarGroup>
+        {mode === 'edit' && (
+          <ToolbarGroup noSeparator>
+            <ModeDropdownMenu />
+          </ToolbarGroup>
+        )}
+
+        {!readOnly && isOwner && (
+          <ToolbarGroup className="self-end ml-auto">
+            <ShareWith />
+          </ToolbarGroup>
+        )}
       </div>
     </div>
   )

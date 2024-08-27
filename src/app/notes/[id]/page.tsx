@@ -2,9 +2,11 @@
 
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { PlateEditor } from '@/components/platejs/PlateEditor'
+import { usePathContext } from '@/context/pathContext'
 import { baseURL } from '@/lib/utils'
 import { Empty, Skeleton } from 'antd'
 import { useSession } from 'next-auth/react'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 const Notes = ({
@@ -14,7 +16,12 @@ const Notes = ({
     id: string
   }
 }) => {
+  const searchParams = useSearchParams()
+  const editorMode = searchParams.get('mode')
+  const pathname = usePathname()
+
   const [loading, setLoading] = useState(true)
+  const [isOwner, setIsOwner] = useState(false)
   const [notesData, setNotesData] = useState<
     (
       | {
@@ -37,6 +44,8 @@ const Notes = ({
   const { data, status } = useSession()
   const [error, setError] = useState(false)
 
+  const { addPage } = usePathContext()
+
   const getNotes = async (authToken: string | undefined) => {
     if (authToken) {
       try {
@@ -49,15 +58,23 @@ const Notes = ({
 
         if (response.ok) {
           const responseData = await response.json()
-          const data = responseData.data && JSON.parse(responseData.data)
+          setIsOwner(responseData.owner === data?.user?.email)
+          const notesData = responseData.data && JSON.parse(responseData.data)
           const parsedTitle = {
             type: 'h1',
             children: [{ text: responseData.title }],
             id: 'title',
           }
 
-          if (data) {
-            setNotesData([parsedTitle, ...data])
+          addPage({
+            title: responseData.title,
+            pathname: pathname,
+            isActive: true,
+            isStatic: false,
+          })
+
+          if (notesData) {
+            setNotesData([parsedTitle, ...notesData])
           } else {
             setNotesData([parsedTitle])
           }
@@ -75,9 +92,11 @@ const Notes = ({
     }
   }
 
+  let called = false
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (status === 'authenticated' && !called) {
       getNotes(data.accessToken)
+      called = true
     }
   }, [status])
 
@@ -108,7 +127,7 @@ const Notes = ({
       )}
       {loading ? (
         <MaxWidthWrapper className="mt-[10vh] px-0 md:px-2 lg:px-8 sm:px-2">
-          <div className="h-full w-full pt-10 flex flex-col gap-6 overflow-hidden">
+          <div className="h-full w-full pt-10 flex flex-col gap-6">
             <Skeleton.Button active block />
             <Skeleton.Button className="py-[15rem] -mt-[8rem]" active block />
           </div>
@@ -117,9 +136,11 @@ const Notes = ({
         <>
           {!error && (
             <PlateEditor
+              mode={editorMode || 'view'}
               value={notesData}
               notesId={params.id}
               authToken={data?.accessToken!}
+              isOwner={isOwner}
             />
           )}
         </>

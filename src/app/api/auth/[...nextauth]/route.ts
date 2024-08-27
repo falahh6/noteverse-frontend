@@ -1,6 +1,4 @@
-import { baseURL } from '@/lib/utils'
-import NextAuth, { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import NextAuth from 'next-auth'
 import { authOptions } from './authoptions'
 
 const handler = NextAuth(authOptions)

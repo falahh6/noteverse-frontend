@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 
-import type { PlateContentProps } from '@udecode/plate-common';
-import type { VariantProps } from 'class-variance-authority';
+import type { PlateContentProps } from '@udecode/plate-common'
+import type { VariantProps } from 'class-variance-authority'
 
-import { cn } from '@udecode/cn';
-import { PlateContent } from '@udecode/plate-common';
-import { cva } from 'class-variance-authority';
+import { cn } from '@udecode/cn'
+import { PlateContent } from '@udecode/plate-common'
+import { cva } from 'class-variance-authority'
 
 const editorVariants = cva(
   cn(
@@ -13,7 +13,7 @@ const editorVariants = cva(
     'min-h-[80px] w-full rounded-md bg-background px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none',
     '[&_[data-slate-placeholder]]:text-muted-foreground [&_[data-slate-placeholder]]:!opacity-100',
     '[&_[data-slate-placeholder]]:top-[auto_!important]',
-    '[&_strong]:font-bold'
+    '[&_strong]:font-bold',
   ),
   {
     defaultVariants: {
@@ -41,11 +41,11 @@ const editorVariants = cva(
         outline: 'border border-input',
       },
     },
-  }
-);
+  },
+)
 
 export type EditorProps = PlateContentProps &
-  VariantProps<typeof editorVariants>;
+  VariantProps<typeof editorVariants>
 
 const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
   (
@@ -59,7 +59,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
       variant,
       ...props
     },
-    ref
+    ref,
   ) => {
     return (
       <div className="relative w-full" ref={ref}>
@@ -73,16 +73,16 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
               size,
               variant,
             }),
-            className
+            className,
           )}
           disableDefaultStyles
           readOnly={disabled ?? readOnly}
           {...props}
         />
       </div>
-    );
-  }
-);
-Editor.displayName = 'Editor';
+    )
+  },
+)
+Editor.displayName = 'Editor'
 
-export { Editor };
+export { Editor }

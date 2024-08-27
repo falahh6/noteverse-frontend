@@ -10,6 +10,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { authOptions } from './api/auth/[...nextauth]/authoptions'
 import ProgressBarProvider from '@/components/ui/Progressbar'
+import { PathContextProvider } from '@/context/pathContext'
 
 export const metadata = constructMetadata()
 
@@ -28,10 +29,10 @@ export default async function RootLayout({
           <ProgressBarProvider>
             <AntdRegistry>
               <ThemeProvider defaultTheme="light">
-                <>
+                <PathContextProvider>
                   <Navigation session={session} />
                   {children}
-                </>
+                </PathContextProvider>
                 <Toaster richColors closeButton className="z-[999]" />
               </ThemeProvider>
             </AntdRegistry>

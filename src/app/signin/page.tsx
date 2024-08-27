@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/Input'
-import { ArrowRight, Eye, Loader } from 'lucide-react'
+import { ArrowRight, Loader } from 'lucide-react'
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
@@ -104,7 +104,7 @@ const Page = () => {
                 }}
               />
             </div>
-            {errors.password && (
+            {errors.password?.message && (
               <p className="text-red-500 text-xs">{errors.password.message}</p>
             )}
             {error?.type && (

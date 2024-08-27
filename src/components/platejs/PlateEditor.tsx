@@ -159,6 +159,7 @@ import MaxWidthWrapper from '../layout/MaxwidthWrapper'
 import { useCallback, useEffect } from 'react'
 import { baseURL } from '@/lib/utils'
 import { NotesSchemaTypeOne, NotesSchemaTypeTwo } from '@/lib/types/notes'
+import { Textarea } from '../ui/textarea'
 
 const plugins = createPlugins(
   [
@@ -382,6 +383,8 @@ export function PlateEditor({
   value,
   notesId,
   authToken,
+  mode,
+  isOwner,
 }: {
   value: (
     | {
@@ -401,6 +404,8 @@ export function PlateEditor({
   )[]
   notesId: string
   authToken: string
+  mode: string
+  isOwner: boolean
 }) {
   const saveNotes = useCallback(
     debounce(
@@ -453,11 +458,12 @@ export function PlateEditor({
             }}
             plugins={plugins}
             initialValue={value}
+            readOnly={mode === '' || mode === 'view'}
           >
-            <MaxWidthWrapper className="mt-[10vh] px-10 max-sm:px-4">
-              <div className="h-[88vh] overflow-scroll no-scrollbar border-2 rounded-md scroll-m-0">
+            <MaxWidthWrapper className="px-10 mt-[12vh] max-sm:px-4">
+              <div className="h-[86vh] overflow-scroll no-scrollbar border-2 rounded-md scroll-m-0">
                 <FixedToolbar>
-                  <FixedToolbarButtons />
+                  <FixedToolbarButtons mode={mode} isOwner={isOwner} />
                 </FixedToolbar>
 
                 <Editor
