@@ -25,14 +25,10 @@ export const PathContextProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
 
   const addPage = (newPage: Page) => {
-    console.log('CALLED')
-
-    // Check if a page with the same properties exists in the pages array
-    const pageExists = pages.some((page) => page.pathname === newPage.pathname) // Assuming Page has an 'id' property
+    const pageExists = pages.some((page) => page.pathname === newPage.pathname)
     console.log(pageExists)
 
     if (!pageExists) {
-      console.log('CALLED 1')
       setPages((prevPages) => [...prevPages, newPage])
     }
   }
@@ -46,6 +42,7 @@ export const PathContextProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const toogleActivePage = (pathname: string) => {
+    console.log('@toogleActivePage_pathname : ', pathname)
     setPages((prevPages) =>
       prevPages.map((prevpage) =>
         prevpage.pathname === pathname

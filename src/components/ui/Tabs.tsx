@@ -80,7 +80,7 @@ export const Tabs = ({
               transformStyle: 'preserve-3d',
             }}
           >
-            {active.value === tab.value && (
+            {active?.value === tab.value && (
               <motion.div
                 layoutId="clickedbutton"
                 transition={{ type: 'spring', bounce: 0.3, duration: 0.6 }}
