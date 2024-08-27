@@ -7,24 +7,27 @@ import { Button } from '@/components/ui/button'
 import { baseURL, extractText } from '@/lib/utils'
 import { PenBoxIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Empty, Typography, Skeleton } from 'antd'
+import { Skeleton } from 'antd'
+import { Tabs } from '@/components/ui/Tabs'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { NoteProps } from '@/lib/types/notes'
+import EmptyNotesState from '@/components/common/EmptyNotesState'
+import { usePathContext } from '@/context/pathContext'
 
 const Notes = () => {
-  //@ts-ignore
+  const searchParams = useSearchParams()
+  const type = searchParams.get('type')
+
   const [dialogOpen, setDialogOpen] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [allNotes, setAllNotes] = useState<
-    {
-      id: string
-      title: string
-      content: string | null
-      userId: string
-      createdAt: Date
-      updatedAt: Date
-    }[]
-  >([])
+
+  const [allNotes, setAllNotes] = useState<NoteProps[]>([])
+  const [featuredNotes, setFeaturedNotes] = useState<NoteProps[]>([])
+  const [sharedNotes, setShareNotes] = useState<NoteProps[]>([])
+  const [yourNotes, setYourNotes] = useState<NoteProps[]>([])
+
   const { data, status } = useSession()
 
   const getNotesList = async (authToken: string | undefined) => {
@@ -42,14 +45,25 @@ const Notes = () => {
           const responseData = await response.json()
           console.log('notesList : ', responseData)
 
-          const parsedResponse = responseData?.map((data: any) => ({
-            id: data.id,
-            title: data.title,
-            content: data.data && extractText(JSON.parse(data.data)),
-            userId: 'na',
-            createdAt: new Date(data.created_at),
-            updatedAt: new Date(data.updated_at),
-          }))
+          const parsedResponse: NoteProps[] = responseData?.map(
+            (data: any) => ({
+              id: data.id,
+              title: data.title,
+              content: data.data && extractText(JSON.parse(data.data)),
+              userId: 'na',
+              createdAt: new Date(data.created_at),
+              updatedAt: new Date(data.updated_at),
+              ownerEmail: data.owner,
+            }),
+          )
+
+          setFeaturedNotes(parsedResponse)
+
+          setYourNotes(
+            parsedResponse.filter(
+              (note) => note.ownerEmail === data?.user?.email,
+            ),
+          )
 
           console.log(parsedResponse)
           setAllNotes(parsedResponse)
@@ -75,55 +89,90 @@ const Notes = () => {
 
   return (
     <MaxWidthWrapper className="h-full w-full flex flex-col items-center justify-center rounded-lg">
-      <div className="w-full mx-auto rounded-lg md:rounded-2xl p-4 md:p-8 mt-20">
-        <div className="flex flex-row justify-end w-full my-4">
+      <div className="w-full mx-auto rounded-lg md:rounded-2xl p-4 md:p-8 md:pt-0 mt-[10vh]">
+        <div className="flex flex-row justify-between items-center w-full my-4 border-b pb-2">
+          <h1 className="text-xl font-bold text-gray-600">Home</h1>
           <Button
             onClick={() => {
               setDialogOpen(true)
             }}
-            variant={'outline'}
-            className="w-full"
+            className="w-fit bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold max-sm:text-xs"
+            size={'sm'}
           >
             {' '}
             <PenBoxIcon className="h-5 w-5 mr-2" /> Create new{' '}
           </Button>
         </div>
-        {loading ? (
-          <div className="h-screen w-full mt-14 flex flex-col gap-6">
-            <Skeleton.Button active block />
-            <Skeleton.Button active block />
-            <Skeleton.Button active block />
-            <Skeleton.Button active block />
-          </div>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {allNotes.map((note) => (
-              <Note
-                key={note.id}
-                note={note}
-                authToken={data?.accessToken}
-                getNotesList={getNotesList}
-              />
-            ))}
-            {allNotes.length === 0 && (
-              <div className="col-span-full text-center">
-                <div className="h-screen w-full mt-10">
-                  <div className="flex flex-row justify-center items-center">
-                    <Empty
-                      image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                      imageStyle={{ height: 100 }}
-                      description={
-                        <Typography.Text>
-                          You don't have any notes yet.
-                        </Typography.Text>
-                      }
-                    ></Empty>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+        <div className="mt-2 mb-4">
+          <Tabs
+            tabs={[
+              { title: 'Featured', value: 'featured' },
+              { title: 'Shared with me', value: 'shared' },
+              { title: 'Your Notes', value: 'your-notes' },
+            ]}
+          />
+        </div>
+        <div className="max-h-[65vh] h-[65vh] overflow-scroll no-scrollbar">
+          {loading ? (
+            <div className="h-full w-full mt-14 flex flex-col gap-6">
+              <Skeleton.Button active block />
+              <Skeleton.Button active block />
+              <Skeleton.Button active block />
+              <Skeleton.Button active block />
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {type === 'featured' && (
+                <>
+                  {featuredNotes.length > 0 ? (
+                    featuredNotes.map((note) => (
+                      <Note
+                        key={note.id}
+                        note={note}
+                        authToken={data?.accessToken}
+                        getNotesList={getNotesList}
+                      />
+                    ))
+                  ) : (
+                    <EmptyNotesState description="" />
+                  )}
+                </>
+              )}
+              {type === 'shared' && (
+                <>
+                  {sharedNotes.length > 0 ? (
+                    sharedNotes.map((note) => (
+                      <Note
+                        key={note.id}
+                        note={note}
+                        authToken={data?.accessToken}
+                        getNotesList={getNotesList}
+                      />
+                    ))
+                  ) : (
+                    <EmptyNotesState description="" />
+                  )}
+                </>
+              )}
+              {type === 'your-notes' && (
+                <>
+                  {yourNotes.length > 0 ? (
+                    yourNotes.map((note) => (
+                      <Note
+                        key={note.id}
+                        note={note}
+                        authToken={data?.accessToken}
+                        getNotesList={getNotesList}
+                      />
+                    ))
+                  ) : (
+                    <EmptyNotesState description="" />
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
       {data?.accessToken && (
         <AddNoteDialog
