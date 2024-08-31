@@ -7,14 +7,13 @@ import { Button } from '@/components/ui/button'
 import { baseURL, extractText } from '@/lib/utils'
 import { PenBoxIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Skeleton } from 'antd'
 import { Tabs } from '@/components/ui/Tabs'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { NoteProps } from '@/lib/types/notes'
 import EmptyNotesState from '@/components/common/EmptyNotesState'
-import { usePathContext } from '@/context/pathContext'
 
 const Notes = () => {
   const searchParams = useSearchParams()

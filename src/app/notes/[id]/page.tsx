@@ -68,7 +68,7 @@ const Notes = ({
 
           addPage({
             title: responseData.title,
-            pathname: pathname,
+            pathname: pathname + `?mode=${editorMode}`,
             isActive: true,
             isStatic: false,
           })

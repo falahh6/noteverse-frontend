@@ -11,6 +11,7 @@ import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { authOptions } from './api/auth/[...nextauth]/authoptions'
 import ProgressBarProvider from '@/components/ui/Progressbar'
 import { PathContextProvider } from '@/context/pathContext'
+import { UserContextProvider } from '@/context/usersContext'
 
 export const metadata = constructMetadata()
 
@@ -30,8 +31,10 @@ export default async function RootLayout({
             <AntdRegistry>
               <ThemeProvider defaultTheme="light">
                 <PathContextProvider>
-                  <Navigation session={session} />
-                  {children}
+                  <UserContextProvider>
+                    <Navigation session={session} />
+                    {children}
+                  </UserContextProvider>
                 </PathContextProvider>
                 <Toaster richColors closeButton className="z-[999]" />
               </ThemeProvider>

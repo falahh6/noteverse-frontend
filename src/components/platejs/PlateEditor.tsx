@@ -156,7 +156,7 @@ import { withDraggables } from '@/components/plate-ui/with-draggables'
 import { EmojiInputElement } from '@/components/plate-ui/emoji-input-element'
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
 import MaxWidthWrapper from '../layout/MaxwidthWrapper'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { baseURL } from '@/lib/utils'
 import { NotesSchemaTypeOne, NotesSchemaTypeTwo } from '@/lib/types/notes'
 import { Textarea } from '../ui/textarea'
@@ -407,6 +407,7 @@ export function PlateEditor({
   mode: string
   isOwner: boolean
 }) {
+  const [notesTitle, setNotesTitle] = useState('')
   const saveNotes = useCallback(
     debounce(
       async (
@@ -444,6 +445,15 @@ export function PlateEditor({
     saveNotes(notesTitle, notesBody)
   }
 
+  useEffect(() => {
+    const initialTitle = value.filter((val) => val.type === 'h1')[0]
+    setNotesTitle(
+      initialTitle?.children[0]?.text
+        ? initialTitle.children[0].text
+        : 'Untitled',
+    )
+  }, [])
+
   return (
     <TooltipProvider>
       <DndProvider backend={HTML5Backend}>
@@ -453,6 +463,9 @@ export function PlateEditor({
               const editorElement = document.getElementById('editor')
               editorElement?.scrollBy(0, 500)
               const title = val.filter((val) => val.type === 'h1')[0]
+              setNotesTitle(
+                title?.children[0]?.text ? title.children[0].text : 'Untitled',
+              )
               const body = val.filter((val) => val.id !== 'title')
               handleNotesChange(title, body)
             }}
@@ -463,7 +476,12 @@ export function PlateEditor({
             <MaxWidthWrapper className="px-10 mt-[12vh] max-sm:px-4">
               <div className="h-[86vh] overflow-scroll no-scrollbar border-2 rounded-md scroll-m-0">
                 <FixedToolbar>
-                  <FixedToolbarButtons mode={mode} isOwner={isOwner} />
+                  <FixedToolbarButtons
+                    notesTitle={notesTitle}
+                    mode={mode}
+                    isOwner={isOwner}
+                    authToken={authToken}
+                  />
                 </FixedToolbar>
 
                 <Editor
