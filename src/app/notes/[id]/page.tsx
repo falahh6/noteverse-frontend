@@ -46,6 +46,8 @@ const Notes = ({
 
   const { addPage } = usePathContext()
 
+  const [notesSharedWithData, setNotesSharedWithData] = useState()
+
   const getNotes = async (authToken: string | undefined) => {
     if (authToken) {
       try {

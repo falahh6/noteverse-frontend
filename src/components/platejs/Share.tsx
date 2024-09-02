@@ -27,6 +27,7 @@ import {
 
 import { User, useUserContext, validateEmail } from '@/context/usersContext'
 import { Input } from '../ui/Input'
+import { toast } from 'sonner'
 
 const ShareWith = ({
   authToken,
@@ -58,6 +59,28 @@ const ShareWith = ({
       }
     | undefined
   >()
+
+  const shareNotesHandler = async () => {
+    const response = await fetch(`${baseURL}/sharedstatuses/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({
+        shared_by: data?.user?.email,
+        shared_with: selectedUser?.email,
+        permissions: selectedUser?.permission,
+        note: 0,
+      }),
+    })
+
+    if (response.ok) {
+      toast.success(`Successfully sent the invite to ${selectedUser?.email}`)
+    } else {
+      toast.error('Error while sending the invite. Please try again.')
+    }
+  }
 
   return (
     <Dialog
@@ -224,7 +247,11 @@ const ShareWith = ({
                 >
                   Cancel
                 </Button>
-                <Button size={'sm'} variant={'default'}>
+                <Button
+                  onClick={() => shareNotesHandler()}
+                  size={'sm'}
+                  variant={'default'}
+                >
                   Send
                 </Button>
               </div>

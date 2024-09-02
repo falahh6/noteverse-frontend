@@ -42,7 +42,7 @@ const Notes = () => {
 
         if (response.ok) {
           const responseData = await response.json()
-          console.log('notesList : ', responseData)
+          console.log('notesList (All): ', responseData)
 
           const parsedResponse: NoteProps[] = responseData?.map(
             (data: any) => ({
@@ -53,19 +53,100 @@ const Notes = () => {
               createdAt: new Date(data.created_at),
               updatedAt: new Date(data.updated_at),
               ownerEmail: data.owner,
+              visibility: data.visibility,
             }),
           )
-
-          setFeaturedNotes(parsedResponse)
 
           setYourNotes(
             parsedResponse.filter(
               (note) => note.ownerEmail === data?.user?.email,
             ),
           )
+        }
+      } catch (error) {
+        console.log(error)
+        toast.error('Error Fetching your notes, Please Refresh.')
+      } finally {
+        setTimeout(() => {
+          setLoading(false)
+        }, 1000)
+      }
+    } else {
+      setLoading(false)
+    }
+  }
+  const getFeaturedNotes = async (authToken: string | undefined) => {
+    setLoading(true)
+    if (authToken) {
+      try {
+        const response = await fetch(`${baseURL}/notes/get-featured-notes/`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        })
 
-          console.log(parsedResponse)
-          setAllNotes(parsedResponse)
+        if (response.ok) {
+          const responseData = await response.json()
+          console.log('notesList (Featured): ', responseData)
+
+          const parsedResponse: NoteProps[] = responseData?.map(
+            (data: any) => ({
+              id: data.id,
+              title: data.title,
+              content: data.data && extractText(JSON.parse(data.data)),
+              userId: 'na',
+              createdAt: new Date(data.created_at),
+              updatedAt: new Date(data.updated_at),
+              ownerEmail: data.owner,
+              visibility: data.visibility,
+            }),
+          )
+
+          setFeaturedNotes(parsedResponse)
+        }
+      } catch (error) {
+        console.log(error)
+        toast.error('Error Fetching your notes, Please Refresh.')
+      } finally {
+        setTimeout(() => {
+          setLoading(false)
+        }, 1000)
+      }
+    } else {
+      setLoading(false)
+    }
+  }
+
+  const getSharedNotes = async (authToken: string | undefined) => {
+    setLoading(true)
+    if (authToken) {
+      try {
+        const response = await fetch(`${baseURL}/notes/get-shared-notes/`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        })
+
+        if (response.ok) {
+          const responseData = await response.json()
+          console.log('notesList (Shared): ', responseData)
+
+          const parsedResponse: NoteProps[] = responseData?.map(
+            (data: any) => ({
+              id: data.id,
+              title: data.title,
+              content: data.data && extractText(JSON.parse(data.data)),
+              userId: 'na',
+              createdAt: new Date(data.created_at),
+              updatedAt: new Date(data.updated_at),
+              ownerEmail: data.owner,
+              visibility: data.visibility,
+            }),
+          )
+
+          setShareNotes(parsedResponse)
         }
       } catch (error) {
         console.log(error)
@@ -83,6 +164,8 @@ const Notes = () => {
   useEffect(() => {
     if (status === 'authenticated') {
       getNotesList(data.accessToken)
+      getFeaturedNotes(data.accessToken)
+      getSharedNotes(data.accessToken)
     }
   }, [status])
 
