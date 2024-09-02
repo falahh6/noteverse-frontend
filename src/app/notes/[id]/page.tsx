@@ -46,6 +46,8 @@ const Notes = ({
 
   const { addPage } = usePathContext()
 
+  const [notesSharedWithData, setNotesSharedWithData] = useState()
+
   const getNotes = async (authToken: string | undefined) => {
     if (authToken) {
       try {
@@ -68,7 +70,7 @@ const Notes = ({
 
           addPage({
             title: responseData.title,
-            pathname: pathname,
+            pathname: pathname + `?mode=${editorMode}`,
             isActive: true,
             isStatic: false,
           })

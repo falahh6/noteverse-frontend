@@ -6,6 +6,7 @@ export interface NoteProps {
   createdAt: Date
   updatedAt: Date
   ownerEmail: string
+  visibility: string
 }
 
 export interface NotesSchemaTypeOne {

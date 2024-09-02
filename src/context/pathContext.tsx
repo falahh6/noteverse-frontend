@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { createContext, ReactNode, useContext, useState } from 'react'
 
 type Page = {
@@ -22,6 +22,9 @@ const PathContext = createContext<PathContextType | undefined>(undefined)
 
 export const PathContextProvider = ({ children }: { children: ReactNode }) => {
   const [pages, setPages] = useState<Page[]>([])
+  const searchParams = useSearchParams()
+  const currPathname = usePathname()
+  const editorMode = searchParams.get('mode')
   const router = useRouter()
 
   const addPage = (newPage: Page) => {
@@ -38,7 +41,17 @@ export const PathContextProvider = ({ children }: { children: ReactNode }) => {
       prevPages.filter((page) => page.pathname !== pathname),
     )
 
-    router.push('/notes?type=featured')
+    const element = pages.filter((page) => page.pathname === pathname)[0]
+    const index = pages.indexOf(element)
+    const prev = index > 0 ? pages[index - 1] : null
+
+    if (element.isActive) {
+      if (prev) {
+        router.push(prev.pathname)
+      } else {
+        router.push('/notes?type=featured')
+      }
+    }
   }
 
   const toogleActivePage = (pathname: string) => {
