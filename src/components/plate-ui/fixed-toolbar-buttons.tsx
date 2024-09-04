@@ -32,17 +32,22 @@ import { TableDropdownMenu } from './table-dropdown-menu'
 import { EmojiDropdownMenu } from './emoji-dropdown-menu'
 import { Eye } from 'lucide-react'
 import ShareWith from '../platejs/Share'
+import { sharedStatus } from '@/lib/types/notes'
 
 export function FixedToolbarButtons({
   mode,
   isOwner,
   authToken,
   notesTitle,
+  notesId,
+  sharedStatuses,
 }: {
   mode: string
   isOwner: boolean
   authToken: string
   notesTitle: string
+  notesId: number
+  sharedStatuses: sharedStatus[]
 }) {
   const readOnly = useEditorReadOnly()
 
@@ -142,7 +147,13 @@ export function FixedToolbarButtons({
 
         {!readOnly && isOwner && (
           <ToolbarGroup className="self-end ml-auto">
-            <ShareWith notesTitle={notesTitle} authToken={authToken} isOwner />
+            <ShareWith
+              notesId={notesId}
+              notesTitle={notesTitle}
+              authToken={authToken}
+              isOwner
+              sharedStatuses={sharedStatuses}
+            />
           </ToolbarGroup>
         )}
       </div>

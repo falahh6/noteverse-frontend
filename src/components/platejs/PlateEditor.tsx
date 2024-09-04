@@ -158,7 +158,11 @@ import { TooltipProvider } from '@/components/plate-ui/tooltip'
 import MaxWidthWrapper from '../layout/MaxwidthWrapper'
 import { useCallback, useEffect, useState } from 'react'
 import { baseURL } from '@/lib/utils'
-import { NotesSchemaTypeOne, NotesSchemaTypeTwo } from '@/lib/types/notes'
+import {
+  NotesSchemaTypeOne,
+  NotesSchemaTypeTwo,
+  sharedStatus,
+} from '@/lib/types/notes'
 import { Textarea } from '../ui/textarea'
 
 const plugins = createPlugins(
@@ -385,6 +389,7 @@ export function PlateEditor({
   authToken,
   mode,
   isOwner,
+  sharedStatuses,
 }: {
   value: (
     | {
@@ -402,10 +407,11 @@ export function PlateEditor({
         id: string
       }
   )[]
-  notesId: string
+  notesId: number
   authToken: string
   mode: string
   isOwner: boolean
+  sharedStatuses: sharedStatus[]
 }) {
   const [notesTitle, setNotesTitle] = useState('')
   const saveNotes = useCallback(
@@ -481,6 +487,8 @@ export function PlateEditor({
                     mode={mode}
                     isOwner={isOwner}
                     authToken={authToken}
+                    notesId={notesId}
+                    sharedStatuses={sharedStatuses}
                   />
                 </FixedToolbar>
 
