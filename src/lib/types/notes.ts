@@ -33,3 +33,12 @@ export interface SchemaChildNode {
   id?: string
   backgroundColor?: string
 }
+
+export interface sharedStatus {
+  id: number
+  shared_by: number
+  shared_with: number
+  permissions: 'view' | 'edit'
+  shared_at: Date
+  note: number
+}

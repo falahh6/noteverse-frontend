@@ -1,9 +1,17 @@
 'use client'
 
-import { ArrowLeft, Globe, Link2, Share, UserRound } from 'lucide-react'
+import {
+  ArrowLeft,
+  Globe,
+  Link2,
+  Loader,
+  Share,
+  Trash,
+  UserRound,
+} from 'lucide-react'
 import { Button } from '../ui/button'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import {
   Select,
@@ -28,24 +36,29 @@ import {
 import { User, useUserContext, validateEmail } from '@/context/usersContext'
 import { Input } from '../ui/Input'
 import { toast } from 'sonner'
+import { sharedStatus } from '@/lib/types/notes'
 
 const ShareWith = ({
   authToken,
   notesTitle,
   isOwner,
+  notesId,
+  sharedStatuses,
 }: {
   authToken: string
   notesTitle: string
   isOwner: boolean
+  notesId: number
+  sharedStatuses: sharedStatus[]
 }) => {
   const { data, status } = useSession()
   const { users } = useUserContext()
   const [Users, setUsers] = useState<User[] | null>([])
   const [viewList, setViewList] = useState(false)
-  const [shareAccess, setShareAccess] = useState('viewer')
+  const [shareAccess, setShareAccess] = useState('view')
 
   const [sharedUsers, setSharedUsers] = useState<
-    { email: string; name: string; permission: string }[]
+    { id: string; permission: string; email: string; name: string }[]
   >([])
 
   useEffect(() => {
@@ -60,27 +73,114 @@ const ShareWith = ({
     | undefined
   >()
 
-  const shareNotesHandler = async () => {
-    const response = await fetch(`${baseURL}/sharedstatuses/`, {
-      method: 'POST',
+  const [sending, setSending] = useState(false)
+  const [actionLoading, setActionLoading] = useState(false)
+
+  const getSharedStatuses = async () => {
+    const response = await fetch(`${baseURL}/sharedstatuses/${notesId}/`, {
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify({
-        shared_by: data?.user?.email,
-        shared_with: selectedUser?.email,
-        permissions: selectedUser?.permission,
-        note: 0,
-      }),
     })
 
     if (response.ok) {
-      toast.success(`Successfully sent the invite to ${selectedUser?.email}`)
-    } else {
-      toast.error('Error while sending the invite. Please try again.')
+      const results = await response.json()
+      console.log(results)
     }
   }
+
+  const removeSharedStatus = async (id: number) => {
+    setActionLoading(true)
+    try {
+      const response = await fetch(`${baseURL}/sharedstatuses/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
+
+      if (response.ok) {
+        const results = await response.json()
+        toast.success(JSON.stringify(results))
+        console.log(results)
+      }
+    } catch (error) {
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const updateSharedStatus = async (id: number, permission: string) => {
+    setActionLoading(true)
+    try {
+      const response = await fetch(`${baseURL}/sharedstatuses/${id}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          permissions: permission,
+        }),
+      })
+
+      if (response.ok) {
+        const results = await response.json()
+        console.log(results)
+      }
+    } catch (error) {
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    // const updatedUsers = sharedStatuses.map((status) => status.id)
+    // setUsers()
+    /* TODO : Filterout the shared Users and users to show in dropdown, also when new share status created */
+  }, [])
+
+  const shareNotesHandler = async () => {
+    setSending(true)
+
+    console.log({
+      shared_by: data?.user.id as number,
+      shared_with: 5,
+      permissions: selectedUser?.permission,
+      note: notesId,
+    })
+    try {
+      const response = await fetch(`${baseURL}/sharedstatuses/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          shared_by: data?.user.id as number,
+          shared_with: 5,
+          permissions: selectedUser?.permission,
+          note: notesId,
+        }),
+      })
+
+      if (response.ok) {
+        setSelectedUser(undefined)
+        toast.success(`Successfully sent the invite to ${selectedUser?.email}`)
+      } else {
+        toast.error('Error while sending the invite. Please try again.')
+      }
+    } catch (error) {
+      toast.error('Error while sending the invite. Please try again.')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  useEffect(() => {
+    getSharedStatuses()
+  }, [])
 
   return (
     <Dialog
@@ -136,12 +236,12 @@ const ShareWith = ({
                       </SelectTrigger>
                       <SelectContent className="text-xs">
                         <SelectItem
-                          value="viewer"
+                          value="view"
                           className="text-xs flex flex-row items-baseline"
                         >
                           Viewer
                         </SelectItem>
-                        <SelectItem value="editor" className="text-xs">
+                        <SelectItem value="edit" className="text-xs">
                           Editor
                         </SelectItem>
                       </SelectContent>
@@ -181,34 +281,88 @@ const ShareWith = ({
                       }
                     }}
                   />
-                  <div className="absolute w-full bg-gray-100 max-w-[90%] max-sm:max-w-[86%] m-1 ml-0.5 rounded-md max-h-[25vh] overflow-scroll no-scrollbar">
-                    {viewList && (
-                      <>
-                        {Users &&
-                          Users.map((user) => (
-                            <div
-                              onClick={() => {
-                                setSelectedUser({
-                                  email: user.email,
-                                  permission: '',
-                                })
-                                setViewList(false)
-                              }}
-                              className="hover:bg-gray-200 w-full p-2 rounded-md flex flex-row items-center hover:cursor-pointer"
-                            >
-                              <UserRound className="h-4 w-4 mr-2" />
-                              <div>
-                                <p>{user.name}</p>
-                                <p>{user.email}</p>
-                              </div>
+                  {viewList && (
+                    <div className="absolute w-full bg-gray-100 max-w-[90%] max-sm:max-w-[86%] m-1 ml-0.5 rounded-md max-h-[25vh] overflow-scroll no-scrollbar shadow-md border z-50">
+                      {Users &&
+                        Users.map((user) => (
+                          <div
+                            onClick={() => {
+                              setSelectedUser({
+                                email: user.email,
+                                permission: shareAccess,
+                              })
+                              setViewList(false)
+                            }}
+                            className="hover:bg-gray-200 w-full p-2 rounded-md flex flex-row items-center hover:cursor-pointer"
+                          >
+                            <UserRound className="h-4 w-4 mr-2" />
+                            <div>
+                              <p>{user.name}</p>
+                              <p>{user.email}</p>
                             </div>
-                          ))}
-                      </>
-                    )}
-                  </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
                 <div className="my-4">
                   <p className="text-base font-semibold">People with access</p>
+                  <div className="flex flex-col gap-3 mt-2 max-h-44 overflow-y-auto custom-scrollbar pr-2">
+                    {sharedStatuses.map((status) => (
+                      <>
+                        <div className="w-full bg-gray-100 p-2 rounded-md flex flex-row items-center justify-between">
+                          <div>
+                            <p className=" text-sm font-semibold">Falah</p>
+                            <p>falah@gmail.com</p>
+                          </div>
+                          <div>
+                            <Select
+                              value={status.permissions}
+                              onValueChange={(val) => {
+                                if (val === 'remove') {
+                                  removeSharedStatus(status.id)
+                                  // remove the sharedStatuses
+                                } else {
+                                  updateSharedStatus(status.id, val)
+                                }
+                              }}
+                              // disabled
+                            >
+                              <SelectTrigger className="w-fit ring-0 outline-none p-1 px-2 h-fit focus:ring-0">
+                                {actionLoading ? (
+                                  <Loader className="h-4 animate-spin w-4 mr-2" />
+                                ) : (
+                                  <SelectValue placeholder="View" />
+                                )}
+                              </SelectTrigger>
+                              <SelectContent className="text-xs">
+                                <SelectItem
+                                  value="view"
+                                  className="text-xs flex flex-row items-baseline"
+                                >
+                                  Viewer
+                                </SelectItem>
+                                <SelectItem value="edit" className="text-xs">
+                                  Editor
+                                </SelectItem>
+                                <SelectItem
+                                  value="remove"
+                                  // onClick={() => removeSharedStatus(status.id)}
+                                  className="text-xs text-red-500 hover:text-red-500"
+                                >
+                                  Remove
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>{' '}
+                        {/* <p>{user.shared_with}</p> | <p>{user.permissions}</p> */}
+                        {/* 
+                          todo : shared with name and email, add switch with api call, remove shared status
+                        */}
+                      </>
+                    ))}
+                  </div>
                 </div>
                 {isOwner && (
                   <div className="my-4">
@@ -251,8 +405,16 @@ const ShareWith = ({
                   onClick={() => shareNotesHandler()}
                   size={'sm'}
                   variant={'default'}
+                  disabled={sending}
                 >
-                  Send
+                  {sending ? (
+                    <>
+                      {' '}
+                      <Loader className="h-4 animate-spin w-4 ml-1" /> Sending
+                    </>
+                  ) : (
+                    'Send'
+                  )}
                 </Button>
               </div>
             </div>
