@@ -85,7 +85,7 @@ export default function Note({
   return (
     <>
       <Card className="flex cursor-pointer flex-col justify-between transition-shadow hover:shadow-lg">
-        <Link href={`/notes/${note.id}?mode=view`}>
+        <Link href={`/notes/${note.id}`}>
           <CardHeader>
             <CardTitle>{truncateNotesTitle(note.title)}</CardTitle>
             <CardDescription>

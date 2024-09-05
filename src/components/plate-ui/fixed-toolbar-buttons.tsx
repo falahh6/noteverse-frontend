@@ -139,11 +139,11 @@ export function FixedToolbarButtons({
 
         <div className="grow" />
 
-        {mode === 'edit' && (
+        {/* {mode === 'edit' && (
           <ToolbarGroup noSeparator>
             <ModeDropdownMenu />
           </ToolbarGroup>
-        )}
+        )} */}
 
         {!readOnly && isOwner && (
           <ToolbarGroup className="self-end ml-auto">
@@ -152,7 +152,7 @@ export function FixedToolbarButtons({
               notesTitle={notesTitle}
               authToken={authToken}
               isOwner
-              sharedStatuses={sharedStatuses}
+              // sharedStatuses={sharedStatuses}
             />
           </ToolbarGroup>
         )}

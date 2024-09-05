@@ -17,8 +17,6 @@ const Notes = ({
     id: number
   }
 }) => {
-  const searchParams = useSearchParams()
-  const editorMode = searchParams.get('mode')
   const pathname = usePathname()
 
   const [loading, setLoading] = useState(true)
@@ -73,9 +71,18 @@ const Notes = ({
           console.log('@shared_statuses : ', responseData.shared_statuses)
           setNotesSharedWithData(responseData.shared_statuses)
 
+          console.log(data?.user)
+          console.log(
+            '@sharedwith0',
+            notesSharedWithData.filter(
+              (d) =>
+                d.shared_with === data?.user.email && d.permissions === 'edit',
+            ),
+          )
+
           addPage({
             title: responseData.title,
-            pathname: pathname + `?mode=${editorMode}`,
+            pathname: pathname,
             isActive: true,
             isStatic: false,
           })
@@ -146,7 +153,8 @@ const Notes = ({
               mode={
                 notesSharedWithData.filter(
                   (d) =>
-                    d.shared_with === data?.user.id && d.permissions === 'edit',
+                    d.shared_with === data?.user.email &&
+                    d.permissions === 'edit',
                 ).length > 0 || isOwner
                   ? 'edit'
                   : 'view'
