@@ -11,21 +11,21 @@ import { useSession } from 'next-auth/react'
 import { baseURL } from '@/lib/utils'
 
 export type User = {
-  id?: string
+  id: string
   name: string
   email: string
   // Add other user properties here
 }
 
 type UsersContextType = {
-  users: User[] | null
+  users: User[] | undefined
   loading: boolean
 }
 
 const UserContext = createContext<UsersContextType | undefined>(undefined)
 
 export const UserContextProvider = ({ children }: { children: ReactNode }) => {
-  const [users, setUsers] = useState<User[] | null>(null)
+  const [users, setUsers] = useState<User[] | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const { data: session } = useSession()
   let called: boolean

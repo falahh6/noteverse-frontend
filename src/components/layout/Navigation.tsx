@@ -40,7 +40,6 @@ const Navigation = ({
     usePathContext()
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
-  const editorMode = searchParams.get('mode')
   let Called = false
 
   useEffect(() => {
@@ -64,8 +63,8 @@ const Navigation = ({
       )
     }
 
-    if (editorMode) {
-      toogleActivePage(pathname + `?mode=${editorMode || 'view'}`)
+    if (pathname.includes('/notes/')) {
+      toogleActivePage(pathname)
     }
   }, [pathname])
 

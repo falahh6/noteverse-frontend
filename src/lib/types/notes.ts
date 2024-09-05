@@ -36,9 +36,9 @@ export interface SchemaChildNode {
 
 export interface sharedStatus {
   id: number
-  shared_by: number
-  shared_with: number
-  permissions: 'view' | 'edit'
-  shared_at: Date
-  note: number
+  shared_by?: string
+  shared_with?: string
+  permissions: 'view' | 'edit' | 'owner'
+  shared_at?: Date
+  note?: number
 }
