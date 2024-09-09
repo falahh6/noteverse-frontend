@@ -1,13 +1,13 @@
-import React from 'react';
+import React from 'react'
 
-import { cn } from '@udecode/cn';
-import { EmojiSettings, type UseEmojiPickerType } from '@udecode/plate-emoji';
+import { cn } from '@udecode/cn'
+import { EmojiSettings, type UseEmojiPickerType } from '@udecode/plate-emoji'
 
-import { EmojiPickerContent } from './emoji-picker-content';
-import { EmojiPickerNavigation } from './emoji-picker-navigation';
-import { EmojiPickerPreview } from './emoji-picker-preview';
-import { EmojiPickerSearchAndClear } from './emoji-picker-search-and-clear';
-import { EmojiPickerSearchBar } from './emoji-picker-search-bar';
+import { EmojiPickerContent } from './emoji-picker-content'
+import { EmojiPickerNavigation } from './emoji-picker-navigation'
+import { EmojiPickerPreview } from './emoji-picker-preview'
+import { EmojiPickerSearchAndClear } from './emoji-picker-search-and-clear'
+import { EmojiPickerSearchBar } from './emoji-picker-search-bar'
 
 export function EmojiPicker({
   clearSearch,
@@ -32,7 +32,7 @@ export function EmojiPicker({
     <div
       className={cn(
         'flex flex-col rounded bg-background',
-        'h-[350px] w-[316px] shadow-[rgb(15_15_15_/_5%)_0_0_0_1px,_rgb(15_15_15_/_10%)_0_3px_6px,_rgb(15_15_15_/_20%)_0_9px_24px]'
+        'h-[350px] w-[316px] shadow-[rgb(15_15_15_/_5%)_0_0_0_1px,_rgb(15_15_15_/_10%)_0_3px_6px,_rgb(15_15_15_/_20%)_0_9px_24px]',
       )}
     >
       <EmojiPickerNavigation
@@ -71,5 +71,5 @@ export function EmojiPicker({
         isSearching={isSearching}
       />
     </div>
-  );
+  )
 }

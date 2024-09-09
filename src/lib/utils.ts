@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from 'clsx'
 import { Metadata } from 'next'
 import { twMerge } from 'tailwind-merge'
 import { SchemaChildNode } from './types/notes'
+import { useMemo } from 'react'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -79,3 +80,23 @@ export function extractText(nodes: SchemaChildNode[]): string {
 }
 
 export const baseURL = 'https://aadil611.live/api'
+
+export function useExampleRoomId(roomId: string) {
+  // const params = useSearchParams()
+  const exampleId = '' //params?.get('exampleId')
+
+  const exampleRoomId = useMemo(() => {
+    return exampleId ? `${roomId}-${exampleId}` : roomId
+  }, [roomId, exampleId])
+
+  return exampleRoomId
+}
+
+export function avatarFallbackHandler(name: string) {
+  let fallback: string = ''
+  name.split(' ').forEach((name) => {
+    fallback += name.slice(0, 1).toUpperCase()
+  })
+
+  return fallback
+}
