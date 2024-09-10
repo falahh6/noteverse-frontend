@@ -97,7 +97,7 @@ export const sampleNotes: {
   },
 ]
 
-export const threads: Thread[] = [
+export const threads = [
   {
     id: 1,
     user: {

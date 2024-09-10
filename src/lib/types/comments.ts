@@ -8,15 +8,19 @@ interface User {
 interface Reply {
   id: number
   user: User
-  content: string
-  date: string
+  note: number
+  text: string
+  created_at: string
+  user_name: string
 }
 
 // Define the type for a Thread
 interface Thread {
   id: number
   user: User
-  content: string
-  date: string
-  replies: Reply[] // Array of replies
+  note: number
+  text: string
+  created_at: string
+  user_name: string
+  replies: Reply[]
 }

@@ -1,10 +1,7 @@
-import { Empty, Input } from 'antd'
 import { Icons } from '../icons'
 import { Button } from '../ui/button'
-
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -14,19 +11,50 @@ import {
 } from '@/components/ui/drawer'
 import Composer from './Composer'
 
-import { toast } from 'sonner'
 import Thread from './Thread'
-import { useState } from 'react'
-import { threads } from '@/lib/sampleData'
+import { useEffect, useState } from 'react'
+import { baseURL } from '@/lib/utils'
+import { Empty } from 'antd'
 
-const { TextArea } = Input
-
-const Comments = ({}: { notesId: number; authToken: string }) => {
+const Comments = ({
+  notesId,
+  authToken,
+}: {
+  notesId: number
+  authToken: string
+}) => {
   const [focusedThread, setFocusedThread] = useState<number | null>(null)
+  const [threadData, setThreadData] = useState<Thread[]>([])
+
+  const getComments = async (
+    getCommentFor: 'comment' | 'reply' = 'comment',
+  ) => {
+    const response = await fetch(`${baseURL}/comments/?note_id=${notesId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    })
+
+    if (response.ok) {
+      const responseData = await response.json()
+      setThreadData(responseData)
+
+      const threadListElement = document.getElementById('thread_list')
+      if (threadListElement && getCommentFor == 'comment') {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        threadListElement.scrollTop = threadListElement.scrollHeight
+      }
+    }
+  }
+
+  useEffect(() => {
+    getComments()
+  }, [])
 
   return (
     <>
-      <Drawer>
+      <Drawer direction={window.innerWidth < 768 ? 'bottom' : 'right'}>
         <DrawerTrigger asChild>
           <Button
             color="#dbeafe"
@@ -37,7 +65,7 @@ const Comments = ({}: { notesId: number; authToken: string }) => {
             Comments
           </Button>
         </DrawerTrigger>
-        <DrawerContent>
+        <DrawerContent className="sm:width-[25vw]">
           <DrawerHeader>
             <DrawerTitle>Comments</DrawerTitle>
             <DrawerDescription className="text-xs">
@@ -47,23 +75,35 @@ const Comments = ({}: { notesId: number; authToken: string }) => {
             </DrawerDescription>
           </DrawerHeader>
           <div className="w-full h-full">
-            <div className="h-full flex flex-col items-center justify-center">
-              <Empty description={'No Comments yet.'} />
-            </div>
-            {/* <div className="h-[63vh] max-sm:h-[53vh] w-full flex flex-col gap-3 items-start text-xs px-4 overflow-y-auto">
-              {threads.map((thread) => (
-                <Thread
-                  key={thread.id}
-                  focusedThread={focusedThread}
-                  setFocusedThread={setFocusedThread}
-                  threadData={thread}
-                />
-              ))}
-            </div> */}
+            {threadData.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center">
+                <Empty description={'No Comments yet.'} />
+              </div>
+            ) : (
+              <div
+                id="thread_list"
+                className="h-[63vh] max-sm:h-[53vh] w-full flex flex-col gap-3 items-start text-xs px-4 overflow-y-auto"
+              >
+                {threadData.map((thread) => (
+                  <Thread
+                    key={thread.id}
+                    focusedThread={focusedThread}
+                    setFocusedThread={setFocusedThread}
+                    threadData={thread}
+                    notesId={notesId}
+                    authToken={authToken}
+                    getComments={getComments}
+                  />
+                ))}
+              </div>
+            )}
           </div>
           <DrawerFooter className="">
-            {/* Composer */}
-            <Composer />
+            <Composer
+              notesId={notesId}
+              authToken={authToken}
+              getComments={getComments}
+            />
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
