@@ -33,6 +33,7 @@ import { EmojiDropdownMenu } from './emoji-dropdown-menu'
 import { Eye } from 'lucide-react'
 import ShareWith from '../platejs/Share'
 import { sharedStatus } from '@/lib/types/notes'
+import Comments from '../comments/Comments'
 
 export function FixedToolbarButtons({
   mode,
@@ -145,8 +146,8 @@ export function FixedToolbarButtons({
           </ToolbarGroup>
         )} */}
 
-        {!readOnly && isOwner && (
-          <ToolbarGroup className="self-end ml-auto">
+        <ToolbarGroup className="self-end ml-auto">
+          {!readOnly && isOwner && (
             <ShareWith
               notesId={notesId}
               notesTitle={notesTitle}
@@ -154,8 +155,12 @@ export function FixedToolbarButtons({
               isOwner
               // sharedStatuses={sharedStatuses}
             />
+          )}
+
+          <ToolbarGroup className="self-end ml-auto my-2">
+            <Comments notesId={notesId} authToken={authToken} />
           </ToolbarGroup>
-        )}
+        </ToolbarGroup>
       </div>
     </div>
   )

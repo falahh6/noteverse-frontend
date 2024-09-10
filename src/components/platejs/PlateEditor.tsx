@@ -157,13 +157,12 @@ import { EmojiInputElement } from '@/components/plate-ui/emoji-input-element'
 import { TooltipProvider } from '@/components/plate-ui/tooltip'
 import MaxWidthWrapper from '../layout/MaxwidthWrapper'
 import { useCallback, useEffect, useState } from 'react'
-import { baseURL } from '@/lib/utils'
+import { baseURL, useExampleRoomId } from '@/lib/utils'
 import {
   NotesSchemaTypeOne,
   NotesSchemaTypeTwo,
   sharedStatus,
 } from '@/lib/types/notes'
-import { Textarea } from '../ui/textarea'
 
 const plugins = createPlugins(
   [

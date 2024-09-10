@@ -99,68 +99,6 @@ export default function Note({
             </p>
           </CardContent>
         </Link>
-        {type === 'your-notes' && (
-          <CardFooter className="place-self-end flex flex-row gap-2">
-            {/* <DropdownMenu>
-            <DropdownMenuTrigger>
-              <AntdButton
-                type="default"
-                className="border border-gray-300 h-fit p-0"
-              >
-                <Share className=" h-4 w-4" />
-              </AntdButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>Share via</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <WhatsappShareButton
-                  separator=""
-                  title={note.title}
-                  url={`https://noteverse.aadil611.live/notes/${note.id}`}
-                  className="flex flex-row"
-                >
-                  <span className="mr-2 inline w-fit text-[#1aa34d]">
-                    WhatsApp
-                  </span>{' '}
-                  <span className="inline w-fit">{Icons.whatsapp}</span>
-                </WhatsappShareButton>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="w-full">
-                <TwitterShareButton
-                  title={note.title}
-                  url={`https://noteverse.aadil611.live/notes/${note.id}`}
-                  className="flex flex-row"
-                >
-                  <span className="mr-2 inline w-fit">X (twitter)</span>{' '}
-                  <span className="inline w-fit">{Icons.twitterX}</span>
-                </TwitterShareButton>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-            <Popconfirm
-              placement="top"
-              title={<b>Are you sure want to delete this notes?</b>}
-              onConfirm={() => {
-                handleDeleteNotes(note.id)
-              }}
-              okText="Yes"
-              cancelText="No"
-            >
-              <AntdButton className="h-fit p-0" danger>
-                <Trash className=" h-4 w-4" />
-              </AntdButton>
-            </Popconfirm>
-            <Link href={`/notes/${note.id}?mode=edit`}>
-              <AntdButton
-                type="primary"
-                className="border border-gray-300 h-fit p-0"
-              >
-                <Edit className=" h-4 w-4" /> Edit
-              </AntdButton>
-            </Link>
-          </CardFooter>
-        )}
       </Card>
     </>
   )

@@ -80,6 +80,10 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  [vaul-drawer][vaul-drawer-direction='right']::after {
+    content: none !important;
+  }
   /* Hide scrollbar for IE, Edge and Firefox */
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */

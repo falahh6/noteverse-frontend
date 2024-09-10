@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from 'clsx'
 import { Metadata } from 'next'
 import { twMerge } from 'tailwind-merge'
 import { SchemaChildNode } from './types/notes'
+import { useMemo } from 'react'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -79,3 +80,52 @@ export function extractText(nodes: SchemaChildNode[]): string {
 }
 
 export const baseURL = 'https://aadil611.live/api'
+
+export function useExampleRoomId(roomId: string) {
+  // const params = useSearchParams()
+  const exampleId = '' //params?.get('exampleId')
+
+  const exampleRoomId = useMemo(() => {
+    return exampleId ? `${roomId}-${exampleId}` : roomId
+  }, [roomId, exampleId])
+
+  return exampleRoomId
+}
+
+export function avatarFallbackHandler(name: string) {
+  let fallback: string = ''
+  name.split(' ').forEach((name) => {
+    fallback += name.slice(0, 1).toUpperCase()
+  })
+
+  return fallback
+}
+
+export function formatDate(inputDate: string): string {
+  const date = new Date(inputDate)
+  const today = new Date()
+
+  // Reset time portion of the dates for accurate day difference calculation
+  today.setHours(0, 0, 0, 0)
+  date.setHours(0, 0, 0, 0)
+
+  // Calculate the difference in time (milliseconds) and convert it to days
+  const diffTime = today.getTime() - date.getTime()
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) {
+    return 'Today'
+  } else if (diffDays === 1) {
+    return 'Yesterday'
+  } else if (diffDays > 1 && diffDays <= 5) {
+    return `${diffDays} days ago`
+  } else {
+    // If more than 5 days, return the date in "7 Sept 2023" format
+    const options: Intl.DateTimeFormatOptions = {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }
+    return date.toLocaleDateString('en-US', options)
+  }
+}

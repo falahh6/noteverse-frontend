@@ -14,6 +14,7 @@ import { Icons } from '@/components/icons'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import { MoreDropdownMenu } from './more-dropdown-menu'
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
+import { CommentToolbarButton } from './comment-toolbar-button'
 
 export function FloatingToolbarButtons() {
   const readOnly = useEditorReadOnly()
@@ -48,6 +49,7 @@ export function FloatingToolbarButtons() {
         </>
       )}
 
+      <CommentToolbarButton />
       <MoreDropdownMenu />
     </>
   )
