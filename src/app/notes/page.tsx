@@ -29,8 +29,13 @@ const Notes = () => {
 
   const { data, status } = useSession()
 
-  const getNotesList = async (authToken: string | undefined) => {
-    setLoading(true)
+  const getNotesList = async (
+    authToken: string | undefined,
+    silent?: boolean,
+  ) => {
+    if (!silent) {
+      setLoading(true)
+    }
     if (authToken) {
       try {
         const response = await fetch(`${baseURL}/notes/`, {
@@ -54,6 +59,7 @@ const Notes = () => {
               updatedAt: new Date(data.updated_at),
               ownerEmail: data.owner,
               visibility: data.visibility,
+              likes: data.likes,
             }),
           )
 
@@ -62,6 +68,10 @@ const Notes = () => {
               (note) => note.ownerEmail === data?.user?.email,
             ),
           )
+
+          if (silent) {
+            return parsedResponse
+          }
         }
       } catch (error) {
         console.log(error)
@@ -75,8 +85,13 @@ const Notes = () => {
       setLoading(false)
     }
   }
-  const getFeaturedNotes = async (authToken: string | undefined) => {
-    setLoading(true)
+  const getFeaturedNotes = async (
+    authToken: string | undefined,
+    silent?: boolean,
+  ) => {
+    if (!silent) {
+      setLoading(true)
+    }
     if (authToken) {
       try {
         const response = await fetch(`${baseURL}/notes/get-featured-notes/`, {
@@ -100,10 +115,15 @@ const Notes = () => {
               updatedAt: new Date(data.updated_at),
               ownerEmail: data.owner,
               visibility: data.visibility,
+              likes: data.likes,
             }),
           )
 
           setFeaturedNotes(parsedResponse)
+
+          if (silent) {
+            return parsedResponse
+          }
         }
       } catch (error) {
         console.log(error)
@@ -118,8 +138,14 @@ const Notes = () => {
     }
   }
 
-  const getSharedNotes = async (authToken: string | undefined) => {
-    setLoading(true)
+  const getSharedNotes = async (
+    authToken: string | undefined,
+    silent?: boolean,
+  ) => {
+    if (!silent) {
+      setLoading(true)
+    }
+
     if (authToken) {
       try {
         const response = await fetch(`${baseURL}/notes/get-shared-notes/`, {
@@ -143,10 +169,15 @@ const Notes = () => {
               updatedAt: new Date(data.updated_at),
               ownerEmail: data.owner,
               visibility: data.visibility,
+              likes: data.likes,
             }),
           )
 
           setShareNotes(parsedResponse)
+
+          if (silent) {
+            return parsedResponse
+          }
         }
       } catch (error) {
         console.log(error)
@@ -213,6 +244,8 @@ const Notes = () => {
                         note={note}
                         authToken={data?.accessToken}
                         getNotesList={getNotesList}
+                        getFeaturedNotes={getFeaturedNotes}
+                        getSharedNotes={getSharedNotes}
                       />
                     ))
                   ) : (
@@ -229,6 +262,8 @@ const Notes = () => {
                         note={note}
                         authToken={data?.accessToken}
                         getNotesList={getNotesList}
+                        getFeaturedNotes={getFeaturedNotes}
+                        getSharedNotes={getSharedNotes}
                       />
                     ))
                   ) : (
@@ -245,6 +280,8 @@ const Notes = () => {
                         note={note}
                         authToken={data?.accessToken}
                         getNotesList={getNotesList}
+                        getFeaturedNotes={getFeaturedNotes}
+                        getSharedNotes={getSharedNotes}
                       />
                     ))
                   ) : (

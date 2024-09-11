@@ -129,3 +129,11 @@ export function formatDate(inputDate: string): string {
     return date.toLocaleDateString('en-US', options)
   }
 }
+
+export const getAppUrl = () => {
+  const appBaseUrl = window.location.href
+  const url = new URL(appBaseUrl)
+  const applicationBaseURL = `${url.protocol}//${url.hostname}${url.port ? `:${url.port}` : ''}`
+
+  return applicationBaseURL
+}
