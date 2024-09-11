@@ -4,12 +4,12 @@ import AddNoteDialog from '@/components/common/AddNoteDialog'
 import Note from '@/components/common/Note'
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { Button } from '@/components/ui/button'
-import { baseURL, extractText } from '@/lib/utils'
-import { PenBoxIcon } from 'lucide-react'
+import { baseURL, cn, extractText } from '@/lib/utils'
+import { Grid2X2, List, PenBoxIcon, SeparatorVertical } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Skeleton } from 'antd'
+import { Skeleton, Tooltip } from 'antd'
 import { Tabs } from '@/components/ui/Tabs'
 import { useSearchParams } from 'next/navigation'
 import { NoteProps } from '@/lib/types/notes'
@@ -22,10 +22,11 @@ const Notes = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  const [allNotes, setAllNotes] = useState<NoteProps[]>([])
   const [featuredNotes, setFeaturedNotes] = useState<NoteProps[]>([])
   const [sharedNotes, setShareNotes] = useState<NoteProps[]>([])
   const [yourNotes, setYourNotes] = useState<NoteProps[]>([])
+
+  const [listView, setListView] = useState<'list' | 'grid'>('grid')
 
   const { data, status } = useSession()
 
@@ -216,7 +217,7 @@ const Notes = () => {
             <PenBoxIcon className="h-5 w-5 mr-2" /> Create new{' '}
           </Button>
         </div>
-        <div className="mt-2 mb-4">
+        <div className="mt-2 mb-4 flex flex-row items-center gap-2 h-fit">
           <Tabs
             tabs={[
               { title: 'Featured', value: 'featured' },
@@ -224,7 +225,33 @@ const Notes = () => {
               { title: 'Your Notes', value: 'your-notes' },
             ]}
           />
+          <div className="w-[3px] h-[20px] bg-gray-400 rounded-full max-sm:hidden" />
+          <div className="flex flex-row gap-2 ml-2 max-sm:hidden">
+            <Tooltip title="Grid view">
+              <Button
+                onClick={() => setListView('grid')}
+                className={cn('h-fit w-fit p-1', {
+                  'bg-gray-300': listView === 'grid',
+                })}
+                variant={'outline'}
+              >
+                <Grid2X2 className="h-4 w-4" />
+              </Button>
+            </Tooltip>
+            <Tooltip title="List view">
+              <Button
+                onClick={() => setListView('list')}
+                className={cn('h-fit w-fit p-1', {
+                  'bg-gray-300': listView === 'list',
+                })}
+                variant={'outline'}
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </Tooltip>
+          </div>
         </div>
+
         <div className="max-h-[65vh] h-[65vh] overflow-scroll no-scrollbar">
           {loading ? (
             <div className="h-full w-full mt-14 flex flex-col gap-6">
@@ -234,12 +261,15 @@ const Notes = () => {
               <Skeleton.Button active block />
             </div>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              className={`grid gap-3 ${listView === 'grid' && 'sm:grid-cols-2 lg:grid-cols-3'}`}
+            >
               {type === 'featured' && (
                 <>
                   {featuredNotes.length > 0 ? (
                     featuredNotes.map((note) => (
                       <Note
+                        listView={listView}
                         key={note.id}
                         note={note}
                         authToken={data?.accessToken}
@@ -258,6 +288,7 @@ const Notes = () => {
                   {sharedNotes.length > 0 ? (
                     sharedNotes.map((note) => (
                       <Note
+                        listView={listView}
                         key={note.id}
                         note={note}
                         authToken={data?.accessToken}
@@ -276,6 +307,7 @@ const Notes = () => {
                   {yourNotes.length > 0 ? (
                     yourNotes.map((note) => (
                       <Note
+                        listView={listView}
                         key={note.id}
                         note={note}
                         authToken={data?.accessToken}
