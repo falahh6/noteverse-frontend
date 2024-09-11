@@ -1,6 +1,14 @@
 'use client'
 
-import { ArrowLeft, Globe, Link2, Loader, Share, UserRound } from 'lucide-react'
+import {
+  ArrowLeft,
+  Check,
+  Globe,
+  Link2,
+  Loader,
+  Share,
+  UserRound,
+} from 'lucide-react'
 import { Button } from '../ui/button'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
@@ -13,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import { baseURL } from '@/lib/utils'
+import { baseURL, getAppUrl } from '@/lib/utils'
 
 import {
   Dialog,
@@ -197,6 +205,26 @@ const ShareWith = ({
     }
   }
 
+  const [isCopied, setIsCopied] = useState(false)
+
+  const copyHandler = () => {
+    const notesUrl = getAppUrl() + `/notes/${notesId}`
+
+    navigator.clipboard
+      .writeText(notesUrl)
+      .then(() => {
+        toast.success('Notes URL copied to clipboard')
+        setIsCopied(true)
+      })
+      .catch(() => {
+        toast.error('Error copying URL.')
+      })
+
+    setTimeout(() => {
+      setIsCopied(false)
+    }, 1000)
+  }
+
   useEffect(() => {
     handleUsersListUpdate()
   }, [sharedStatuses, loadingToGetUsers])
@@ -223,7 +251,7 @@ const ShareWith = ({
       </DialogTrigger>
       <DialogContent className="max-sm:w-[90%] rounded-lg">
         <DialogHeader className="max-sm:text-left text-left">
-          <DialogTitle className="flex flex-row items-center ">
+          <DialogTitle className="flex flex-row items-center text-wrap max-sm:file:max-w-[80%]">
             {' '}
             {selectedUser && (
               <Button
@@ -238,13 +266,13 @@ const ShareWith = ({
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             )}
-            <p> Share '{notesTitle}'</p>
+            <p className="text-wrap max-sm:text-sm"> Share '{notesTitle}'</p>
           </DialogTitle>
           <DialogDescription>
             {selectedUser ? (
               <>
                 <div className="my-4  px-4">
-                  <div className="text-base flex flex-row gap-2 items-center">
+                  <div className="text-base max-sm:text-sm flex flex-row gap-2 items-center">
                     <p>Invite</p>
                     <span className="font-bold">
                       {' '}
@@ -434,8 +462,17 @@ const ShareWith = ({
         <DialogFooter>
           {selectedUser ? (
             <div className="flex flex-row gap-2 justify-between w-full">
-              <Button size={'sm'} variant={'outline'}>
-                <Link2 className="h-4 w- mr-2" /> Copy link
+              <Button onClick={copyHandler} size={'sm'} variant={'outline'}>
+                {!isCopied ? (
+                  <>
+                    {' '}
+                    <Link2 className="h-4 w-4 mr-2" /> Copy link
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-4 w-4 mr-2" /> Copied!
+                  </>
+                )}
               </Button>
               <div className="flex flex-row gap-2">
                 <Button
@@ -467,9 +504,17 @@ const ShareWith = ({
           ) : (
             <div className="flex flex-row justify-between w-full">
               {' '}
-              <Button size={'sm'} variant={'outline'}>
-                {' '}
-                <Link2 className="h-4 w- mr-2" /> Copy link
+              <Button onClick={copyHandler} size={'sm'} variant={'outline'}>
+                {!isCopied ? (
+                  <>
+                    {' '}
+                    <Link2 className="h-4 w- mr-2" /> Copy link
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-4 w- mr-2" /> Copied!
+                  </>
+                )}
               </Button>
               <Button size={'sm'} variant={'default'}>
                 Done

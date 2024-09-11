@@ -85,20 +85,20 @@ const Navigation = ({
             alt="logo-sm"
             height={48}
             width={200}
-            className="max-sm:hidden"
+            className="max-sm:hidden "
           />
           <Image
             src={'/logo-sm.svg'}
             alt="logo-sm"
             height={48}
             width={48}
-            className="max-sm:block hidden"
+            className="max-sm:block hidden min-h-[48px] min-w-[48px]"
           />{' '}
         </a>
       </div>
       <div>
         {session?.user && (
-          <div className="flex flex-row gap-2 max-sm:gap-1 items-center">
+          <div className="flex flex-row gap-2 max-sm:gap-1 items-center max-sm:mx-2 max-sm:max-w-[80vw]">
             {pages[0]?.title === 'Home' && (
               <Button
                 variant={'secondary'}
@@ -111,14 +111,16 @@ const Navigation = ({
                     <Link href={pages[0].pathname}>
                       <Home className="h-4 w-4 inline" />
                       {pages.length < 4 && (
-                        <span className="ml-1">{pages[0].title}</span>
+                        <span className="ml-1 max-sm:hidden">
+                          {pages[0].title}
+                        </span>
                       )}
                     </Link>
                   )}
                 </div>
               </Button>
             )}
-            <div className="flex flex-row gap-2 max-sm:gap-1 items-center max-w-[60vw] max-sm:max-w-[50vw] overflow-y-auto no-scrollbar">
+            <div className="flex flex-row gap-2 max-sm:gap-1 items-center max-w-[60vw] max-sm:max-w-[40vw] overflow-y-auto no-scrollbar">
               {pages
                 .filter((i) => i.title !== 'Home')
                 .map((page) => (

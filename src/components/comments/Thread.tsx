@@ -115,25 +115,6 @@ const Thread = ({
 
           {(isFocused || replyValue) && (
             <div className="mt-1 flex flex-row justify-between items-center">
-              {/* <Popover>
-                <PopoverTrigger asChild>
-                  <div className="h-6 w-6 hover:bg-gray-200 hover:cursor-pointer flex justify-center items-center rounded-full">
-                    <Smile className="h-4 w-4 text-gray-500" />
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent
-                  side="left"
-                  className="w-fit p-0 border-0 rounded-lg z-[999]"
-                >
-                  <Picker
-                    className="flex-1 overflow-auto"
-                    data={data}
-                    onEmojiSelect={(val: any) => {
-                      setReplyValue((prev) => (prev += val.native))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover> */}
               <EmojiPicker setValue={setReplyValue} />
               <div>
                 <Button
