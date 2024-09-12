@@ -6,6 +6,8 @@ export interface NoteProps {
   createdAt: Date
   updatedAt: Date
   ownerEmail: string
+  visibility: string
+  likes: number[]
 }
 
 export interface NotesSchemaTypeOne {
@@ -31,4 +33,13 @@ export interface SchemaChildNode {
   type?: string
   id?: string
   backgroundColor?: string
+}
+
+export interface sharedStatus {
+  id: number
+  shared_by?: string
+  shared_with?: string
+  permissions: 'view' | 'edit' | 'owner'
+  shared_at?: Date
+  note?: number
 }

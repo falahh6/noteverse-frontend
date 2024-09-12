@@ -3,6 +3,7 @@
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { PlateEditor } from '@/components/platejs/PlateEditor'
 import { usePathContext } from '@/context/pathContext'
+import { sharedStatus } from '@/lib/types/notes'
 import { baseURL } from '@/lib/utils'
 import { Empty, Skeleton } from 'antd'
 import { useSession } from 'next-auth/react'
@@ -13,11 +14,9 @@ const Notes = ({
   params,
 }: {
   params: {
-    id: string
+    id: number
   }
 }) => {
-  const searchParams = useSearchParams()
-  const editorMode = searchParams.get('mode')
   const pathname = usePathname()
 
   const [loading, setLoading] = useState(true)
@@ -46,6 +45,10 @@ const Notes = ({
 
   const { addPage } = usePathContext()
 
+  const [notesSharedWithData, setNotesSharedWithData] = useState<
+    sharedStatus[]
+  >([])
+
   const getNotes = async (authToken: string | undefined) => {
     if (authToken) {
       try {
@@ -65,6 +68,17 @@ const Notes = ({
             children: [{ text: responseData.title }],
             id: 'title',
           }
+          console.log('@shared_statuses : ', responseData.shared_statuses)
+          setNotesSharedWithData(responseData.shared_statuses)
+
+          console.log(data?.user)
+          console.log(
+            '@sharedwith0',
+            notesSharedWithData.filter(
+              (d) =>
+                d.shared_with === data?.user.email && d.permissions === 'edit',
+            ),
+          )
 
           addPage({
             title: responseData.title,
@@ -136,11 +150,20 @@ const Notes = ({
         <>
           {!error && (
             <PlateEditor
-              mode={editorMode || 'view'}
+              mode={
+                notesSharedWithData.filter(
+                  (d) =>
+                    d.shared_with === data?.user.email &&
+                    d.permissions === 'edit',
+                ).length > 0 || isOwner
+                  ? 'edit'
+                  : 'view'
+              }
               value={notesData}
               notesId={params.id}
               authToken={data?.accessToken!}
               isOwner={isOwner}
+              sharedStatuses={notesSharedWithData}
             />
           )}
         </>

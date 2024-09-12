@@ -60,7 +60,7 @@ export const Tabs = ({
     <>
       <div
         className={cn(
-          'flex flex-row items-center flex-wrap justify-start [perspective:1000px] relative overflow-auto sm:overflow-visible no-visible-scrollbar max-w-full w-full',
+          'flex flex-row items-center flex-wrap justify-start [perspective:1000px] relative overflow-auto sm:overflow-visible no-visible-scrollbar max-w-full w-fit',
           containerClassName,
         )}
       >
@@ -80,7 +80,7 @@ export const Tabs = ({
               transformStyle: 'preserve-3d',
             }}
           >
-            {active.value === tab.value && (
+            {active?.value === tab.value && (
               <motion.div
                 layoutId="clickedbutton"
                 transition={{ type: 'spring', bounce: 0.3, duration: 0.6 }}

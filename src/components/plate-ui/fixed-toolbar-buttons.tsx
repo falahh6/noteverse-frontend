@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import {
   MARK_BOLD,
@@ -10,19 +10,13 @@ import {
   MARK_UNDERLINE,
 } from '@udecode/plate-basic-marks'
 import { useEditorReadOnly } from '@udecode/plate-common'
-
 import { Icons, iconVariants } from '@/components/icons'
-
 import { InsertDropdownMenu } from './insert-dropdown-menu'
 import { MarkToolbarButton } from './mark-toolbar-button'
 import { ModeDropdownMenu } from './mode-dropdown-menu'
 import { ToolbarGroup } from './toolbar'
 import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu'
-import {
-  MARK_BG_COLOR,
-  MARK_COLOR,
-  useColorDropdownMenu,
-} from '@udecode/plate-font'
+import { MARK_BG_COLOR, MARK_COLOR } from '@udecode/plate-font'
 import { ListStyleType } from '@udecode/plate-indent-list'
 import { ELEMENT_IMAGE } from '@udecode/plate-media'
 import { ColorDropdownMenu } from './color-dropdown-menu'
@@ -36,16 +30,25 @@ import { LinkToolbarButton } from './link-toolbar-button'
 import { MediaToolbarButton } from './media-toolbar-button'
 import { TableDropdownMenu } from './table-dropdown-menu'
 import { EmojiDropdownMenu } from './emoji-dropdown-menu'
-import { Eye, Share } from 'lucide-react'
-import { Button } from './button'
-import ShareWith from '../platejs/ShareWith'
+import { Eye } from 'lucide-react'
+import ShareWith from '../platejs/Share'
+import { sharedStatus } from '@/lib/types/notes'
+import Comments from '../comments/Comments'
 
 export function FixedToolbarButtons({
   mode,
   isOwner,
+  authToken,
+  notesTitle,
+  notesId,
+  sharedStatuses,
 }: {
   mode: string
   isOwner: boolean
+  authToken: string
+  notesTitle: string
+  notesId: number
+  sharedStatuses: sharedStatus[]
 }) {
   const readOnly = useEditorReadOnly()
 
@@ -137,17 +140,27 @@ export function FixedToolbarButtons({
 
         <div className="grow" />
 
-        {mode === 'edit' && (
+        {/* {mode === 'edit' && (
           <ToolbarGroup noSeparator>
             <ModeDropdownMenu />
           </ToolbarGroup>
-        )}
+        )} */}
 
-        {!readOnly && isOwner && (
-          <ToolbarGroup className="self-end ml-auto">
-            <ShareWith />
+        <ToolbarGroup className="self-end ml-auto">
+          {!readOnly && isOwner && (
+            <ShareWith
+              notesId={notesId}
+              notesTitle={notesTitle}
+              authToken={authToken}
+              isOwner
+              // sharedStatuses={sharedStatuses}
+            />
+          )}
+
+          <ToolbarGroup className="self-end ml-auto my-2">
+            <Comments notesId={notesId} authToken={authToken} />
           </ToolbarGroup>
-        )}
+        </ToolbarGroup>
       </div>
     </div>
   )
