@@ -22,6 +22,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { baseURL } from '@/lib/utils'
+import { getNotesFnType } from '@/lib/types/notes'
 
 interface AddNoteDialogProps {
   open: boolean
@@ -99,31 +100,8 @@ export default function AddNoteDialog({
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Note Content</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Note content" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
+
             <DialogFooter className="gap-1 sm:gap-0">
-              {/* {noteToEdit && (
-                <LoadingButton
-                  type="button"
-                  variant="destructive"
-                  onClick={deleteNote}
-                  loading={deleteInProgress}
-                  disabled={form.formState.isSubmitting}
-                >
-                  Delete
-                </LoadingButton>
-              )} */}
               <LoadingButton
                 type="submit"
                 loading={loading}

@@ -43,3 +43,8 @@ export interface sharedStatus {
   shared_at?: Date
   note?: number
 }
+
+export type getNotesFnType = (
+  authToken: string,
+  silent?: boolean,
+) => Promise<NoteProps[] | undefined>
