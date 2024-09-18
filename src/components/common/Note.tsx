@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { ArrowBigUp, Check, Copy, ExternalLink, Trash2 } from 'lucide-react'
-import { NoteProps } from '@/lib/types/notes'
+import { getNotesFnType, NoteProps } from '@/lib/types/notes'
 import { Popconfirm, Tooltip } from 'antd'
 import { toast } from 'sonner'
 import { baseURL, getAppUrl } from '@/lib/utils'
@@ -33,10 +33,6 @@ const truncateNotesTitle = (title: string, length: number) => {
   }
 }
 
-type getNotesFnType = (
-  authToken: string,
-  silent?: boolean,
-) => Promise<NoteProps[] | undefined>
 export default function Note({
   note,
   authToken,
@@ -74,6 +70,10 @@ export default function Note({
       if (response.ok) {
         toast.warning('Deleted your notes.')
         getNotesList(authToken)
+
+        await getFeaturedNotes(authToken, true)
+        await getSharedNotes(authToken, true)
+        await getNotesList(authToken, true)
       } else {
         toast.error('Error deleting your notes, Please try again.')
       }
@@ -138,7 +138,7 @@ export default function Note({
         className={`flex cursor-pointer flex-col justify-between transition-shadow hover:shadow-md`} //${type !== 'your-notes' && 'pb-3'}
       >
         <Link href={`/notes/${note.id}`}>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 max-sm:p-4">
             <CardTitle className="text-lg">
               {truncateNotesTitle(note.title, listView === 'grid' ? 35 : 100)}
             </CardTitle>
@@ -147,7 +147,7 @@ export default function Note({
               {wasUpdated && ' (updated)'}
             </CardDescription>
           </CardHeader>
-          <CardContent className="py-2 text-sm">
+          <CardContent className="py-2 max-sm:py-0 max-sm:px-4 text-sm">
             <p className="whitespace-pre-line">
               {trucateNotesContent(
                 note.content,

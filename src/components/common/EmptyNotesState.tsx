@@ -1,6 +1,10 @@
 import { Empty, Typography } from 'antd'
 
-const EmptyNotesState = ({ description }: { description: string }) => {
+const EmptyNotesState = ({
+  description,
+}: {
+  description: string | React.ReactNode
+}) => {
   return (
     <div className="col-span-full text-center">
       <div className="h-full w-full mt-10">
@@ -8,9 +12,8 @@ const EmptyNotesState = ({ description }: { description: string }) => {
           <Empty
             image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
             imageStyle={{ height: 100 }}
-            description={
-              <Typography.Text>You don't have any notes yet.</Typography.Text>
-            }
+            className="flex flex-col items-center"
+            description={<Typography.Text>{description}</Typography.Text>}
           ></Empty>
         </div>
       </div>

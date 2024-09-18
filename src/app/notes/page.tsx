@@ -5,7 +5,7 @@ import Note from '@/components/common/Note'
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { Button } from '@/components/ui/button'
 import { baseURL, cn, extractText } from '@/lib/utils'
-import { Grid2X2, List, PenBoxIcon, SeparatorVertical } from 'lucide-react'
+import { Grid2X2, List, PenBoxIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -14,16 +14,44 @@ import { Tabs } from '@/components/ui/Tabs'
 import { useSearchParams } from 'next/navigation'
 import { NoteProps } from '@/lib/types/notes'
 import EmptyNotesState from '@/components/common/EmptyNotesState'
+import SearchNotes from '@/components/common/Search'
+
+const fetchNotes = async (url: string, authToken: string) => {
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${authToken}` },
+    })
+    if (response.ok) {
+      const data = await response.json()
+      return data.map((note: any) => ({
+        id: note.id,
+        title: note.title,
+        content: note.data ? extractText(JSON.parse(note.data)) : '',
+        userId: 'na',
+        createdAt: new Date(note.created_at),
+        updatedAt: new Date(note.updated_at),
+        ownerEmail: note.owner,
+        visibility: note.visibility,
+        likes: note.likes,
+      }))
+    }
+  } catch (error) {
+    toast.error('Error fetching notes. Please refresh.')
+  }
+  return []
+}
 
 const Notes = () => {
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
+  const searchQuery = searchParams.get('s')
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [loading, setLoading] = useState(true)
 
   const [featuredNotes, setFeaturedNotes] = useState<NoteProps[]>([])
-  const [sharedNotes, setShareNotes] = useState<NoteProps[]>([])
+  const [sharedNotes, setSharedNotes] = useState<NoteProps[]>([])
   const [yourNotes, setYourNotes] = useState<NoteProps[]>([])
 
   const [listView, setListView] = useState<'list' | 'grid'>('grid')
@@ -39,40 +67,19 @@ const Notes = () => {
     }
     if (authToken) {
       try {
-        const response = await fetch(`${baseURL}/notes/`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        })
+        const parsedResponse: NoteProps[] = await fetchNotes(
+          `${baseURL}/notes/`,
+          authToken,
+        )
 
-        if (response.ok) {
-          const responseData = await response.json()
-          console.log('notesList (All): ', responseData)
+        setYourNotes(
+          parsedResponse.filter(
+            (note) => note.ownerEmail === data?.user?.email,
+          ),
+        )
 
-          const parsedResponse: NoteProps[] = responseData?.map(
-            (data: any) => ({
-              id: data.id,
-              title: data.title,
-              content: data.data && extractText(JSON.parse(data.data)),
-              userId: 'na',
-              createdAt: new Date(data.created_at),
-              updatedAt: new Date(data.updated_at),
-              ownerEmail: data.owner,
-              visibility: data.visibility,
-              likes: data.likes,
-            }),
-          )
-
-          setYourNotes(
-            parsedResponse.filter(
-              (note) => note.ownerEmail === data?.user?.email,
-            ),
-          )
-
-          if (silent) {
-            return parsedResponse
-          }
+        if (silent) {
+          return parsedResponse
         }
       } catch (error) {
         console.log(error)
@@ -86,6 +93,7 @@ const Notes = () => {
       setLoading(false)
     }
   }
+
   const getFeaturedNotes = async (
     authToken: string | undefined,
     silent?: boolean,
@@ -95,36 +103,15 @@ const Notes = () => {
     }
     if (authToken) {
       try {
-        const response = await fetch(`${baseURL}/notes/get-featured-notes/`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        })
+        const parsedResponse: NoteProps[] = await fetchNotes(
+          `${baseURL}/notes/get-featured-notes/`,
+          authToken,
+        )
 
-        if (response.ok) {
-          const responseData = await response.json()
-          console.log('notesList (Featured): ', responseData)
+        setFeaturedNotes(parsedResponse)
 
-          const parsedResponse: NoteProps[] = responseData?.map(
-            (data: any) => ({
-              id: data.id,
-              title: data.title,
-              content: data.data && extractText(JSON.parse(data.data)),
-              userId: 'na',
-              createdAt: new Date(data.created_at),
-              updatedAt: new Date(data.updated_at),
-              ownerEmail: data.owner,
-              visibility: data.visibility,
-              likes: data.likes,
-            }),
-          )
-
-          setFeaturedNotes(parsedResponse)
-
-          if (silent) {
-            return parsedResponse
-          }
+        if (silent) {
+          return parsedResponse
         }
       } catch (error) {
         console.log(error)
@@ -149,36 +136,15 @@ const Notes = () => {
 
     if (authToken) {
       try {
-        const response = await fetch(`${baseURL}/notes/get-shared-notes/`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        })
+        const parsedResponse: NoteProps[] = await fetchNotes(
+          `${baseURL}/notes/get-shared-notes/`,
+          authToken,
+        )
 
-        if (response.ok) {
-          const responseData = await response.json()
-          console.log('notesList (Shared): ', responseData)
+        setSharedNotes(parsedResponse)
 
-          const parsedResponse: NoteProps[] = responseData?.map(
-            (data: any) => ({
-              id: data.id,
-              title: data.title,
-              content: data.data && extractText(JSON.parse(data.data)),
-              userId: 'na',
-              createdAt: new Date(data.created_at),
-              updatedAt: new Date(data.updated_at),
-              ownerEmail: data.owner,
-              visibility: data.visibility,
-              likes: data.likes,
-            }),
-          )
-
-          setShareNotes(parsedResponse)
-
-          if (silent) {
-            return parsedResponse
-          }
+        if (silent) {
+          return parsedResponse
         }
       } catch (error) {
         console.log(error)
@@ -201,11 +167,22 @@ const Notes = () => {
     }
   }, [status])
 
+  const filterNotes = (notes: NoteProps[]) => {
+    if (!searchQuery) return notes
+
+    const lowerCaseQuery = searchQuery.toLowerCase()
+
+    return notes.filter((note) =>
+      note.title.toLowerCase().includes(lowerCaseQuery),
+    )
+  }
+
   return (
     <MaxWidthWrapper className="h-full w-full flex flex-col items-center justify-center rounded-lg">
-      <div className="w-full mx-auto rounded-lg md:rounded-2xl p-4 md:p-8 md:pt-0 mt-[10vh]">
-        <div className="flex flex-row justify-between items-center w-full my-4 border-b pb-2">
+      <div className="w-full mx-auto rounded-lg md:rounded-2xl px-2 xl:px-6 lg:px-12 sm:px-10 mt-[10vh]">
+        <div className="flex flex-row justify-between items-center w-full my-4 pb-2">
           <h1 className="text-xl font-bold text-gray-600">Home</h1>
+          <SearchNotes />
           <Button
             onClick={() => {
               setDialogOpen(true)
@@ -214,7 +191,8 @@ const Notes = () => {
             size={'sm'}
           >
             {' '}
-            <PenBoxIcon className="h-5 w-5 mr-2" /> Create new{' '}
+            <PenBoxIcon className="h-4 w-4 mr-2 max-sm:mr-0" />{' '}
+            <span className="max-sm:hidden text-sm">Create new</span>{' '}
           </Button>
         </div>
         <div className="mt-2 mb-4 flex flex-row items-center gap-2 h-fit">
@@ -231,7 +209,7 @@ const Notes = () => {
               <Button
                 onClick={() => setListView('grid')}
                 className={cn('h-fit w-fit p-1', {
-                  'bg-gray-300': listView === 'grid',
+                  'bg-gray-200': listView === 'grid',
                 })}
                 variant={'outline'}
               >
@@ -242,7 +220,7 @@ const Notes = () => {
               <Button
                 onClick={() => setListView('list')}
                 className={cn('h-fit w-fit p-1', {
-                  'bg-gray-300': listView === 'list',
+                  'bg-gray-200': listView === 'list',
                 })}
                 variant={'outline'}
               >
@@ -266,8 +244,8 @@ const Notes = () => {
             >
               {type === 'featured' && (
                 <>
-                  {featuredNotes.length > 0 ? (
-                    featuredNotes.map((note) => (
+                  {filterNotes(featuredNotes).length > 0 &&
+                    filterNotes(featuredNotes).map((note) => (
                       <Note
                         listView={listView}
                         key={note.id}
@@ -277,16 +255,13 @@ const Notes = () => {
                         getFeaturedNotes={getFeaturedNotes}
                         getSharedNotes={getSharedNotes}
                       />
-                    ))
-                  ) : (
-                    <EmptyNotesState description="" />
-                  )}
+                    ))}
                 </>
               )}
               {type === 'shared' && (
                 <>
-                  {sharedNotes.length > 0 ? (
-                    sharedNotes.map((note) => (
+                  {filterNotes(sharedNotes).length > 0 &&
+                    filterNotes(sharedNotes).map((note) => (
                       <Note
                         listView={listView}
                         key={note.id}
@@ -296,16 +271,13 @@ const Notes = () => {
                         getFeaturedNotes={getFeaturedNotes}
                         getSharedNotes={getSharedNotes}
                       />
-                    ))
-                  ) : (
-                    <EmptyNotesState description="" />
-                  )}
+                    ))}
                 </>
               )}
               {type === 'your-notes' && (
                 <>
-                  {yourNotes.length > 0 ? (
-                    yourNotes.map((note) => (
+                  {filterNotes(yourNotes).length > 0 &&
+                    filterNotes(yourNotes).map((note) => (
                       <Note
                         listView={listView}
                         key={note.id}
@@ -315,9 +287,27 @@ const Notes = () => {
                         getFeaturedNotes={getFeaturedNotes}
                         getSharedNotes={getSharedNotes}
                       />
-                    ))
+                    ))}
+                </>
+              )}
+
+              {((type === 'featured' &&
+                filterNotes(featuredNotes).length === 0) ||
+                (type === 'shared' && filterNotes(sharedNotes).length === 0) ||
+                (type === 'your-notes' &&
+                  filterNotes(yourNotes).length === 0)) && (
+                <>
+                  {' '}
+                  {searchQuery ? (
+                    <EmptyNotesState
+                      description={
+                        <>
+                          No notes found for search query : <b>{searchQuery}</b>
+                        </>
+                      }
+                    />
                   ) : (
-                    <EmptyNotesState description="" />
+                    <EmptyNotesState description="You don't have any notes yet." />
                   )}
                 </>
               )}

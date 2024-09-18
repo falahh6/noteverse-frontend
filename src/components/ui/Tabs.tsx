@@ -27,6 +27,7 @@ export const Tabs = ({
   const router = useRouter()
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
+  const searchQuery = searchParams.get('s')
   const [active, setActive] = useState<Tab>(propTabs[0])
   const [tabs, setTabs] = useState<Tab[]>(propTabs)
 
@@ -45,13 +46,17 @@ export const Tabs = ({
   }, [type])
 
   const moveSelectedTabToTop = (idx: number, tabValue: string) => {
-    // console.log(idx, tabValue)
     const newTabs = [...propTabs]
     const selectedTab = newTabs.splice(idx, 1)
     newTabs.unshift(selectedTab[0])
     setTabs(newTabs)
     setActive(newTabs[0])
-    router.push(`/notes?type=${tabValue}`)
+    if (searchQuery) {
+      const sp = new URLSearchParams([['s', searchQuery]])
+      router.push(`/notes?type=${tabValue}&${sp}`)
+    } else {
+      router.push(`/notes?type=${tabValue}`)
+    }
   }
 
   const [hovering, setHovering] = useState(false)

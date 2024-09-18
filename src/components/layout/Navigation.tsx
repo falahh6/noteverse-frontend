@@ -40,12 +40,13 @@ const Navigation = ({
     usePathContext()
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
-  let Called = false
+  const searchQuery = searchParams.get('s')
+  let init = false
 
   useEffect(() => {
     if (
       !pages.some((page) => page.pathname.startsWith('/notes?type=')) &&
-      !Called
+      !init
     ) {
       addPage({
         title: 'Home',
@@ -54,13 +55,23 @@ const Navigation = ({
         isActive: true,
       })
     }
-    Called = true
+    init = true
     if (pathname === '/notes') {
-      toogleActivePage(
-        pathname === '/notes'
-          ? pathname + `?type=${type || 'featured'}`
-          : pathname,
-      )
+      if (searchQuery) {
+        const sp = new URLSearchParams([['s', searchQuery]])
+        console.log('@SP : ', sp)
+        toogleActivePage(
+          pathname === '/notes'
+            ? pathname + `?type=${type || 'featured'}` + `&${sp}`
+            : pathname,
+        )
+      } else {
+        toogleActivePage(
+          pathname === '/notes'
+            ? pathname + `?type=${type || 'featured'}`
+            : pathname,
+        )
+      }
     }
 
     if (pathname.includes('/notes/')) {
@@ -71,10 +82,13 @@ const Navigation = ({
   //modify pathname
   useEffect(() => {
     if (type) {
-      console.log('@modify_effect')
       modifyPathname(`/notes?type=${type}`)
     }
-  }, [type])
+
+    if (searchQuery) {
+      modifyPathname(`/notes?type=${type}&s=${searchQuery}`)
+    }
+  }, [type, searchQuery])
 
   return (
     <div className="min-h-[10vh] px-20 max-sm:px-8 w-full bg-gradient-to-b from-gray-300  to-transparent fixed top-0 left-0 right-0 flex flex-row justify-between items-center backdrop:blur-0 backdrop-blur-lg z-50">
@@ -85,20 +99,20 @@ const Navigation = ({
             alt="logo-sm"
             height={48}
             width={200}
-            className="max-sm:hidden "
+            className="max-sm:hidden max-md:hidden max-lg:hidden"
           />
           <Image
             src={'/logo-sm.svg'}
             alt="logo-sm"
             height={48}
             width={48}
-            className="max-sm:block hidden min-h-[48px] min-w-[48px]"
+            className="max-sm:block max-md:block max-lg:block hidden min-h-[48px] min-w-[48px]"
           />{' '}
         </a>
       </div>
       <div>
         {session?.user && (
-          <div className="flex flex-row gap-2 max-sm:gap-1 items-center max-sm:mx-2 max-sm:max-w-[80vw]">
+          <div className="flex flex-row justify-center gap-2 max-sm:gap-1 items-center max-sm:mx-2 max-sm:max-w-[80vw]">
             {pages[0]?.title === 'Home' && (
               <Button
                 variant={'secondary'}
@@ -162,14 +176,14 @@ const Navigation = ({
 
       <div className="flex flex-row items-center gap-4">
         <DropdownMenu>
-          <DropdownMenuTrigger className="border border-gray-300 p-2 rounded-full h-fit bg-gray-100 flex flex-row items-center gap-1 ring-0 outline-none">
+          <DropdownMenuTrigger className="border ml-[200px] max-sm:ml-0 border-gray-300 p-2 rounded-full h-fit bg-gray-100 flex flex-row items-center gap-1 ring-0 outline-none">
             {session?.user ? (
               <User className="h-4 w-4" />
             ) : (
               <Menu className="h-4 w-4" />
             )}
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[20vw] max-md:w-[50vw] max-lg:w-[50vw] max-sm:w-[50vw] rounded-2xl mr-20 max-sm:mr-8 bg-white">
+          <DropdownMenuContent className="w-[20vw] max-md:w-[50vw] max-lg:w-[50vw] max-sm:w-[70vw] rounded-2xl mr-20 max-sm:mr-8 bg-white shadow-2xl">
             {session?.user ? (
               <DropdownMenuLabel className="p-4">
                 <div className="text-base">{session.user.name}</div>
