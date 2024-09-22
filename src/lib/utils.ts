@@ -137,3 +137,26 @@ export const getAppUrl = () => {
 
   return applicationBaseURL
 }
+
+export const visibleLightColors = [
+  '#ADD8E6', // Light Blue
+  '#90EE90', // Light Green
+  '#FFB6C1', // Light Pink
+  '#FFD700', // Gold
+  '#FFA07A', // Light Salmon
+  '#87CEFA', // Light Sky Blue
+  '#FF69B4', // Hot Pink
+  '#BA55D3', // Medium Orchid
+  '#9370DB', // Medium Purple
+  '#FF6347', // Tomato
+  '#40E0D0', // Turquoise
+  '#48D1CC', // Medium Turquoise
+  '#AFEEEE', // Pale Turquoise
+  '#DB7093', // Pale Violet Red
+  '#FFC0CB', // Pink
+  '#FFDAB9', // Peach Puff
+  '#EE82EE', // Violet
+  '#DAA520', // Goldenrod
+  '#CD5C5C', // Indian Red
+  '#B0E0E6', // Powder Blue
+]

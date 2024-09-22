@@ -33,6 +33,16 @@
     --ring: 224 71.4% 4.1%;
 
     --radius: 0.5rem;
+
+    --novel-highlight-default: #ffffff;
+    --novel-highlight-purple: #f6f3f8;
+    --novel-highlight-red: #fdebeb;
+    --novel-highlight-yellow: #fbf4a2;
+    --novel-highlight-blue: #c1ecf9;
+    --novel-highlight-green: #acf79f;
+    --novel-highlight-orange: #faebdd;
+    --novel-highlight-pink: #faf1f5;
+    --novel-highlight-gray: #f1f1ef;
   }
 
   .dark {
@@ -63,6 +73,16 @@
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
     --ring: 216 12.2% 83.9%;
+
+    --novel-highlight-default: #000000;
+    --novel-highlight-purple: #3f2c4b;
+    --novel-highlight-red: #5c1a1a;
+    --novel-highlight-yellow: #5c4b1a;
+    --novel-highlight-blue: #1a3d5c;
+    --novel-highlight-green: #1a5c20;
+    --novel-highlight-orange: #5c3a1a;
+    --novel-highlight-pink: #5c1a3a;
+    --novel-highlight-gray: #3a3a3a;
   }
 }
 
@@ -109,4 +129,59 @@
     scrollbar-width: thin; /* Set a thin scrollbar width */
     scrollbar-color: #888 #f1f1f1; /* Set thumb color and track color */
   }
+}
+
+/* Give a remote user a caret */
+.collaboration-cursor__caret {
+  border-left: 1px solid #0d0d0d;
+  border-right: 1px solid #0d0d0d;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+/* Render the username above the caret */
+.collaboration-cursor__label {
+  font-style: normal;
+  font-weight: 600;
+  left: -1px;
+  line-height: normal;
+  position: absolute;
+  user-select: none;
+  white-space: nowrap;
+  font-size: 14px;
+  color: #fff;
+  top: -1.4em;
+  border-radius: 6px;
+  border-bottom-left-radius: 0;
+  padding: 2px 6px;
+  pointer-events: none;
+}
+
+.custom-caret {
+  display: inline-block;
+  width: 1px;
+  border-radius: 10px;
+  height: 1.5em;
+  position: relative;
+  animation: blink 1s step-end infinite;
+  margin-bottom: -2px;
+  background-color: var(--caret-color);
+}
+
+.custom-caret::after {
+  content: attr(data-name);
+  position: absolute;
+  top: -1.4em;
+  left: 0;
+  font-size: 10px;
+  font-weight: 600;
+  height: fit-content;
+  white-space: nowrap;
+  padding: 0 4px;
+  border-radius: 4px;
+  border-bottom-left-radius: 0;
+  background-color: var(--caret-color);
 }
