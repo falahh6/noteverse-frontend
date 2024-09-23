@@ -2,42 +2,15 @@ import { Extension } from '@tiptap/core'
 import { Plugin, PluginKey } from 'prosemirror-state'
 import { Decoration, DecorationSet } from 'prosemirror-view'
 
-// Create a proper Tiptap extension for Caret decorations
-export const CaretDecoration = (users: any) =>
-  Extension.create({
-    name: 'caretDecoration',
-
-    addProseMirrorPlugins() {
-      return [
-        new Plugin({
-          key: new PluginKey('caretDecoration'),
-          state: {
-            init(_, { doc }) {
-              return DecorationSet.empty
-            },
-            apply(tr, oldDecorations) {
-              oldDecorations = oldDecorations.map(tr.mapping, tr.doc)
-
-              const decorations: Decoration[] = []
-              users.forEach((user: any) => {
-                const caretPos = user.caretPosition
-                if (caretPos) {
-                  // Add a decoration (caret) for each user
-                  const caretElement = document.createElement('span')
-                  caretElement.style.borderLeft = `2px solid ${user.color}`
-                  caretElement.style.height = '1em'
-                  caretElement.style.position = 'absolute'
-                  caretElement.style.zIndex = '90'
-                  decorations.push(Decoration.widget(caretPos, caretElement))
-                }
-              })
-              return DecorationSet.create(tr.doc, decorations)
-            },
-          },
-        }),
-      ]
-    },
-  })
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    multipleCarets: {
+      updateCarets: (
+        carets: Array<{ position: number; name: string; color: string }>,
+      ) => ReturnType
+    }
+  }
+}
 
 export const MultipleCarets = Extension.create({
   name: 'multipleCarets',
@@ -49,30 +22,45 @@ export const MultipleCarets = Extension.create({
   },
 
   addProseMirrorPlugins() {
+    const pluginKey = new PluginKey('multipleCarets')
+
     return [
       new Plugin({
-        props: {
-          decorations: (state) => {
-            const { doc } = state
-            const decorations: any = []
-
-            console.log('THIS : ', this.options.carets)
-
-            this.options.carets.forEach(({ position, name, color }: any) => {
-              const caretDecoration = Decoration.widget(position, () => {
+        key: pluginKey,
+        state: {
+          init: () => DecorationSet.empty,
+          apply: (tr, old) => {
+            const carets = this.options.carets
+            const decorations = carets.map(({ position, name, color }: any) =>
+              Decoration.widget(position, () => {
                 const caretElement = document.createElement('span')
                 caretElement.className = 'custom-caret'
-                caretElement.setAttribute('style', `--caret-color: ${color};`)
+                caretElement.style.setProperty('--caret-color', color)
                 caretElement.setAttribute('data-name', name)
                 return caretElement
-              })
-              decorations.push(caretDecoration)
-            })
-
-            return DecorationSet.create(doc, decorations)
+              }),
+            )
+            return DecorationSet.create(tr.doc, decorations)
+          },
+        },
+        props: {
+          decorations(state) {
+            return pluginKey.getState(state)
           },
         },
       }),
     ]
+  },
+
+  addCommands() {
+    return {
+      updateCarets:
+        (carets: any) =>
+        ({ editor }: any) => {
+          this.options.carets = carets
+          editor.view.dispatch(editor.state.tr)
+          return true
+        },
+    }
   },
 })

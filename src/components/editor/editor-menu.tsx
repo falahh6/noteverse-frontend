@@ -12,7 +12,7 @@ interface EditorMenuProps {
 export default function EditorMenu({
   children,
   open,
-  onOpenChange
+  onOpenChange,
 }: EditorMenuProps) {
   const { editor } = useEditor()
 
@@ -27,10 +27,10 @@ export default function EditorMenu({
         placement: open ? 'bottom-start' : 'top',
         onHidden: () => {
           onOpenChange(false)
-          editor?.chain().unsetHighlight().run()
-        }
+          editor?.chain().unsetAIHighlight().run()
+        },
       }}
-      className='flex w-fit max-w-[90vw] overflow-hidden rounded-md border border-muted bg-background shadow-xl'
+      className="flex w-fit max-w-[90vw] overflow-hidden rounded-md border border-muted bg-background shadow-xl"
     >
       {!open && children}
     </EditorBubble>

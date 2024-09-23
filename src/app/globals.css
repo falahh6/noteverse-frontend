@@ -173,6 +173,7 @@
 
 .custom-caret::after {
   content: attr(data-name);
+  z-index: 200;
   position: absolute;
   top: -1.4em;
   left: 0;

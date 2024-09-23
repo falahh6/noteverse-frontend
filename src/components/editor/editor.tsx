@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   EditorRoot,
   EditorCommand,
@@ -27,6 +27,10 @@ import { cn } from '@/lib/utils'
 import { Button } from 'antd'
 import { MultipleCarets } from './caret'
 import { socket } from '@/socket'
+import { Extension } from '@tiptap/core'
+import { Plugin } from 'prosemirror-state'
+import { Decoration, DecorationSet } from 'prosemirror-view'
+import { toast } from 'sonner'
 
 const extensions = [...defaultExtensions, slashCommand]
 
@@ -89,20 +93,27 @@ const Editor = ({
     )
   }
 
+  const updateCarets = useCallback(
+    (connectedUsers: any) => {
+      if (editor && connectedUsers) {
+        const carets = connectedUsers.map((u: any, i: number) => ({
+          position: u.position,
+          name: u.userName || 'Noteverse user ' + i,
+          color: u.color,
+        }))
+        editor.commands.updateCarets(carets)
+      }
+    },
+    [editor, connectedUsers],
+  )
+
   useEffect(() => {
     if (editor && connectedUsers?.length > 0) {
-      editor.extensionManager.extensions.forEach((extension: any) => {
-        if (extension.name === 'multipleCarets') {
-          extension.options = {
-            ...extension.options,
-            carets: connectedUsers.map((u: any) => ({
-              position: u.position,
-              name: u.userName,
-              color: u.color,
-            })),
-          }
-        }
-      })
+      console.log('connected users : ', connectedUsers)
+      const updatesConnectedUsers = connectedUsers.filter(
+        (u: any) => u.userId !== userData.id,
+      )
+      updateCarets(updatesConnectedUsers)
     }
   }, [connectedUsers])
 
