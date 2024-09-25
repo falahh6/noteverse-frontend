@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { twMerge } from 'tailwind-merge'
 import { SchemaChildNode } from './types/notes'
 import { useMemo } from 'react'
+import { JSONContent } from 'novel'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -94,9 +95,15 @@ export function useExampleRoomId(roomId: string) {
 
 export function avatarFallbackHandler(name: string) {
   let fallback: string = ''
-  name.split(' ').forEach((name) => {
-    fallback += name.slice(0, 1).toUpperCase()
-  })
+  const nameParts = name.split(' ')
+
+  if (nameParts.length === 1) {
+    fallback = nameParts[0].slice(0, 1).toUpperCase()
+  } else {
+    fallback =
+      nameParts[0].slice(0, 1).toUpperCase() +
+      nameParts[nameParts.length - 1].slice(0, 1).toUpperCase()
+  }
 
   return fallback
 }
@@ -160,3 +167,54 @@ export const visibleLightColors = [
   '#CD5C5C', // Indian Red
   '#B0E0E6', // Powder Blue
 ]
+
+export function findDifferences(
+  obj1: JSONContent | undefined,
+  obj2: JSONContent | undefined,
+): string | null {
+  if (obj1 == undefined || obj2 == undefined) return null
+  // Helper function for deep equality
+  function deepEqual(item1: any, item2: any): boolean {
+    if (item1 === item2) return true
+
+    if (
+      typeof item1 !== 'object' ||
+      typeof item2 !== 'object' ||
+      item1 === null ||
+      item2 === null
+    ) {
+      return false
+    }
+
+    const keys1 = Object.keys(item1)
+    const keys2 = Object.keys(item2)
+
+    if (keys1.length !== keys2.length) return false
+
+    for (let key of keys1) {
+      if (!keys2.includes(key) || !deepEqual(item1[key], item2[key])) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  // Check if both objects have content arrays
+  if (Array.isArray(obj1?.content) && Array.isArray(obj2?.content)) {
+    for (let i = 0; i < obj2.content.length; i++) {
+      const item1 = obj1.content[i]
+      const item2 = obj2.content[i]
+
+      // If the items are not deeply equal, return the differing text
+      if (!deepEqual(item1, item2)) {
+        if (item2?.content?.[0]?.text) {
+          return item2.content[0].text // Return the differing text
+        }
+        return 'Difference found, but no text content'
+      }
+    }
+  }
+
+  return null
+}

@@ -24,15 +24,8 @@ import { Separator } from '../ui/separator'
 
 import './style/prosemirror.css'
 import { cn } from '@/lib/utils'
-import { Button } from 'antd'
 import { MultipleCarets } from './caret'
 import { socket } from '@/socket'
-import { Extension } from '@tiptap/core'
-import { Plugin } from 'prosemirror-state'
-import { Decoration, DecorationSet } from 'prosemirror-view'
-import { toast } from 'sonner'
-
-const extensions = [...defaultExtensions, slashCommand]
 
 interface EditorProp {
   content?: JSONContent
@@ -91,6 +84,11 @@ const Editor = ({
         }
       },
     )
+
+    connectedUsers = connectedUsers.map((u: any) => ({
+      ...u,
+      isActive: u.id === userData.id ? true : false,
+    }))
   }
 
   const updateCarets = useCallback(
@@ -133,6 +131,7 @@ const Editor = ({
               position: u.position,
               name: u.userName,
               color: u.color,
+              isActive: u.isActive || false,
             })),
           }),
         ]}

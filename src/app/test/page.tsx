@@ -12,7 +12,12 @@ import { useSession } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
-import { visibleLightColors } from '@/lib/utils'
+import {
+  avatarFallbackHandler,
+  findDifferences,
+  visibleLightColors,
+} from '@/lib/utils'
+import { Tooltip } from 'antd'
 
 const Page = () => {
   const { data, status } = useSession()
@@ -69,7 +74,11 @@ const Page = () => {
 
       let connectedUsers: any = []
       users?.forEach((user: any, i: number) => {
-        connectedUsers.push({ ...user, color: visibleLightColors[i] })
+        connectedUsers.push({
+          ...user,
+          userName: user.userName || 'Noteverse User ' + i,
+          color: visibleLightColors[i],
+        })
       })
 
       setConnectedUsers(connectedUsers)
@@ -93,7 +102,12 @@ const Page = () => {
           notesId: notesId,
         },
         (response: any) => {
-          setConnectedUsers(response.connectedUsers)
+          setConnectedUsers(
+            response.connectedUsers?.map((u: any, i: number) => ({
+              ...u,
+              userName: u.userName || 'Noteverse User ' + i,
+            })),
+          )
         },
       )
     }
@@ -117,9 +131,12 @@ const Page = () => {
   }, [status])
 
   const onChange = (value: JSONContent) => {
+    console.log(value)
     setContent(value)
 
-    socket.emit('contentChanged', { notesId, content: value })
+    if (findDifferences(content, value) !== '/') {
+      socket.emit('contentChanged', { notesId, content: value })
+    }
   }
 
   useEffect(() => {
@@ -150,20 +167,30 @@ const Page = () => {
             </div>
           </div>
         </div>
-        <div className="py-2">
-          {connectedUsers
-            .filter((u) => u.userId)
-            .map((item) => (
-              <div className="flex flex-row items-center">
-                {item.userId} | {item.userName}{' '}
-                {item.userId === data?.user.id && (
-                  <Badge className="text-xs ml-2" variant={'secondary'}>
-                    You
-                  </Badge>
-                )}{' '}
-                | caret at : {item.position}
-              </div>
-            ))}
+        <div className="py-2 flex flex-row justify-between">
+          <div>falah</div>
+          <div className="flex flex-row  gap-1">
+            {connectedUsers
+              .filter((u) => u.userId !== data?.user.id && u.position)
+              .map((item) => (
+                <Tooltip
+                  title={item.userName}
+                  color={item.color}
+                  style={{
+                    fontSize: '10px',
+                    backgroundColor: item.color,
+                    color: item.color,
+                  }}
+                >
+                  <div
+                    className={`text-xs bg-gray-200 rounded-full p-2`}
+                    style={{ backgroundColor: item.color }}
+                  >
+                    {avatarFallbackHandler(item.userName)}
+                  </div>
+                </Tooltip>
+              ))}
+          </div>
         </div>
       </div>
       <div className="mb-10">

@@ -8,6 +8,7 @@ declare module '@tiptap/core' {
       updateCarets: (
         carets: Array<{ position: number; name: string; color: string }>,
       ) => ReturnType
+      setCurrentUserActive: (isActive: boolean) => ReturnType
     }
   }
 }
@@ -51,6 +52,11 @@ export const MultipleCarets = Extension.create({
       }),
     ]
   },
+  addStorage() {
+    return {
+      isCurrentUserActive: false,
+    }
+  },
 
   addCommands() {
     return {
@@ -59,6 +65,7 @@ export const MultipleCarets = Extension.create({
         ({ editor }: any) => {
           this.options.carets = carets
           editor.view.dispatch(editor.state.tr)
+          editor.storage.multipleCarets.isCurrentUserActive = carets.isActive
           return true
         },
     }

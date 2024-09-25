@@ -37,7 +37,7 @@ export const suggestionItems = createSuggestionItems([
     searchTerms: ['todo', 'task', 'list', 'check', 'checkbox'],
     icon: <CheckSquare size={18} />,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).toggleTaskList().run()
+      editor.chain().focus().deleteRange(range).toggleList('', '').run()
     },
   },
   {
@@ -160,6 +160,7 @@ export const suggestionItems = createSuggestionItems([
           .chain()
           .focus()
           .deleteRange(range)
+          //@ts-ignore
           .setYoutubeVideo({
             src: videoLink as string,
           })
@@ -202,7 +203,13 @@ export const suggestionItems = createSuggestionItems([
 
 export const slashCommand = Command.configure({
   suggestion: {
-    items: () => suggestionItems,
+    items: ({ editor }: any) => {
+      const isCurrentUserActive =
+        editor.storage.multipleCarets?.isCurrentUserActive || false
+
+      // Only return suggestion items if the current user is active
+      return isCurrentUserActive ? suggestionItems : []
+    },
     render: renderItems,
   },
 })
