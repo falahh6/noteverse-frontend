@@ -227,6 +227,21 @@ export const Icons = {
   underline: Underline,
   unlink: Link2Off,
   viewing: Eye,
+  Share: (props: LucideProps) => (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M13.9289 8.28572V4L21 11.071L13.9289 18.1421V13.3102M13.9289 8.29408C13.2857 8.14812 12.6163 8.07106 11.9289 8.07106C6.9584 8.07106 2.92896 12.1005 2.92896 17.071C2.92896 17.9385 3.05169 18.7773 3.28073 19.571C4.36407 15.8167 7.82587 13.071 11.9289 13.071C12.6163 13.071 13.2857 13.1481 13.9289 13.294"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+    </svg>
+  ),
 
   // www
   gitHub: (props: LucideProps) => (
