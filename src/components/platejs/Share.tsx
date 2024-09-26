@@ -37,6 +37,7 @@ import { User, useUserContext } from '@/context/usersContext'
 import { Input } from '../ui/Input'
 import { toast } from 'sonner'
 import { sharedStatus } from '@/lib/types/notes'
+import { Icons } from '../icons'
 
 const ShareWith = ({
   authToken,
@@ -240,14 +241,10 @@ const ShareWith = ({
       }}
     >
       <DialogTrigger>
-        <Button
-          color="#dbeafe"
-          className="p-1 px-8 h-fit mb-2 mr-1 font-semibold transition-all duration-300 ease-in-out hover:bg-blue-100"
-          variant={'outline'}
-        >
-          <Share className="h-4 w-4 mr-1.5 transition-transform duration-300 ease-in-out group-hover:scale-110" />
-          Share
-        </Button>
+        <Icons.Share
+          strokeWidth={2}
+          className="text-gray-500 p-1 h-7 w-7 border border-gray-300 rounded-md hover:backdrop-blur-sm hover:bg-gray-100 hover:cursor-pointer"
+        />
       </DialogTrigger>
       <DialogContent className="max-sm:w-[90%] rounded-lg">
         <DialogHeader className="max-sm:text-left text-left">

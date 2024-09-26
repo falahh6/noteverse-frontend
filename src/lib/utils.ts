@@ -52,7 +52,10 @@ export function constructMetadata({
   }
 }
 
-export function debounce(func: (noteContent: any) => void, wait: number) {
+export function debounce(
+  func: (title: string, body: JSONContent) => void,
+  wait: number,
+) {
   let timeout: NodeJS.Timeout
   return function (...args: any[]) {
     const later = () => {
@@ -65,16 +68,44 @@ export function debounce(func: (noteContent: any) => void, wait: number) {
   }
 }
 
-export function extractText(nodes: SchemaChildNode[]): string {
+export function extractText(data: any): string {
   let result = ''
 
-  for (const node of nodes) {
-    if (node.text) {
-      result += node.text
+  function extractFromType1(node: any): string {
+    let textResult = ''
+
+    if (node.type === 'text' && node.text) {
+      textResult += node.text
     }
-    if (node.children && node.children.length > 0) {
-      result += extractText(node.children)
+
+    if (node.content && Array.isArray(node.content)) {
+      for (const child of node.content) {
+        textResult += extractFromType1(child)
+      }
     }
+
+    return textResult
+  }
+
+  function extractFromType2(nodes: any[]): string {
+    let textResult = ''
+
+    for (const node of nodes) {
+      if (node.text) {
+        textResult += node.text
+      }
+      if (node.children && node.children.length > 0) {
+        textResult += extractFromType2(node.children)
+      }
+    }
+
+    return textResult
+  }
+
+  if (Array.isArray(data)) {
+    result += extractFromType2(data)
+  } else if (typeof data === 'object' && data.type) {
+    result += extractFromType1(data)
   }
 
   return result

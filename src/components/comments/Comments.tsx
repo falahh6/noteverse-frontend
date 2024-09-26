@@ -15,6 +15,7 @@ import Thread from './Thread'
 import { useEffect, useState } from 'react'
 import { baseURL } from '@/lib/utils'
 import { Empty } from 'antd'
+import { MessageCircleMore } from 'lucide-react'
 
 const Comments = ({
   notesId,
@@ -56,14 +57,10 @@ const Comments = ({
     <>
       <Drawer direction={window.innerWidth < 768 ? 'bottom' : 'right'}>
         <DrawerTrigger asChild>
-          <Button
-            color="#dbeafe"
-            className="p-1 px-4 mr-1 h-fit mb-2 font-semibold transition-all duration-300 ease-in-out hover:bg-blue-100"
-            variant={'outline'}
-          >
-            <Icons.commentAdd className="h-4 w-4 mr-1.5 transition-transform duration-300 ease-in-out group-hover:scale-110" />
-            Comments
-          </Button>
+          <MessageCircleMore
+            strokeWidth={2}
+            className="text-gray-500 p-1 h-7 w-7 border border-gray-300 rounded-md hover:backdrop-blur-sm hover:bg-gray-100 hover:cursor-pointer"
+          />
         </DrawerTrigger>
         <DrawerContent className="sm:width-[25vw]">
           <DrawerHeader>

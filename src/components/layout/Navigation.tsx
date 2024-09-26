@@ -112,7 +112,7 @@ const Navigation = ({
       </div>
       <div>
         {session?.user && (
-          <div className="flex flex-row justify-center gap-2 max-sm:gap-1 items-center max-sm:mx-2 max-sm:max-w-[80vw]">
+          <div className="flex flex-row justify-center gap-2 max-sm:gap-1 items-center max-sm:mx-2 max-sm:max-w-[80vw] max-lg:ml-20">
             {pages[0]?.title === 'Home' && (
               <Button
                 variant={'secondary'}

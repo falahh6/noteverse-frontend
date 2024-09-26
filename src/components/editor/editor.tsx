@@ -23,9 +23,10 @@ import { uploadFn } from './image-upload'
 import { Separator } from '../ui/separator'
 
 import './style/prosemirror.css'
-import { cn } from '@/lib/utils'
+import { baseURL, cn, debounce } from '@/lib/utils'
 import { MultipleCarets } from './caret'
 import { socket } from '@/socket'
+import { toast } from 'sonner'
 
 interface EditorProp {
   content?: JSONContent
@@ -34,7 +35,9 @@ interface EditorProp {
   placeholder?: string
   connectedUsers?: any
   userData: any
-  notesId: string
+  notesId: number
+  canEdit: boolean
+  authToken: string
 }
 
 const Editor = ({
@@ -45,6 +48,8 @@ const Editor = ({
   connectedUsers,
   userData,
   notesId,
+  canEdit,
+  authToken,
 }: EditorProp) => {
   const [editor, setEditor] = useState<any>(null)
 
@@ -67,8 +72,33 @@ const Editor = ({
     }
   }, [content])
 
+  const saveNotes = useCallback(
+    debounce(async (title: string, body: JSONContent) => {
+      console.log('authToken : ', authToken)
+      const response = await fetch(`${baseURL}/notes/${notesId}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          title: title,
+          data: JSON.stringify(body),
+        }),
+      })
+
+      if (response.ok) {
+        const responseData = await response.json()
+        console.log('Note saved:', responseData)
+      }
+    }, 1000),
+    [],
+  )
+
   const handleUpdate = ({ editor }: any) => {
     onChange(editor.getJSON())
+
+    // saveNotes('hey', editor.getJSON())
 
     const { to } = editor.state.selection
     socket.emit(
@@ -107,7 +137,6 @@ const Editor = ({
 
   useEffect(() => {
     if (editor && connectedUsers?.length > 0) {
-      console.log('connected users : ', connectedUsers)
       const updatesConnectedUsers = connectedUsers.filter(
         (u: any) => u.userId !== userData.id,
       )
@@ -118,7 +147,10 @@ const Editor = ({
   return (
     <EditorRoot>
       <EditorContent
-        onCreate={({ editor }) => setEditor(editor)}
+        editable={canEdit}
+        onCreate={({ editor }) => {
+          setEditor(editor)
+        }}
         className={cn('border rounded-xl w-full pb-10', className)}
         {...(content && {
           initialContent: content,
@@ -178,6 +210,7 @@ const Editor = ({
         <EditorBubble
           tippyOptions={{
             placement: 'top',
+            zIndex: 10,
           }}
           className="flex w-fit max-w-[90vw] overflow-hidden rounded-md border border-muted bg-background shadow-xl"
         >

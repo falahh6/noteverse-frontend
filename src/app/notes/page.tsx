@@ -27,7 +27,7 @@ const fetchNotes = async (url: string, authToken: string) => {
       return data.map((note: any) => ({
         id: note.id,
         title: note.title,
-        content: note.data ? extractText(JSON.parse(note.data)) : '',
+        content: note.data ? extractText(JSON.parse(note.data)) || '' : '',
         userId: 'na',
         createdAt: new Date(note.created_at),
         updatedAt: new Date(note.updated_at),
@@ -71,6 +71,7 @@ const Notes = () => {
           `${baseURL}/notes/`,
           authToken,
         )
+        console.log('@getNotesList : ', parsedResponse)
 
         setYourNotes(
           parsedResponse.filter(
@@ -107,6 +108,7 @@ const Notes = () => {
           `${baseURL}/notes/get-featured-notes/`,
           authToken,
         )
+        console.log('@getFeaturedNotes : ', parsedResponse)
 
         setFeaturedNotes(parsedResponse)
 
@@ -140,6 +142,7 @@ const Notes = () => {
           `${baseURL}/notes/get-shared-notes/`,
           authToken,
         )
+        console.log('@getSharedNotes : ', parsedResponse)
 
         setSharedNotes(parsedResponse)
 
