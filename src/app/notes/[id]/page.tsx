@@ -5,8 +5,6 @@ import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { type JSONContent } from 'novel'
 import { useCallback, useEffect, useState } from 'react'
 
-import { Icons } from '@/components/icons'
-import { MessageCircleMore } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import {
@@ -21,7 +19,7 @@ import { socket } from '@/socket'
 import { usePathContext } from '@/context/pathContext'
 import { sharedStatus } from '@/lib/types/notes'
 import Comments from '@/components/comments/Comments'
-import ShareWith from '@/components/platejs/Share'
+import ShareWith from '@/components/share/Share'
 import { useUserContext } from '@/context/usersContext'
 
 const Page = ({ params }: { params: { id: number } }) => {
@@ -276,13 +274,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                       <Comments notesId={notesId} authToken={authToken} />
                     </div>
                     <div>
-                      <ShareWith
-                        notesId={notesId}
-                        notesTitle={notesTitle}
-                        authToken={authToken}
-                        isOwner
-                        // sharedStatuses={sharedStatuses}
-                      />
+                      {isOwner && (
+                        <ShareWith
+                          notesId={notesId}
+                          notesTitle={notesTitle}
+                          authToken={authToken}
+                          isOwner
+                        />
+                      )}
                     </div>
                   </div>
                 </div>

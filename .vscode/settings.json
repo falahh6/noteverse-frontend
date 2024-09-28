@@ -28,7 +28,6 @@
   "prettier.useTabs": false,
   "prettier.printWidth": 80,
   "prettier.bracketSpacing": true,
-  "prettier.jsxBracketSameLine": false,
   "prettier.arrowParens": "always",
   "prettier.endOfLine": "lf",
   "prettier.proseWrap": "preserve",
