@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   EditorRoot,
   EditorCommand,
@@ -23,10 +23,9 @@ import { uploadFn } from './image-upload'
 import { Separator } from '../ui/separator'
 
 import './style/prosemirror.css'
-import { baseURL, cn, debounce } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { MultipleCarets } from './caret'
 import { socket } from '@/socket'
-import { toast } from 'sonner'
 
 interface EditorProp {
   content?: JSONContent
@@ -59,6 +58,7 @@ const Editor = ({
   const [liveUsers, setLiveUsers] = useState<
     { userName: string; position?: number; color?: string }[]
   >([])
+  const [openAI, setOpenAI] = useState(false)
 
   useEffect(() => {
     if (editor && content) {
@@ -72,33 +72,8 @@ const Editor = ({
     }
   }, [content])
 
-  const saveNotes = useCallback(
-    debounce(async (title: string, body: JSONContent) => {
-      console.log('authToken : ', authToken)
-      const response = await fetch(`${baseURL}/notes/${notesId}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          title: title,
-          data: JSON.stringify(body),
-        }),
-      })
-
-      if (response.ok) {
-        const responseData = await response.json()
-        console.log('Note saved:', responseData)
-      }
-    }, 1000),
-    [],
-  )
-
   const handleUpdate = ({ editor }: any) => {
     onChange(editor.getJSON())
-
-    // saveNotes('hey', editor.getJSON())
 
     const { to } = editor.state.selection
     socket.emit(

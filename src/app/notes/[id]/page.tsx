@@ -274,12 +274,14 @@ const Page = ({ params }: { params: { id: number } }) => {
                       <Comments notesId={notesId} authToken={authToken} />
                     </div>
                     <div>
-                      {isOwner &&<ShareWith
-                        notesId={notesId}
-                        notesTitle={notesTitle}
-                        authToken={authToken}
-                        isOwner
-                      />}
+                      {isOwner && (
+                        <ShareWith
+                          notesId={notesId}
+                          notesTitle={notesTitle}
+                          authToken={authToken}
+                          isOwner
+                        />
+                      )}
                     </div>
                   </div>
                 </div>

@@ -37,7 +37,7 @@ export const suggestionItems = createSuggestionItems([
     searchTerms: ['todo', 'task', 'list', 'check', 'checkbox'],
     icon: <CheckSquare size={18} />,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).toggleList('', '').run()
+      editor.chain().focus().deleteRange(range).toggleTaskList().run()
     },
   },
   {
