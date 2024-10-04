@@ -4,18 +4,101 @@ import { authOptions } from './api/auth/[...nextauth]/authoptions'
 import { Cover } from '@/components/ui/cover'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { BackgroundDots, BackgroundGrid } from '@/components/ui/BackgroundGrid'
+import { BackgroundDots } from '@/components/ui/BackgroundGrid'
+import Image from 'next/image'
+import { ContainerScroll } from '@/components/ui/container-scroll-animation'
+import {
+  BellIcon,
+  CalendarIcon,
+  FileTextIcon,
+  GlobeIcon,
+  ShareIcon,
+  Users2,
+} from 'lucide-react'
+import { Separator } from '@radix-ui/react-separator'
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
+import { InputIcon } from '@radix-ui/react-icons'
+import FullTextSearchBackground from '@/components/ui/full-text-search'
+import StaticVersionHistoryBackground from '@/components/ui/version-history-background'
+import { RainbowButton } from '@/components/ui/rainbow-button'
+import StyledBadge from '@/components/ui/styled-badge'
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
 
-  if (session?.user) redirect('/notes')
+  // if (session?.user) redirect('/notes')
+
+  const features = [
+    {
+      Icon: FileTextIcon,
+      name: 'Real-time Collaboration',
+      description:
+        'Work with your team on notes in real-time, with instant updates for everyone.',
+      href: '/',
+      cta: 'Learn more',
+      background: (
+        <img
+          src="/collaborative.svg"
+          className="absolute -right-5 top-20 max-sm:top-5 opacity-60 h-[160px]"
+        />
+      ),
+      className: 'lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3',
+      done: true,
+    },
+    {
+      Icon: InputIcon,
+      name: 'Full-text Search',
+      description:
+        'Find any note or document instantly with powerful search across all content.',
+      href: '/',
+      cta: 'Learn more',
+      background: <FullTextSearchBackground />,
+      className: 'lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3',
+      done: false,
+    },
+    {
+      Icon: GlobeIcon,
+      name: 'Multilingual Support',
+      description:
+        'Collaborate with team members in over 100+ languages seamlessly.',
+      href: '/',
+      cta: 'Learn more',
+      background: <img className="absolute -right-20 -top-20 opacity-60" />,
+      className: 'lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4',
+      done: true,
+    },
+    {
+      Icon: CalendarIcon,
+      name: 'Version History',
+      description:
+        'Track and revert to previous versions of your notes with detailed change logs.',
+      href: '/',
+      cta: 'Learn more',
+      background: <StaticVersionHistoryBackground /> || (
+        <img className="absolute -right-20 -top-20 opacity-60" />
+      ),
+      className: 'lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2',
+      done: true,
+    },
+    {
+      Icon: ShareIcon,
+      name: 'File Sharing',
+      description:
+        'Easily share notes and documents with others inside or outside your organization.',
+      href: '/',
+      cta: 'Learn more',
+      background: <img className="absolute -right-10 top-20 opacity-60" />,
+      className: 'lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4',
+      done: false,
+    },
+  ]
 
   return (
     <BackgroundDots>
       <MaxWidthWrapper>
-        <div className="text-center text-sm flex items-center min-h-screen justify-center flex-col">
-          <div>
+        <div className="text-center text-sm min-h-screen flex flex-col items-center justify-center h-full mb-72">
+          <div className="mt-[30vh]">
+            <StyledBadge text="In a developmental stage" />
             <h1 className="text-4xl md:text-4xl lg:text-6xl font-semibold max-w-7xl mx-auto text-center mt-6 relative z-20 py-6 bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-neutral-700 to-neutral-700 dark:from-neutral-800 dark:via-white dark:to-white">
               Create simple and sleek notes <br /> with{' '}
               <Cover>
@@ -24,34 +107,54 @@ export default async function Home() {
                 </p>
               </Cover>
             </h1>
-            <button className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6  text-white inline-block">
-              <span className="absolute inset-0 overflow-hidden rounded-full">
-                <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
-              </span>
-              <div className="relative flex space-x-2 items-center z-10 rounded-full bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10">
-                <Link href={'/signup'}>
+
+            <RainbowButton>
+              {session?.user ? (
+                <Link href={'/notes?type=featured'}>
                   <span className="text-sm font-normal py-1 shadow-sm hover:shadow-xl">
-                    Get Started now by Signing In
+                    Go to your Dashboard
                   </span>
                 </Link>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                    d="M10.75 8.75L14.25 12L10.75 15.25"
-                  ></path>
-                </svg>
-              </div>
-              <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40"></span>
-            </button>
+              ) : (
+                <Link href={'/signup'}>
+                  <span className="text-sm font-normal py-1 shadow-sm hover:shadow-xl">
+                    Get Started for free
+                  </span>
+                </Link>
+              )}
+            </RainbowButton>
+          </div>
+          <ContainerScroll
+            titleComponent={
+              <>
+                <h1 className="text-2xl font-semibold text-black dark:text-white">
+                  I said simple <br />
+                  <span className="text-3xl md:text-[4rem] font-bold mt-1 leading-none">
+                    and I mean it.
+                  </span>
+                </h1>
+              </>
+            }
+          >
+            <Image
+              src={`https://bvnp6cpie7oauwed.public.blob.vercel-storage.com/assets/Screenshot%202024-09-30%20at%205.19.23%E2%80%AFPM-IbRTguB3It0reF5OgzwweVXBwAUZKe.png`}
+              alt="hero"
+              height={620}
+              width={1400}
+              className="mx-auto rounded-2xl object-cover h-full object-left-top"
+              draggable={false}
+            />
+          </ContainerScroll>
+
+          <div className="flex flex-col justify-center items-center h-full w-[80%]">
+            <h1 className="text-3xl text-center w-full font-semibold">
+              Ofcourse it's realtime, and more
+            </h1>
+            <BentoGrid className="lg:grid-rows-3 py-10 text-left ">
+              {features.map((feature) => (
+                <BentoCard key={feature.name} {...feature} />
+              ))}
+            </BentoGrid>
           </div>
         </div>
       </MaxWidthWrapper>
