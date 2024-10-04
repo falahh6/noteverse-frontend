@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import {
@@ -7,12 +9,17 @@ import {
   StrikethroughIcon,
   UnderlineIcon,
 } from 'lucide-react'
-import { EditorBubbleItem, useEditor } from 'novel'
+import { EditorBubbleItem, JSONContent, useEditor } from 'novel'
 import type { SelectorItem } from './node-selector'
+import { toast } from 'sonner'
+import TextCapture from '../actions/text-capture'
+import { useState } from 'react'
 
 export const TextButtons = () => {
   const { editor } = useEditor()
   if (!editor) return null
+  const [open, setOpen] = useState(false)
+  const [selectedText, setSelectedText] = useState<JSONContent>()
   const items: SelectorItem[] = [
     {
       name: 'bold',
@@ -64,6 +71,39 @@ export const TextButtons = () => {
           </Button>
         </EditorBubbleItem>
       ))}
+      {/* <EditorBubbleItem
+        key={'text-capture'}
+        onSelect={(editor) => {
+          const getSelectedJSONContent = (editor: any) => {
+            const { from, to } = editor.state.selection
+            const selectedContent = editor.state.doc.cut(from, to)
+
+            const jsonContent = selectedContent.toJSON()
+
+            if (!Array.isArray(jsonContent)) {
+              return {
+                type: 'doc',
+                content: [jsonContent],
+              }
+            }
+
+            return {
+              type: 'doc',
+              content: jsonContent,
+            }
+          }
+
+          const selectedJSONContent = getSelectedJSONContent(editor)
+          toast.success(JSON.stringify(selectedJSONContent))
+          setSelectedText(selectedJSONContent)
+          setOpen(true)
+        }}
+      >
+        <Button size="sm" className="rounded-none" variant="ghost">
+          Capture
+        </Button>
+      </EditorBubbleItem>
+       <TextCapture open={open} setOpen={setOpen} selectedText={selectedText} /> */}
     </div>
   )
 }
