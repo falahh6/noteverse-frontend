@@ -9,6 +9,7 @@ import {
   type JSONContent,
   EditorCommandList,
   EditorBubble,
+  EditorInstance,
 } from 'novel'
 import { ImageResizer, handleCommandNavigation } from 'novel/extensions'
 import { defaultExtensions } from './extensions'
@@ -24,8 +25,10 @@ import { Separator } from '../ui/separator'
 
 import './style/prosemirror.css'
 import { cn } from '@/lib/utils'
-import { MultipleCarets } from './caret'
+import { MultipleCarets } from './entensions/caret'
 import { socket } from '@/socket'
+import { TextSearch } from './entensions/search-text'
+import { useEditorContext } from '@/context/editorContext'
 
 interface EditorProp {
   content?: JSONContent
@@ -50,8 +53,8 @@ const Editor = ({
   canEdit,
   authToken,
 }: EditorProp) => {
-  const [editor, setEditor] = useState<any>(null)
-
+  // const [editor, setEditor] = useState<any>(null)
+  // const { setEditor: setEditorContext } = useEditorContext()
   const [openNode, setOpenNode] = useState(false)
   const [openColor, setOpenColor] = useState(false)
   const [openLink, setOpenLink] = useState(false)
@@ -59,6 +62,8 @@ const Editor = ({
     { userName: string; position?: number; color?: string }[]
   >([])
   const [openAI, setOpenAI] = useState(false)
+
+  const { editor, setEditor } = useEditorContext()
 
   useEffect(() => {
     if (editor && content) {
@@ -72,8 +77,10 @@ const Editor = ({
     }
   }, [content])
 
-  const handleUpdate = ({ editor }: any) => {
+  const handleUpdate = () => {
     onChange(editor.getJSON())
+
+    editor.commands.clearSearch()
 
     const { to } = editor.state.selection
     socket.emit(
@@ -125,6 +132,7 @@ const Editor = ({
         editable={canEdit}
         onCreate={({ editor }) => {
           setEditor(editor)
+          // setEditorContext(editor)
         }}
         className={cn('border rounded-xl w-full pb-10', className)}
         {...(content && {
@@ -133,6 +141,7 @@ const Editor = ({
         extensions={[
           ...defaultExtensions,
           slashCommand as any,
+          TextSearch,
           MultipleCarets.configure({
             carets: connectedUsers.map((u: any) => ({
               position: u.position,
@@ -156,7 +165,7 @@ const Editor = ({
         onUpdate={handleUpdate}
         slotAfter={<ImageResizer />}
       >
-        <EditorCommand className="z-50 h-auto max-h-[330px] overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all">
+        <EditorCommand className="z-20 h-auto max-h-[330px] overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all">
           <EditorCommandEmpty className="px-2 text-muted-foreground">
             No results
           </EditorCommandEmpty>

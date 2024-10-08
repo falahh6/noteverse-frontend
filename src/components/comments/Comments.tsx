@@ -59,7 +59,7 @@ const Comments = ({
         <DrawerTrigger asChild>
           <MessageCircleMore
             strokeWidth={2}
-            className="text-gray-500 p-1 h-7 w-7 border border-gray-300 rounded-md hover:backdrop-blur-sm hover:bg-gray-100 hover:cursor-pointer"
+            className="text-gray-500 px-1 h-7 min-w-7 border border-gray-300 rounded-md hover:backdrop-blur-sm hover:bg-gray-100 hover:cursor-pointer"
           />
         </DrawerTrigger>
         <DrawerContent className="sm:width-[25vw]">

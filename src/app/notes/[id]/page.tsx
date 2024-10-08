@@ -14,13 +14,14 @@ import {
   findDifferences,
   visibleLightColors,
 } from '@/lib/utils'
-import { Empty, Skeleton, Tooltip } from 'antd'
+import { Empty, Input, Skeleton, Tooltip } from 'antd'
 import { socket } from '@/socket'
 import { usePathContext } from '@/context/pathContext'
 import { sharedStatus } from '@/lib/types/notes'
 import Comments from '@/components/comments/Comments'
 import ShareWith from '@/components/share/Share'
 import { useUserContext } from '@/context/usersContext'
+import Search from '@/components/search/search'
 
 const Page = ({ params }: { params: { id: number } }) => {
   const { data, status } = useSession()
@@ -258,8 +259,8 @@ const Page = ({ params }: { params: { id: number } }) => {
         <MaxWidthWrapper className="px-10 mt-[12vh] max-sm:px-4">
           {!error && (
             <>
-              <div className="border-b px-4 py-2 sm:px-12">
-                <div className="py-2 flex flex-row gap-4 justify-between">
+              <div className="border-b px-4 py-2 mb-6 sm:px-12 sticky top-[10vh] bg-white z-20">
+                <div className="py-2 flex flex-row max-sm:flex-col gap-4 justify-between">
                   <input
                     className="w-full text-3xl max-sm:text-xl font-bold outline-none ring-none "
                     placeholder="Untitled"
@@ -269,20 +270,17 @@ const Page = ({ params }: { params: { id: number } }) => {
                       saveNotes(e.target.value, content!)
                     }}
                   />
-                  <div className="flex flex-row gap-2">
-                    <div>
-                      <Comments notesId={notesId} authToken={authToken} />
-                    </div>
-                    <div>
-                      {isOwner && (
-                        <ShareWith
-                          notesId={notesId}
-                          notesTitle={notesTitle}
-                          authToken={authToken}
-                          isOwner
-                        />
-                      )}
-                    </div>
+                  <div className="flex flex-row gap-2 items-center">
+                    <Search />
+                    <Comments notesId={notesId} authToken={authToken} />
+                    {isOwner && (
+                      <ShareWith
+                        notesId={notesId}
+                        notesTitle={notesTitle}
+                        authToken={authToken}
+                        isOwner
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="py-2 flex flex-row justify-between">

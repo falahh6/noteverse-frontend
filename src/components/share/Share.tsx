@@ -243,7 +243,7 @@ const ShareWith = ({
       <DialogTrigger>
         <Icons.Share
           strokeWidth={2}
-          className="text-gray-500 p-1 h-7 w-7 border border-gray-300 rounded-md hover:backdrop-blur-sm hover:bg-gray-100 hover:cursor-pointer"
+          className="text-gray-500 h-7 w-7 border border-gray-300 rounded-md hover:backdrop-blur-sm hover:bg-gray-100 hover:cursor-pointer"
         />
       </DialogTrigger>
       <DialogContent className="max-sm:w-[90%] rounded-lg">

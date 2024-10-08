@@ -91,7 +91,7 @@ const Navigation = ({
   }, [type, searchQuery])
 
   return (
-    <div className="min-h-[10vh] px-20 max-sm:px-8 w-full bg-gradient-to-b from-gray-300  to-transparent fixed top-0 left-0 right-0 flex flex-row justify-between items-center backdrop:blur-0 backdrop-blur-lg z-50">
+    <div className="min-h-[10vh] px-20 max-sm:px-8 w-full bg-gradient-to-b from-gray-300  to-white fixed top-0 left-0 right-0 flex flex-row justify-between items-center z-50">
       <div className="flex flex-row gap-2 items-center">
         <a href={'/'} className="flex flex-row items-center">
           <Image
