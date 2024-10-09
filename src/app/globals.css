@@ -196,3 +196,37 @@
   border-bottom-left-radius: 0;
   background-color: var(--caret-color);
 }
+
+/* Default highlight for light backgrounds */
+.search-highlight {
+  background-color: yellow; /* Light highlight for light backgrounds */
+}
+
+/* Highlight for dark backgrounds */
+.search-highlight-dark {
+  background-color: rgba(
+    255,
+    255,
+    0,
+    0.7
+  ); /* Slightly transparent yellow for dark backgrounds */
+}
+
+/* Optional: Specific styles for code blocks */
+.code-block .search-highlight {
+  background-color: rgba(
+    255,
+    255,
+    0,
+    0.5
+  ); /* Adjust the highlight for code blocks if needed */
+}
+
+.code-block .search-highlight-dark {
+  background-color: rgba(
+    255,
+    255,
+    0,
+    0.7
+  ); /* Keep the same for consistency in code blocks */
+}

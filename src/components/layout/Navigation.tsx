@@ -28,6 +28,7 @@ import { Button } from '../ui/button'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Badge } from '../ui/badge'
 import { usePathContext } from '@/context/pathContext'
+import { DashboardIcon } from '@radix-ui/react-icons'
 
 const Navigation = ({
   session,
@@ -91,7 +92,9 @@ const Navigation = ({
   }, [type, searchQuery])
 
   return (
-    <div className="min-h-[10vh] px-20 max-sm:px-8 w-full bg-gradient-to-b from-gray-300  to-transparent fixed top-0 left-0 right-0 flex flex-row justify-between items-center backdrop:blur-0 backdrop-blur-lg z-50">
+    <div
+      className={`min-h-[10vh] px-20 max-sm:px-8 w-full bg-gradient-to-b from-gray-300  ${pathname !== '/' ? 'to-white backdrop-blur-2xl' : 'to-transparent'} fixed top-0 left-0 right-0 flex flex-row justify-between items-center z-50`}
+    >
       <div className="flex flex-row gap-2 items-center">
         <a href={'/'} className="flex flex-row items-center">
           <Image
@@ -117,17 +120,15 @@ const Navigation = ({
               <Button
                 variant={'secondary'}
                 size={'sm'}
-                className={`h-fit p-1.5 group text-sm max-sm:text-xs hover:bg-gray-200 ${pages[0].isActive ? 'bg-gray-300' : 'bg-transparent'} border border-transparent hover:border-gray-400`}
+                className={`h-fit p-1.5 ml-1 group text-sm max-sm:text-xs hover:bg-gray-200 ${pages[0].isActive && pathname !== '/' ? 'bg-gray-300' : 'bg-transparent'} border border-transparent hover:border-gray-400`}
                 asChild
               >
                 <div>
                   {pages[0].title === 'Home' && (
                     <Link href={pages[0].pathname}>
-                      <Home className="h-4 w-4 inline" />
+                      <DashboardIcon className="h-4 w-4 inline" />
                       {pages.length < 4 && (
-                        <span className="ml-1 max-sm:hidden">
-                          {pages[0].title}
-                        </span>
+                        <span className="ml-1 max-sm:hidden">Dashboard</span>
                       )}
                     </Link>
                   )}
