@@ -1,4 +1,5 @@
 'use client'
+
 import React, { useCallback, useEffect, useState } from 'react'
 import {
   EditorRoot,
@@ -53,15 +54,12 @@ const Editor = ({
   canEdit,
   authToken,
 }: EditorProp) => {
-  // const [editor, setEditor] = useState<any>(null)
-  // const { setEditor: setEditorContext } = useEditorContext()
   const [openNode, setOpenNode] = useState(false)
   const [openColor, setOpenColor] = useState(false)
   const [openLink, setOpenLink] = useState(false)
   const [liveUsers, setLiveUsers] = useState<
     { userName: string; position?: number; color?: string }[]
   >([])
-  const [openAI, setOpenAI] = useState(false)
 
   const { editor, setEditor } = useEditorContext()
 
@@ -80,7 +78,8 @@ const Editor = ({
   const handleUpdate = () => {
     onChange(editor.getJSON())
 
-    editor.commands.clearSearch()
+    //@ts-ignore
+    editor.commands.fullTextSearch.clearSearch()
 
     const { to } = editor.state.selection
     socket.emit(
