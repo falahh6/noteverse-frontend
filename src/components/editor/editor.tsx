@@ -10,7 +10,6 @@ import {
   type JSONContent,
   EditorCommandList,
   EditorBubble,
-  EditorInstance,
 } from 'novel'
 import { ImageResizer, handleCommandNavigation } from 'novel/extensions'
 import { defaultExtensions } from './extensions'
@@ -78,8 +77,7 @@ const Editor = ({
   const handleUpdate = () => {
     onChange(editor.getJSON())
 
-    //@ts-ignore
-    editor.commands.fullTextSearch.clearSearch()
+    editor.commands.clearSearch()
 
     const { to } = editor.state.selection
     socket.emit(

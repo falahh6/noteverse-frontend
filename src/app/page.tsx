@@ -2,20 +2,11 @@ import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]/authoptions'
 import { Cover } from '@/components/ui/cover'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { BackgroundDots } from '@/components/ui/BackgroundGrid'
 import Image from 'next/image'
 import { ContainerScroll } from '@/components/ui/container-scroll-animation'
-import {
-  BellIcon,
-  CalendarIcon,
-  FileTextIcon,
-  GlobeIcon,
-  ShareIcon,
-  Users2,
-} from 'lucide-react'
-import { Separator } from '@radix-ui/react-separator'
+import { CalendarIcon, FileTextIcon, GlobeIcon, ShareIcon } from 'lucide-react'
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
 import { InputIcon } from '@radix-ui/react-icons'
 import FullTextSearchBackground from '@/components/ui/full-text-search'
@@ -25,8 +16,6 @@ import StyledBadge from '@/components/ui/styled-badge'
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
-
-  // if (session?.user) redirect('/notes')
 
   const features = [
     {
@@ -74,9 +63,7 @@ export default async function Home() {
         'Track and revert to previous versions of your notes with detailed change logs.',
       href: '/',
       cta: 'Learn more',
-      background: <StaticVersionHistoryBackground /> || (
-        <img className="absolute -right-20 -top-20 opacity-60" />
-      ),
+      background: <StaticVersionHistoryBackground />,
       className: 'lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2',
       done: true,
     },
