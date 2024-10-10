@@ -77,6 +77,7 @@ const Editor = ({
   const handleUpdate = () => {
     onChange(editor.getJSON())
 
+    //@ts-ignore
     editor.commands.clearSearch()
 
     const { to } = editor.state.selection

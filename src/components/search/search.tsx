@@ -8,11 +8,13 @@ const Search = () => {
   const { editor } = useEditorContext()
   const [searchText, setSearchText] = useState('')
   const onChangeHandler = (text: string) => {
+    //@ts-ignore
     editor.commands.search(text)
     setSearchText(text)
   }
 
   const clearHandler = () => {
+    //@ts-ignore
     editor.commands.clearSearch()
   }
 
