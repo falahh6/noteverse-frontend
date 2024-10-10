@@ -10,7 +10,6 @@ import {
   type JSONContent,
   EditorCommandList,
   EditorBubble,
-  EditorInstance,
 } from 'novel'
 import { ImageResizer, handleCommandNavigation } from 'novel/extensions'
 import { defaultExtensions } from './extensions'
@@ -79,7 +78,7 @@ const Editor = ({
     onChange(editor.getJSON())
 
     //@ts-ignore
-    editor.commands.fullTextSearch.clearSearch()
+    editor.commands.clearSearch()
 
     const { to } = editor.state.selection
     socket.emit(
@@ -110,6 +109,7 @@ const Editor = ({
           name: u.userName || 'Noteverse user ' + i,
           color: u.color,
         }))
+        //@ts-ignore
         editor.commands.updateCarets(carets)
       }
     },

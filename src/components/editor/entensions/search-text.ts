@@ -89,7 +89,8 @@ export const TextSearch = Extension.create({
         },
         props: {
           decorations(state) {
-            return this.getState(state)?.decorations // Return current decorations from state
+            const decorationsState = this.getState(state) // Get the current decorations state
+            return decorationsState ? decorationsState.decorations : null // Return null if there are no decorations
           },
         },
       }),
