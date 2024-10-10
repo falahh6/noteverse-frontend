@@ -109,6 +109,7 @@ const Editor = ({
           name: u.userName || 'Noteverse user ' + i,
           color: u.color,
         }))
+        //@ts-ignore
         editor.commands.updateCarets(carets)
       }
     },
