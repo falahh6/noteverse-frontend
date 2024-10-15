@@ -262,9 +262,16 @@ const Page = ({ params }: { params: { id: number } }) => {
               <div className="border-b px-4 py-2 mb-6 sm:px-12 sticky top-[10vh] bg-white z-20">
                 <div className="py-2 flex flex-row max-sm:flex-col gap-4 justify-between">
                   <input
-                    className="w-full text-3xl max-sm:text-xl font-bold outline-none ring-none "
+                    className="w-full text-3xl max-sm:text-xl font-bold outline-none ring-none bg-transparent"
                     placeholder="Untitled"
                     value={notesTitle}
+                    disabled={
+                      notesSharedWithData.filter(
+                        (d) =>
+                          d.shared_with === data?.user.email &&
+                          d.permissions === 'edit',
+                      ).length === 0 || !isOwner
+                    }
                     onChange={(e) => {
                       setNotesTitle(e.target.value)
                       saveNotes(e.target.value, content!)
