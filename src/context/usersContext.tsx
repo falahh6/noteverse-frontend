@@ -41,7 +41,6 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
           })
           if (response.ok) {
             const userData = await response.json()
-            console.log(userData)
             setUsers(userData)
           }
         } catch (error) {

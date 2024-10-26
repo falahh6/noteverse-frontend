@@ -7,6 +7,7 @@ import { getServerSession } from 'next-auth'
 import { Toaster } from '@/components/ui/sonner'
 import { authOptions } from './api/auth/[...nextauth]/authoptions'
 import Providers from './providers'
+import AuthSignIn from './signin/autoSignin'
 
 export const metadata = constructMetadata()
 
@@ -22,9 +23,10 @@ export default async function RootLayout({
       <body className={GeistSans.className}>
         {' '}
         <Providers>
+          <Toaster richColors closeButton className="z-[999]" />
+          <AuthSignIn user={session?.user} />
           <Navigation session={session} />
           {children}
-          <Toaster richColors closeButton className="z-[999]" />
         </Providers>
       </body>
     </html>

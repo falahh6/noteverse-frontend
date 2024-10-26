@@ -270,7 +270,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                         (d) =>
                           d.shared_with === data?.user.email &&
                           d.permissions === 'edit',
-                      ).length === 0 || !isOwner
+                      ).length === 0 && !isOwner
                     }
                     onChange={(e) => {
                       setNotesTitle(e.target.value)
