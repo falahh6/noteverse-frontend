@@ -22,7 +22,7 @@ export const POST = async (request: NextRequest) => {
     console.log('responseData', responseData)
     return NextResponse.json({ email, password }, { status: 201 })
   } else {
-    console.log('responseData', response)
+    console.log('responseData', await response.json())
     return NextResponse.json(
       { error: 'Error signing in', password },
       { status: 400 },
