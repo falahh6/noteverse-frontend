@@ -43,6 +43,11 @@
     --novel-highlight-orange: #faebdd;
     --novel-highlight-pink: #faf1f5;
     --novel-highlight-gray: #f1f1ef;
+    --color-1: 0 100% 63%;
+    --color-2: 270 100% 63%;
+    --color-3: 210 100% 63%;
+    --color-4: 195 100% 63%;
+    --color-5: 90 100% 63%;
   }
 
   .dark {
@@ -83,6 +88,11 @@
     --novel-highlight-orange: #5c3a1a;
     --novel-highlight-pink: #5c1a3a;
     --novel-highlight-gray: #3a3a3a;
+    --color-1: 0 100% 63%;
+    --color-2: 270 100% 63%;
+    --color-3: 210 100% 63%;
+    --color-4: 195 100% 63%;
+    --color-5: 90 100% 63%;
   }
 }
 
@@ -185,4 +195,38 @@
   border-radius: 4px;
   border-bottom-left-radius: 0;
   background-color: var(--caret-color);
+}
+
+/* Default highlight for light backgrounds */
+.search-highlight {
+  background-color: yellow; /* Light highlight for light backgrounds */
+}
+
+/* Highlight for dark backgrounds */
+.search-highlight-dark {
+  background-color: rgba(
+    255,
+    255,
+    0,
+    0.7
+  ); /* Slightly transparent yellow for dark backgrounds */
+}
+
+/* Optional: Specific styles for code blocks */
+.code-block .search-highlight {
+  background-color: rgba(
+    255,
+    255,
+    0,
+    0.5
+  ); /* Adjust the highlight for code blocks if needed */
+}
+
+.code-block .search-highlight-dark {
+  background-color: rgba(
+    255,
+    255,
+    0,
+    0.7
+  ); /* Keep the same for consistency in code blocks */
 }

@@ -22,14 +22,10 @@ const PathContext = createContext<PathContextType | undefined>(undefined)
 
 export const PathContextProvider = ({ children }: { children: ReactNode }) => {
   const [pages, setPages] = useState<Page[]>([])
-  const searchParams = useSearchParams()
-  const currPathname = usePathname()
-  const editorMode = searchParams.get('mode')
   const router = useRouter()
 
   const addPage = (newPage: Page) => {
     const pageExists = pages.some((page) => page.pathname === newPage.pathname)
-    console.log(pageExists)
 
     if (!pageExists) {
       setPages((prevPages) => [...prevPages, newPage])

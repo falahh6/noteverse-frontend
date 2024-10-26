@@ -1,3 +1,5 @@
+'use client'
+
 import { Extension } from '@tiptap/core'
 import { Plugin, PluginKey } from 'prosemirror-state'
 import { Decoration, DecorationSet } from 'prosemirror-view'
@@ -52,6 +54,7 @@ export const MultipleCarets = Extension.create({
       }),
     ]
   },
+
   addStorage() {
     return {
       isCurrentUserActive: false,
