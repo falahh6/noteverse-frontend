@@ -14,7 +14,7 @@ import {
   findDifferences,
   visibleLightColors,
 } from '@/lib/utils'
-import { Empty, Input, Skeleton, Tooltip } from 'antd'
+import { Empty, Skeleton, Tooltip } from 'antd'
 import { socket } from '@/socket'
 import { usePathContext } from '@/context/pathContext'
 import { sharedStatus } from '@/lib/types/notes'
