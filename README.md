@@ -94,6 +94,7 @@ NEXT_PUBLIC_SOCKET_URL=your_socket_url
 NEXT_PUBLIC_UPLOAD_URL=your_upload_url
 NEXTAUTH_URL=your_auth_url
 NEXTAUTH_SECRET=your_auth_secret
+DATABASE_URL=db_connectionstring
 ```
 
 ## 📝 Scripts

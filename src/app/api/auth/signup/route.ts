@@ -2,7 +2,7 @@ import { baseURL } from '@/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const POST = async (request: NextRequest) => {
-  const { email, password } = await request.json()
+  const { email, password, name } = await request.json()
 
   const response = await fetch(`${baseURL}/signup/`, {
     method: 'POST',
@@ -13,6 +13,7 @@ export const POST = async (request: NextRequest) => {
       email: email,
       password1: password,
       password2: password,
+      name: name,
     }),
   })
 
