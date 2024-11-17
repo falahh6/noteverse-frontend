@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { cn } from '@/lib/utils'
@@ -11,7 +11,9 @@ import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import Link from 'next/link'
 import * as yup from 'yup'
 import { toast } from 'sonner'
-import { signIn, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+import { SendVerificationEmail } from '@/lib/api'
+import { Button } from '@/components/ui/button'
 
 interface IFormInput {
   name: string
@@ -33,6 +35,16 @@ const Page = () => {
       .min(8, 'Password must be at least 8 characters long'),
   })
 
+  const [resErorrs, setResErrors] = useState<string>('')
+
+  const { status } = useSession()
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      window.location.href = '/'
+    }
+  }, [status])
+
   const {
     register,
     handleSubmit,
@@ -43,7 +55,7 @@ const Page = () => {
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     setSubmitLoading(true)
-    console.log(data)
+    setResErrors('')
     try {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
@@ -53,23 +65,41 @@ const Page = () => {
         body: JSON.stringify(data),
       })
 
-      if (res.status === 201) {
-        const response = await signIn('credentials', {
-          redirect: false,
-          email: data.email,
-          password: data.password,
-        })
+      const response = await res.json()
+      console.log('Response:', response)
 
-        if (response?.ok) {
-          window.location.href = '/'
+      if (response.email && response.email.length > 0) {
+        if (response.verificationToken) {
+          console.log('User not verified')
+
+          //send email
+          SendVerificationEmail(
+            response.email,
+            'Verify your email',
+            window.location.host + `/verify?vid=${response.verificationToken}`,
+          )
+            .then(() => {
+              toast.info(
+                'We have sent you a verification email. Please verify your email to continue.',
+                {
+                  position: 'top-center',
+                  closeButton: false,
+                },
+              )
+            })
+            .catch(() => {
+              toast.error(
+                'Failed to send verification email. Please try again.',
+              )
+            })
         } else {
-          toast.error('Signup failed, Please try again.')
+          toast.success('Signup successful!')
         }
       } else {
-        toast.error('Signup failed, Please try again.')
+        setResErrors(response.error)
       }
     } catch (error) {
-      toast.error('Signup failed, Please try again.')
+      toast.error('Signup failed, Please try again.  #3')
     } finally {
       setSubmitLoading(false)
     }
@@ -133,6 +163,12 @@ const Page = () => {
             )}
           </LabelInputContainer>
 
+          {resErorrs && (
+            <div className="bg-red-100 text-red-500 p-2 rounded-md mb-4 text-xs">
+              {resErorrs}
+            </div>
+          )}
+
           <button
             className="bg-gradient-to-br group relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
             type="submit"
@@ -155,6 +191,17 @@ const Page = () => {
             </p>
           </div>
         </form>
+        {/* <Button
+          onClick={() => {
+            SendVerificationEmail(
+              'falahsss900@gmail.com',
+              'Verify your email',
+              window.location.host + `/verify?vid=hey`,
+            )
+          }}
+        >
+          hey
+        </Button> */}
       </div>
     </MaxWidthWrapper>
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { cn } from '@/lib/utils'
@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/Input'
 import { ArrowRight, Loader } from 'lucide-react'
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import * as yup from 'yup'
 import { toast } from 'sonner'
@@ -31,18 +31,30 @@ interface IFormInput {
 
 const Page = () => {
   const [error, setError] = useState<{ type: string; message: string }>()
+  const [emailVerificationToken, setEmailVerificationToken] =
+    useState<string>('')
+
+  const { status } = useSession()
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      window.location.href = '/'
+    }
+  }, [status])
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    clearErrors,
   } = useForm<IFormInput>({
     resolver: yupResolver(loginSchema),
   })
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     console.log(data)
+    clearErrors()
     try {
       const response = await signIn('credentials', {
         redirect: false,
@@ -60,10 +72,9 @@ const Page = () => {
       } else {
         toast.error('Sign in failed.')
       }
-    } catch (error) {
-      toast.error('Sign in failed.')
-    } finally {
       reset()
+    } catch (error) {
+      toast.error('Sign in failed. Please check your credentials.')
     }
   }
 
@@ -121,6 +132,19 @@ const Page = () => {
             )}
             <BottomGradient />
           </button>
+
+          <div>
+            {emailVerificationToken && (
+              <>
+                <Link
+                  className="text-blue-500 text-xs"
+                  href={'/verify?vid=' + emailVerificationToken}
+                >
+                  PRESS HERE TO VERIFY
+                </Link>
+              </>
+            )}
+          </div>
 
           <div className="mt-4 w-full flex items-center justify-center">
             <p className="text-sm font-semibold text-gray-600">

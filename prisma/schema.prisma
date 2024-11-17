@@ -13,14 +13,125 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Category Model
+model Category {
+  id          Int       @id @default(autoincrement())
+  title       String    
+  description String
+  thumbnail   String?   // Use String to represent the path to the image file
+  subcategories SubCategory[]
+  notes       Note[]
+}
+
+// SubCategory Model
+model SubCategory {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  thumbnail   String?   // Path to the image file
+  categoryId  Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+
+  notes       Note[]
+
+  @@unique([title, categoryId]) // Enforces uniqueness of (title, category)
+}
+
+enum Permission {
+  View
+  Edit
+}
+
+// SharedStatus Model
+model SharedStatus {
+  id           Int    @id @default(autoincrement())
+  sharedById   Int
+  sharedWithId Int
+  permissions  Permission
+  noteId       Int
+  sharedAt     DateTime @default(now())
+
+  sharedBy   User @relation("SharedBy", fields: [sharedById], references: [id])
+  sharedWith User @relation("SharedWith", fields: [sharedWithId], references: [id])
+  note       Note @relation(fields: [noteId], references: [id])
+
+  @@map("shared_status") // optional if you want to rename table in Prisma
+}
+
+// Tag Model
+model Tag {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  notes      Note[]    @relation("TagsOnNotes") // Many-to-many relation with Note
+}
+
+enum Visibility {
+  Public
+  Private
+  Shared
+}
+
+// Note Model
+model Note {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  data        String?
+  thumbnail   String?
+  views       Int       @default(0)
+  visibility  Visibility @default(Private)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  ownerId     Int
+  categoryId  Int?
+  subcategoryId Int?
+
+  owner       User       @relation("Owner", fields: [ownerId], references: [id])
+  category    Category?  @relation(fields: [categoryId], references: [id])
+  subcategory SubCategory? @relation(fields: [subcategoryId], references: [id])
+
+  tags        Tag[]      @relation("TagsOnNotes") // Many-to-many relation with Tag
+  comments    Comment[]  @relation("CommentsOnNote")
+  sharedStatuses SharedStatus[]
+  likes       User[]     @relation("LikesOnNotes")
+  favorites   User[]     @relation("FavoritesOnNotes")
+}
+
+// Comment Model
+model Comment {
+  id             Int      @id @default(autoincrement())
+  text           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  noteId         Int
+  userId         Int
+  parentCommentId Int?
+
+  note           Note     @relation("CommentsOnNote", fields: [noteId], references: [id])
+  user           User     @relation(fields: [userId], references: [id])
+  parentComment  Comment? @relation("ParentComment", fields: [parentCommentId], references: [id])
+  replies        Comment[] @relation("ParentComment")
+
+  User User[] @relation("UserComments")
+}
+
 model User {
-  uid                String   @unique @default(uuid()) // Generates a unique identifier
-  email              String   @unique
-  password           String
-  name               String?
-  isVerified          Boolean  @default(false)
-  verificationToken   String?  @unique
-  verificationTokenExpiry DateTime?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id               Int            @id @default(autoincrement())
+  email            String         @unique
+  username         String         
+  password         String         
+  authToken        String?       
+  emailVerified     Boolean        @default(false) 
+  verificationToken String?       
+
+  sharedNotes     SharedStatus[] @relation("SharedBy")
+  receivedNotes   SharedStatus[] @relation("SharedWith")
+  notes           Note[]         @relation("Owner")
+  comments        Comment[]      @relation("UserComments")
+  likedNotes      Note[]         @relation("LikesOnNotes")
+  favoriteNotes   Note[]         @relation("FavoritesOnNotes")
+
+  Comment Comment[]
 }
