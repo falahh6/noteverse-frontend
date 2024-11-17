@@ -1,6 +1,7 @@
-import { baseURL } from '@/lib/utils'
+import prisma from '@/lib/prisma'
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import bcrypt from 'bcrypt'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -16,41 +17,32 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const response = await fetch(`${baseURL}/login/`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+          const user = await prisma.user.findUnique({
+            where: {
               email: credentials.email,
-              password: credentials.password,
-            }),
+            },
           })
 
-          if (response.ok) {
-            const data = await response.json()
-            console.log('Logged In User : ', data)
-            return {
-              id: data.id,
-              email: credentials.email,
-              name: data.name,
-              accessToken: data.access,
-              refreshToken: data.refresh,
-            }
-          } else {
-            const errorData = await response.json()
-            console.log('errorData', errorData)
-            if (response.status === 401) {
-              throw new Error('Invalid email or password')
-            } else {
-              throw new Error(
-                errorData.message || 'An error occurred during login',
-              )
-            }
+          console.log('User:', user)
+
+          if (!user) {
+            throw new Error('No user found')
+          } else if (
+            !(await bcrypt.compare(credentials.password, user.password))
+          ) {
+            throw new Error('Invalid password')
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.username,
+            accessToken: user.authToken || undefined, // Ensure accessToken is string or undefined
+            isEmailVerified: user.emailVerified,
+            verificationToken: user.verificationToken || undefined,
           }
         } catch (error) {
-          console.error('Authorization error:', error)
-          return null
+          throw new Error('Authorization error: ' + error)
         }
       },
     }),
@@ -61,6 +53,8 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken
+        token.isEmailVerified = user.isEmailVerified
+        token.verificationToken = user.verificationToken
       }
       return token
     },
@@ -68,8 +62,11 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as number
       }
+      console.log('Session:', token)
       session.accessToken = token.accessToken as string
       session.refreshToken = token.refreshToken as string
+      session.isEmailVerified = token.isEmailVerified as boolean
+      session.verificationToken = token.verificationToken as string
       return session
     },
   },

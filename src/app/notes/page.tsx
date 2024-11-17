@@ -65,6 +65,7 @@ const Notes = () => {
     if (!silent) {
       setLoading(true)
     }
+
     if (authToken) {
       try {
         const parsedResponse: NoteProps[] = await fetchNotes(
