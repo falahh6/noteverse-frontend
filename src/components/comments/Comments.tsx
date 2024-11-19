@@ -1,5 +1,3 @@
-import { Icons } from '../icons'
-import { Button } from '../ui/button'
 import {
   Drawer,
   DrawerContent,
@@ -13,27 +11,28 @@ import Composer from './Composer'
 
 import Thread from './Thread'
 import { useEffect, useState } from 'react'
-import { baseURL } from '@/lib/utils'
 import { Empty } from 'antd'
 import { MessageCircleMore } from 'lucide-react'
 
 const Comments = ({
   notesId,
   authToken,
+  initialThreadData,
 }: {
   notesId: number
   authToken: string
+  initialThreadData: Thread[]
 }) => {
   const [focusedThread, setFocusedThread] = useState<number | null>(null)
-  const [threadData, setThreadData] = useState<Thread[]>([])
+  const [threadData, setThreadData] = useState<Thread[]>(initialThreadData)
 
   const getComments = async (
     getCommentFor: 'comment' | 'reply' = 'comment',
   ) => {
-    const response = await fetch(`${baseURL}/comments/?note_id=${notesId}`, {
+    const response = await fetch(`/api/notes/comments?note_id=${notesId}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${authToken}`,
+        Authorization: `${authToken}`,
       },
     })
 
@@ -50,8 +49,9 @@ const Comments = ({
   }
 
   useEffect(() => {
-    getComments()
-  }, [])
+    // getComments()
+    console.log('initialThreadData :', initialThreadData)
+  }, [threadData])
 
   return (
     <>

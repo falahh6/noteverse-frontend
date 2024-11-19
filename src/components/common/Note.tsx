@@ -11,7 +11,7 @@ import { ArrowBigUp, Check, Copy, ExternalLink, Trash2 } from 'lucide-react'
 import { getNotesFnType, NoteProps } from '@/lib/types/notes'
 import { Popconfirm, Tooltip } from 'antd'
 import { toast } from 'sonner'
-import { baseURL, getAppUrl } from '@/lib/utils'
+import { baseURL, formatDate, getAppUrl } from '@/lib/utils'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
@@ -49,9 +49,7 @@ export default function Note({
   listView: 'list' | 'grid'
 }) {
   const wasUpdated = note.updatedAt > note.createdAt
-  const createdUpdatedAtTimestamp = (
-    wasUpdated ? note.updatedAt : note.createdAt
-  ).toDateString()
+  const createdUpdatedAtTimestamp = wasUpdated ? note.updatedAt : note.createdAt
 
   const { data } = useSession()
 
@@ -143,7 +141,7 @@ export default function Note({
               {truncateNotesTitle(note.title, listView === 'grid' ? 35 : 100)}
             </CardTitle>
             <CardDescription className="text-sm">
-              {createdUpdatedAtTimestamp}
+              {formatDate(createdUpdatedAtTimestamp)}
               {wasUpdated && ' (updated)'}
             </CardDescription>
           </CardHeader>

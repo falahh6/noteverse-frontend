@@ -21,8 +21,6 @@ import LoadingButton from '@/components/ui/loading-button'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { baseURL } from '@/lib/utils'
-import { getNotesFnType } from '@/lib/types/notes'
 
 interface AddNoteDialogProps {
   open: boolean
@@ -37,7 +35,7 @@ export default function AddNoteDialog({
   noteToEdit,
   authToken,
 }: AddNoteDialogProps) {
-  const [deleteInProgress, setDeleteInProgress] = useState(false)
+  const [deleteInProgress] = useState(false)
   const router = useRouter()
 
   const form = useForm<CreateNoteSchema>({
@@ -50,12 +48,13 @@ export default function AddNoteDialog({
   const [loading, setLoading] = useState(false)
   async function onSubmit(input: CreateNoteSchema) {
     setLoading(true)
+
     try {
-      const response = await fetch(`${baseURL}/notes/`, {
+      const response = await fetch(`/api/notes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `${authToken}`,
         },
         body: JSON.stringify({
           title: input.title,
@@ -64,7 +63,7 @@ export default function AddNoteDialog({
 
       if (response.ok) {
         const responseData = await response.json()
-        router.push(`/notes/${responseData.id}`)
+        router.push(`/notes/${responseData.data.id}`)
       } else {
         throw new Error('Error')
       }

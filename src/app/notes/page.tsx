@@ -4,7 +4,7 @@ import AddNoteDialog from '@/components/common/AddNoteDialog'
 import Note from '@/components/common/Note'
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { Button } from '@/components/ui/button'
-import { baseURL, cn, extractText } from '@/lib/utils'
+import { cn, extractText } from '@/lib/utils'
 import { Grid2X2, List, PenBoxIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
@@ -20,18 +20,20 @@ const fetchNotes = async (url: string, authToken: string) => {
   try {
     const response = await fetch(url, {
       method: 'GET',
-      headers: { Authorization: `Bearer ${authToken}` },
+      headers: { Authorization: `${authToken}` },
     })
     if (response.ok) {
-      const data = await response.json()
+      const results = await response.json()
+      const data = results.data
+      console.log('@fetchNotes : ', data)
       return data.map((note: any) => ({
         id: note.id,
         title: note.title,
         content: note.data ? extractText(JSON.parse(note.data)) || '' : '',
         userId: 'na',
-        createdAt: new Date(note.created_at),
-        updatedAt: new Date(note.updated_at),
-        ownerEmail: note.owner,
+        createdAt: note.createdAt,
+        updatedAt: note.updatedAt,
+        ownerEmail: note.owner.email,
         visibility: note.visibility,
         likes: note.likes,
       }))
@@ -69,7 +71,7 @@ const Notes = () => {
     if (authToken) {
       try {
         const parsedResponse: NoteProps[] = await fetchNotes(
-          `${baseURL}/notes/`,
+          `/api/notes`,
           authToken,
         )
         console.log('@getNotesList : ', parsedResponse)
@@ -106,7 +108,7 @@ const Notes = () => {
     if (authToken) {
       try {
         const parsedResponse: NoteProps[] = await fetchNotes(
-          `${baseURL}/notes/get-featured-notes/`,
+          `/api/notes?type=featured`,
           authToken,
         )
         console.log('@getFeaturedNotes : ', parsedResponse)
@@ -140,7 +142,7 @@ const Notes = () => {
     if (authToken) {
       try {
         const parsedResponse: NoteProps[] = await fetchNotes(
-          `${baseURL}/notes/get-shared-notes/`,
+          `/api/notes?type=shared`,
           authToken,
         )
         console.log('@getSharedNotes : ', parsedResponse)
