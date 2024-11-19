@@ -53,7 +53,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    fetchUser()
+    // fetchUser()
   }, [session])
 
   return (

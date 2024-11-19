@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Loader, SendHorizonal } from 'lucide-react'
 import { Button } from '../ui/button'
@@ -28,6 +28,10 @@ const Thread = ({
 
   const [replyLoading, setReplyLoading] = useState(false)
   const { data } = useSession()
+
+  useEffect(() => {
+    console.log('threadData :', threadData)
+  }, [])
 
   const addReply = async () => {
     setReplyLoading(true)
@@ -63,9 +67,9 @@ const Thread = ({
       <div className={`shadow-sm rounded-xl border border-gray-200 w-full`}>
         <div className="flex flex-row gap-2 p-3">
           <Avatar className="h-6 w-6">
-            <AvatarImage src={threadData.user.avatar} />
+            {/* <AvatarImage src={threadData.user.avatar} /> */}
             <AvatarFallback>
-              {avatarFallbackHandler(threadData.user_name || 'Noteverse User')}
+              {avatarFallbackHandler(threadData.user.name || 'Noteverse User')}
             </AvatarFallback>
           </Avatar>
           <div className="">

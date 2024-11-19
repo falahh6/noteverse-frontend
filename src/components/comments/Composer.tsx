@@ -1,12 +1,7 @@
 import { Loader, SendHorizonal, Smile } from 'lucide-react'
 import { Button } from '../ui/button'
 import data from '@emoji-mart/data'
-import Picker from '@emoji-mart/react'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+
 import { useState } from 'react'
 import { baseURL } from '@/lib/utils'
 import { useSession } from 'next-auth/react'
@@ -29,23 +24,22 @@ const Composer = ({
   const addComment = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${baseURL}/comments/`, {
+      const response = await fetch(`/api/notes/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `${authToken}`,
         },
         body: JSON.stringify({
-          note: notesId,
-          user: data?.user.id,
-          text: commentValue,
+          notes_id: notesId,
+          comment: commentValue,
         }),
       })
 
       if (response.ok) {
         const responseData = await response.json()
         console.log('@responseData :', responseData)
-        getComments()
+        // getComments()
         setCommentValue('')
       }
     } catch (error) {

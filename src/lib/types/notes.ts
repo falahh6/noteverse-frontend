@@ -3,8 +3,8 @@ export interface NoteProps {
   title: string
   content: string | null
   userId: string
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
   ownerEmail: string
   visibility: string
   likes: number[]

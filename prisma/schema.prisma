@@ -114,7 +114,7 @@ model Comment {
   parentComment  Comment? @relation("ParentComment", fields: [parentCommentId], references: [id])
   replies        Comment[] @relation("ParentComment")
 
-  User User[] @relation("UserComments")
+  User           User[] @relation("UserComments")
 }
 
 model User {
