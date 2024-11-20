@@ -25,7 +25,6 @@ const fetchNotes = async (url: string, authToken: string) => {
     if (response.ok) {
       const results = await response.json()
       const data = results.data
-      console.log('@fetchNotes : ', data)
       return data.map((note: any) => ({
         id: note.id,
         title: note.title,
@@ -88,11 +87,10 @@ const Notes = () => {
       } catch (error) {
         console.log(error)
         toast.error('Error Fetching your notes, Please Refresh.')
-      } finally {
-        setTimeout(() => {
-          setLoading(false)
-        }, 1000)
       }
+      // finally {
+      //   setLoading(false)
+      // }
     } else {
       setLoading(false)
     }
@@ -121,11 +119,10 @@ const Notes = () => {
       } catch (error) {
         console.log(error)
         toast.error('Error Fetching your notes, Please Refresh.')
-      } finally {
-        setTimeout(() => {
-          setLoading(false)
-        }, 1000)
       }
+      // finally {
+      //   setLoading(false)
+      // }
     } else {
       setLoading(false)
     }
@@ -155,11 +152,10 @@ const Notes = () => {
       } catch (error) {
         console.log(error)
         toast.error('Error Fetching your notes, Please Refresh.')
-      } finally {
-        setTimeout(() => {
-          setLoading(false)
-        }, 1000)
       }
+      //  finally {
+      //   setLoading(false)
+      // }
     } else {
       setLoading(false)
     }
@@ -167,9 +163,13 @@ const Notes = () => {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      getNotesList(data.accessToken)
-      getFeaturedNotes(data.accessToken)
-      getSharedNotes(data.accessToken)
+      Promise.all([
+        getNotesList(data.accessToken),
+        getFeaturedNotes(data.accessToken),
+        getSharedNotes(data.accessToken),
+      ]).finally(() => {
+        setLoading(false)
+      })
     }
   }, [status])
 
@@ -196,9 +196,8 @@ const Notes = () => {
             className="w-fit bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold max-sm:text-xs"
             size={'sm'}
           >
-            {' '}
-            <PenBoxIcon className="h-4 w-4 mr-2 max-sm:mr-0" />{' '}
-            <span className="max-sm:hidden text-sm">Create new</span>{' '}
+            <PenBoxIcon className="h-4 w-4 mr-2 max-sm:mr-0" />
+            <span className="max-sm:hidden text-sm">Create new</span>
           </Button>
         </div>
         <div className="mt-2 mb-4 flex flex-row items-center gap-2 h-fit">

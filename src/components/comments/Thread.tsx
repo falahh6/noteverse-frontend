@@ -29,10 +29,6 @@ const Thread = ({
   const [replyLoading, setReplyLoading] = useState(false)
   const { data } = useSession()
 
-  useEffect(() => {
-    console.log('threadData :', threadData)
-  }, [])
-
   const addReply = async () => {
     setReplyLoading(true)
     try {
@@ -69,15 +65,17 @@ const Thread = ({
           <Avatar className="h-6 w-6">
             {/* <AvatarImage src={threadData.user.avatar} /> */}
             <AvatarFallback>
-              {avatarFallbackHandler(threadData.user.name || 'Noteverse User')}
+              {avatarFallbackHandler(
+                threadData.user.username || 'Noteverse User',
+              )}
             </AvatarFallback>
           </Avatar>
           <div className="">
             <p className="font-semibold text-gray-600">
-              {threadData.user_name || 'Noteverse User'}{' '}
+              {threadData.user.username || 'Noteverse User'}{' '}
               <span className="text-gray-400 mx-1">·</span>{' '}
               <span className="text-gray-400 font-normal">
-                {formatDate(threadData.created_at)}
+                {formatDate(threadData.createdAt)}
               </span>
             </p>{' '}
             <p className="my-1 text-gray-600">{threadData.text}</p>
@@ -90,13 +88,13 @@ const Thread = ({
               <AvatarFallback>
                 {' '}
                 {avatarFallbackHandler(
-                  threadData.user_name || 'Noteverse User',
+                  threadData.user.username || 'Noteverse User',
                 )}
               </AvatarFallback>
             </Avatar>
             <div className="">
               <p className="font-semibold text-gray-600">
-                {reply.user_name || 'Noteverse User'}{' '}
+                {reply.username || 'Noteverse User'}{' '}
                 <span className="text-gray-400 mx-1">·</span>{' '}
                 <span className="text-gray-400 font-normal">
                   {formatDate(reply.created_at)}

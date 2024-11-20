@@ -1,7 +1,9 @@
 interface User {
-  name: string
+  username: string
   avatar: string
   fallback: string
+  email: string
+  id: number
 }
 
 // Define the type for a Reply
@@ -11,16 +13,16 @@ interface Reply {
   note: number
   text: string
   created_at: string
-  user_name: string
+  username: string
 }
 
 // Define the type for a Thread
 interface Thread {
   id: number
   user: User
-  note: number
+  noteId: number
   text: string
-  created_at: string
-  user_name: string
+  userId: number
+  createdAt: string
   replies: Reply[]
 }
