@@ -9,7 +9,6 @@ import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import {
   avatarFallbackHandler,
-  baseURL,
   debounce,
   findDifferences,
   visibleLightColors,
@@ -19,7 +18,6 @@ import { socket } from '@/socket'
 import { usePathContext } from '@/context/pathContext'
 import { sharedStatus } from '@/lib/types/notes'
 import Comments from '@/components/comments/Comments'
-import ShareWith from '@/components/share/Share'
 import { useUserContext } from '@/context/usersContext'
 import Search from '@/components/search/search'
 
@@ -87,20 +85,20 @@ const Page = ({ params }: { params: { id: number } }) => {
           console.log('@shared_statuses : ', responseData.sharedStatuses)
           setNotesSharedWithData(responseData.sharedStatuses)
 
-          const commentsParsed = responseData.comments.map((c: any) => ({
-            id: c.id,
-            user: {
-              id: c.user.id,
-              email: c.user.email,
-              name: c.user.username,
-            },
-            note: c.noteId,
-            text: c.text,
-            created_at: c.createdAt,
-            user_name: c.user.username,
-          }))
+          // const commentsParsed = responseData.comments.map((c: any) => ({
+          //   id: c.id,
+          //   user: {
+          //     id: c.user.id,
+          //     email: c.user.email,
+          //     name: c.user.username,
+          //   },
+          //   note: c.noteId,
+          //   text: c.text,
+          //   created_at: c.createdAt,
+          //   user_name: c.user.username,
+          // }))
 
-          console.log('PARSED COMMENTS : ', commentsParsed)
+          // console.log('PARSED COMMENTS : ', commentsParsed)
           setInitialCommentsData(responseData.comments)
 
           addPage({
@@ -298,11 +296,11 @@ const Page = ({ params }: { params: { id: number } }) => {
                   />
                   <div className="flex flex-row gap-2 items-center">
                     <Search />
-                    {/* <Comments
+                    <Comments
                       notesId={notesId}
                       authToken={authToken}
-                      initialThreadData={initialCommentsData}
-                    /> */}
+                      // initialThreadData={initialCommentsData}
+                    />
                     {/* {isOwner && (
                       <ShareWith
                         notesId={notesId}

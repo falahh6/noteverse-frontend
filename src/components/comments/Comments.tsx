@@ -10,21 +10,22 @@ import {
 import Composer from './Composer'
 
 import Thread from './Thread'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Empty } from 'antd'
 import { MessageCircleMore } from 'lucide-react'
+import useEffect from '@/hooks/use-effect'
 
 const Comments = ({
   notesId,
   authToken,
-  initialThreadData,
+  // initialThreadData,
 }: {
   notesId: number
   authToken: string
-  initialThreadData: Thread[]
+  // initialThreadData: Thread[]
 }) => {
   const [focusedThread, setFocusedThread] = useState<number | null>(null)
-  const [threadData, setThreadData] = useState<Thread[]>(initialThreadData)
+  const [threadData, setThreadData] = useState<Thread[]>([])
 
   const getComments = async (
     getCommentFor: 'comment' | 'reply' = 'comment',
@@ -38,7 +39,8 @@ const Comments = ({
 
     if (response.ok) {
       const responseData = await response.json()
-      setThreadData(responseData)
+      console.log(responseData)
+      setThreadData(responseData.data)
 
       const threadListElement = document.getElementById('thread_list')
       if (threadListElement && getCommentFor == 'comment') {
@@ -48,10 +50,12 @@ const Comments = ({
     }
   }
 
+  let called = false
   useEffect(() => {
-    // getComments()
-    console.log('initialThreadData :', initialThreadData)
-  }, [threadData])
+    if (called) return
+    getComments()
+    called = true
+  }, [authToken])
 
   return (
     <>
