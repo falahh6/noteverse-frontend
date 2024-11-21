@@ -7,7 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ArrowBigUp, Check, Copy, ExternalLink, Trash2 } from 'lucide-react'
+import {
+  ArrowBigUp,
+  Check,
+  Copy,
+  ExternalLink,
+  Loader,
+  Trash2,
+} from 'lucide-react'
 import { getNotesFnType, NoteProps } from '@/lib/types/notes'
 import { Popconfirm, Tooltip } from 'antd'
 import { toast } from 'sonner'
@@ -55,25 +62,33 @@ export default function Note({
 
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   const handleDeleteNotes = async (notesId: string) => {
     if (authToken) {
-      const response = await fetch(`${baseURL}/notes/${notesId}/`, {
+      setDeleteLoading(true)
+      const response = await fetch(`/api/notes?notes_id=${notesId}/`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `${authToken}`,
         },
       })
 
       if (response.ok) {
-        toast.warning('Deleted your notes.')
-        getNotesList(authToken)
-
-        await getFeaturedNotes(authToken, true)
-        await getSharedNotes(authToken, true)
-        await getNotesList(authToken, true)
+        await Promise.all([
+          getFeaturedNotes(authToken, true),
+          getNotesList(authToken, true),
+        ])
+          .then(() => {
+            console.log('deleted n fetched')
+          })
+          .finally(() => {
+            setDeleteLoading(true)
+            toast.warning('Deleted your notes.')
+          })
       } else {
         toast.error('Error deleting your notes, Please try again.')
+        setDeleteLoading(true)
       }
     }
   }
@@ -112,21 +127,24 @@ export default function Note({
         })
 
         if (response.ok) {
-          // if (type === 'featured') {
-          await getFeaturedNotes(authToken, true)
-          // } else if (type === 'shared') {
-          await getSharedNotes(authToken, true)
-          // } else if (type === 'your-notes') {
-          await getNotesList(authToken, true)
-          // }
+          await Promise.all([
+            getFeaturedNotes(authToken, true),
+            getSharedNotes(authToken, true),
+            getNotesList(authToken, true),
+          ])
+            .then(() => {
+              setVoteLoading(false)
+            })
+            .finally(() => {
+              setVoteLoading(false)
+            })
         } else {
           toast.error('Error, please try again!')
+          setVoteLoading(false)
         }
       }
     } catch (error) {
       toast.error('Error, please try again!')
-    } finally {
-      setVoteLoading(false)
     }
   }
 
@@ -209,8 +227,13 @@ export default function Note({
                   }}
                   okText="Yes"
                   cancelText="No"
+                  disabled={deleteLoading}
                 >
-                  <Trash2 className="h-6 w-6 text-red-500 p-1 hover:bg-gray-200 rounded-md" />
+                  {deleteLoading ? (
+                    <Loader className="h-6 w-6 p-1 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-6 w-6 text-red-500 p-1 hover:bg-gray-200 rounded-md" />
+                  )}
                 </Popconfirm>
               </div>
             )}
