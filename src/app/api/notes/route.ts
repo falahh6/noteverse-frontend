@@ -138,10 +138,28 @@ export const PATCH = async (request: NextRequest) => {
   }
 }
 
-export const PUT = async (request: NextRequest) => {
-  //update a note
-}
-
 export const DELETE = async (request: NextRequest) => {
   //delete a note
+  const authToken = request.headers.get('Authorization')
+  const response = await authTokenValidation(authToken)
+  const params = new URL(request.url).searchParams
+  const id = params.get('notes_id')
+
+  if (response && 'id' in response) {
+    if (id) {
+      const note = await prisma.note.delete({
+        where: {
+          id: parseInt(id),
+          ownerId: response.id,
+        },
+      })
+
+      return jsonResponse('Note deleted successfully', note)
+    }
+  } else {
+    return errorResponse(
+      response.error || 'Error deleting note',
+      response.statusCode || 400,
+    )
+  }
 }
