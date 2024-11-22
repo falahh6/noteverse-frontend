@@ -1,5 +1,5 @@
-import prisma, { authTokenValidation } from '@/lib/prisma'
-import { NextRequest, NextResponse } from 'next/server'
+import { authTokenValidation } from '@/lib/prisma'
+import { NextRequest } from 'next/server'
 
 export const POST = async (request: NextRequest) => {
   const authToken = request.headers.get('Authorization')
