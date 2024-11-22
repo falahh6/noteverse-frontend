@@ -1,10 +1,7 @@
-import { Loader, SendHorizonal, Smile } from 'lucide-react'
+import { Loader, SendHorizonal } from 'lucide-react'
 import { Button } from '../ui/button'
-import data from '@emoji-mart/data'
 
 import { useState } from 'react'
-import { baseURL } from '@/lib/utils'
-import { useSession } from 'next-auth/react'
 import EmojiPicker from '../common/EmojiPicker'
 
 const Composer = ({
@@ -18,8 +15,6 @@ const Composer = ({
 }) => {
   const [loading, setLoading] = useState(false)
   const [commentValue, setCommentValue] = useState('')
-
-  const { data, status } = useSession()
 
   const addComment = async () => {
     setLoading(true)
@@ -39,7 +34,7 @@ const Composer = ({
       if (response.ok) {
         const responseData = await response.json()
         console.log('@responseData :', responseData)
-        // getComments()
+        getComments()
         setCommentValue('')
       }
     } catch (error) {

@@ -12,7 +12,7 @@ interface Reply {
   user: User
   note: number
   text: string
-  created_at: string
+  createdAt: string
   username: string
 }
 

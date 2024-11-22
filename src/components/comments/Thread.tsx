@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Loader, SendHorizonal } from 'lucide-react'
 import { Button } from '../ui/button'
-import data from '@emoji-mart/data'
 
-import { avatarFallbackHandler, baseURL, cn, formatDate } from '@/lib/utils'
+import { avatarFallbackHandler, cn, formatDate } from '@/lib/utils'
 import EmojiPicker from '../common/EmojiPicker'
-import { useSession } from 'next-auth/react'
 
 const Thread = ({
   threadData,
@@ -21,41 +19,37 @@ const Thread = ({
   setFocusedThread: (id: number | null) => void
   authToken: string
   notesId: number
-  getComments: (getCommentFor: 'reply' | 'comment') => void
+  getComments: (getCommentFor: 'reply' | 'comment') => Promise<any>
 }) => {
   const isFocused = focusedThread === threadData.id
   const [replyValue, setReplyValue] = useState('')
 
   const [replyLoading, setReplyLoading] = useState(false)
-  const { data } = useSession()
 
   const addReply = async () => {
     setReplyLoading(true)
     try {
-      const response = await fetch(`${baseURL}/comments/`, {
+      const response = await fetch(`/api/notes/comments`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `${authToken}`,
         },
         body: JSON.stringify({
-          note: notesId,
-          user: data?.user.id,
-          text: replyValue,
+          notes_id: notesId,
+          comment: replyValue,
           parent_comment: threadData.id,
         }),
       })
 
       if (response.ok) {
         const responseData = await response.json()
-        getComments('reply')
-        setReplyValue('')
+        console.log('results : ', responseData)
+        getComments('reply').finally(() => {
+          setReplyLoading(false)
+          setReplyValue('')
+        })
       }
-    } catch (error) {
-    } finally {
-      setReplyLoading(false)
-    }
-    setReplyLoading(false)
+    } catch (error) {}
   }
 
   return (
@@ -63,7 +57,6 @@ const Thread = ({
       <div className={`shadow-sm rounded-xl border border-gray-200 w-full`}>
         <div className="flex flex-row gap-2 p-3">
           <Avatar className="h-6 w-6">
-            {/* <AvatarImage src={threadData.user.avatar} /> */}
             <AvatarFallback>
               {avatarFallbackHandler(
                 threadData.user.username || 'Noteverse User',
@@ -84,20 +77,17 @@ const Thread = ({
         {threadData.replies?.map((reply) => (
           <div className="flex flex-row gap-2 p-3">
             <Avatar className="h-6 w-6">
-              <AvatarImage src={reply.user.avatar} />
               <AvatarFallback>
                 {' '}
-                {avatarFallbackHandler(
-                  threadData.user.username || 'Noteverse User',
-                )}
+                {avatarFallbackHandler(reply.user.username || 'Noteverse User')}
               </AvatarFallback>
             </Avatar>
             <div className="">
               <p className="font-semibold text-gray-600">
-                {reply.username || 'Noteverse User'}{' '}
+                {reply.user.username || 'Noteverse User'}{' '}
                 <span className="text-gray-400 mx-1">·</span>{' '}
                 <span className="text-gray-400 font-normal">
-                  {formatDate(reply.created_at)}
+                  {formatDate(reply.createdAt)}
                 </span>
               </p>{' '}
               <p className="my-1 text-gray-600">{reply.text}</p>
