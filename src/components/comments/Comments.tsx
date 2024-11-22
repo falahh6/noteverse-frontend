@@ -18,11 +18,9 @@ import useEffect from '@/hooks/use-effect'
 const Comments = ({
   notesId,
   authToken,
-  // initialThreadData,
 }: {
   notesId: number
   authToken: string
-  // initialThreadData: Thread[]
 }) => {
   const [focusedThread, setFocusedThread] = useState<number | null>(null)
   const [threadData, setThreadData] = useState<Thread[]>([])
@@ -47,14 +45,17 @@ const Comments = ({
         await new Promise((resolve) => setTimeout(resolve, 100))
         threadListElement.scrollTop = threadListElement.scrollHeight
       }
+
+      if (getCommentFor == 'reply') {
+        return new Promise((resolve) => {
+          resolve(responseData.data)
+        })
+      }
     }
   }
 
-  let called = false
   useEffect(() => {
-    if (called) return
     getComments()
-    called = true
   }, [authToken])
 
   return (
