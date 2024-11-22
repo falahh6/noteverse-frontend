@@ -57,6 +57,12 @@ export default function Note({
 }) {
   const wasUpdated = note.updatedAt > note.createdAt
   const createdUpdatedAtTimestamp = wasUpdated ? note.updatedAt : note.createdAt
+  const [noteLikes, setNoteLikes] = useState<
+    {
+      id: string
+      email: string
+    }[]
+  >(note.likes)
 
   const { data } = useSession()
 
@@ -115,29 +121,44 @@ export default function Note({
 
   const [voteLoading, setVoteLoading] = useState(false)
 
-  const voteHandler = async () => {
+  const voteHandler = async (type: 'add' | 'remove') => {
     setVoteLoading(true)
     try {
       if (authToken) {
-        const response = await fetch(`${baseURL}/notes/${note.id}/like/`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${authToken}`,
+        const response = await fetch(
+          `/api/notes/upvotes?note_id=${note.id}&type=${type}`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `${authToken}`,
+            },
           },
-        })
+        )
 
         if (response.ok) {
+          setVoteLoading(false)
+          if (data?.user) {
+            if (type === 'add') {
+              setNoteLikes((prev) => [
+                ...prev,
+                {
+                  id: data?.user.id as unknown as string,
+                  email: data?.user.email as string,
+                },
+              ])
+            } else {
+              setNoteLikes((prev) =>
+                prev.filter((d) => d.email !== data?.user.email),
+              )
+            }
+          }
+
+          console.log('upvote : ', await response.json())
           await Promise.all([
             getFeaturedNotes(authToken, true),
             getSharedNotes(authToken, true),
             getNotesList(authToken, true),
           ])
-            .then(() => {
-              setVoteLoading(false)
-            })
-            .finally(() => {
-              setVoteLoading(false)
-            })
         } else {
           toast.error('Error, please try again!')
           setVoteLoading(false)
@@ -179,7 +200,7 @@ export default function Note({
             <div className="flex flex-row bg-gray-100 justify-center items-center  rounded-2xl border">
               <Tooltip
                 title={
-                  note.likes?.includes(data?.user.id!) ? (
+                  noteLikes?.find((d) => d.email === data?.user.email) ? (
                     <p className="text-xs">Down vote</p>
                   ) : (
                     <p className="text-xs">Up vote</p>
@@ -187,14 +208,20 @@ export default function Note({
                 }
               >
                 <button
-                  onClick={() => voteHandler()}
+                  onClick={() =>
+                    voteHandler(
+                      noteLikes?.find((d) => d.email === data?.user.email)
+                        ? 'remove'
+                        : 'add',
+                    )
+                  }
                   className="rounded-full hover:bg-gray-200 p-1 group disabled:cursor-wait"
                   disabled={voteLoading}
                 >
                   <ArrowBigUp
                     strokeWidth={1}
                     fill={
-                      note.likes?.includes(data?.user.id!)
+                      noteLikes?.find((d) => d.email === data?.user.email)
                         ? '#60a5fa'
                         : '#00000000'
                     }
@@ -203,7 +230,7 @@ export default function Note({
                 </button>
               </Tooltip>
               <span className="text-xs font-bold text-gray-600 pr-3">
-                {note.likes.length}
+                {noteLikes.length}
               </span>
             </div>
             {type === 'your-notes' && (
