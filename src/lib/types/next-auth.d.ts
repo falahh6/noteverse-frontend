@@ -10,6 +10,8 @@ declare module 'next-auth' {
     } & DefaultSession['user']
     accessToken: string
     refreshToken: string
+    isEmailVerified?: boolean
+    verificationToken?: string
   }
 
   interface User {
@@ -19,5 +21,7 @@ declare module 'next-auth' {
     image?: string | null
     accessToken?: string
     refreshToken?: string
+    isEmailVerified?: boolean
+    verificationToken?: string
   }
 }

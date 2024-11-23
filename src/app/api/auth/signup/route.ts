@@ -1,31 +1,48 @@
-import { baseURL } from '@/lib/utils'
+import prisma from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
+import bcrypt from 'bcrypt'
+import cryptoo from 'crypto'
 
 export const POST = async (request: NextRequest) => {
-  const { email, password } = await request.json()
+  const { email, password, name } = await request.json()
 
-  const response = await fetch(`${baseURL}/signup/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+  const existingUser = await prisma.user.findUnique({
+    where: {
       email: email,
-      password1: password,
-      password2: password,
-    }),
+    },
   })
 
-  console.log(response)
-  if (response.ok) {
-    const responseData = await response.json()
-    console.log('responseData', responseData)
-    return NextResponse.json({ email, password }, { status: 201 })
-  } else {
-    console.log('responseData', await response.json())
+  if (existingUser) {
     return NextResponse.json(
-      { error: 'Error signing in', password },
+      {
+        error:
+          'User already exists. Please Log In or try with another account.',
+      },
       { status: 400 },
     )
+  }
+
+  const user = await prisma.user.create({
+    data: {
+      username: name,
+      email: email,
+      password: await bcrypt.hash(password, 10),
+      authToken: cryptoo.randomBytes(64).toString('hex'),
+      verificationToken: cryptoo.randomBytes(32).toString('hex'),
+    },
+  })
+
+  if (user) {
+    console.log('User created:', user)
+    return NextResponse.json(
+      {
+        email: user.email,
+        password: user.password,
+        verificationToken: user.verificationToken,
+      },
+      { status: 201 },
+    )
+  } else {
+    return NextResponse.json({ error: 'Error signing in' }, { status: 400 })
   }
 }

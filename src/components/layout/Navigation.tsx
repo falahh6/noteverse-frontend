@@ -93,7 +93,7 @@ const Navigation = ({
 
   return (
     <div
-      className={`min-h-[10vh] px-20 max-sm:px-8 w-full bg-gradient-to-b from-gray-300  ${pathname !== '/' ? 'to-white backdrop-blur-2xl' : 'to-transparent'} fixed top-0 left-0 right-0 flex flex-row justify-between items-center z-50`}
+      className={`min-h-[10vh] px-20 max-sm:px-8 w-full bg-gradient-to-b from-gray-300  ${pathname !== '/' ? 'to-white backdrop-blur-2xl' : 'to-transparent'} ${pathname === '/verify' && 'hidden'} fixed top-0 left-0 right-0 flex flex-row justify-between items-center z-50`}
     >
       <div className="flex flex-row gap-2 items-center">
         <a href={'/'} className="flex flex-row items-center">

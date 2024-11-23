@@ -1,5 +1,3 @@
-import { Icons } from '../icons'
-import { Button } from '../ui/button'
 import {
   Drawer,
   DrawerContent,
@@ -12,10 +10,10 @@ import {
 import Composer from './Composer'
 
 import Thread from './Thread'
-import { useEffect, useState } from 'react'
-import { baseURL } from '@/lib/utils'
+import { useState } from 'react'
 import { Empty } from 'antd'
 import { MessageCircleMore } from 'lucide-react'
+import useEffect from '@/hooks/use-effect'
 
 const Comments = ({
   notesId,
@@ -30,28 +28,35 @@ const Comments = ({
   const getComments = async (
     getCommentFor: 'comment' | 'reply' = 'comment',
   ) => {
-    const response = await fetch(`${baseURL}/comments/?note_id=${notesId}`, {
+    const response = await fetch(`/api/notes/comments?note_id=${notesId}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${authToken}`,
+        Authorization: `${authToken}`,
       },
     })
 
     if (response.ok) {
       const responseData = await response.json()
-      setThreadData(responseData)
+      console.log(responseData)
+      setThreadData(responseData.data)
 
       const threadListElement = document.getElementById('thread_list')
       if (threadListElement && getCommentFor == 'comment') {
         await new Promise((resolve) => setTimeout(resolve, 100))
         threadListElement.scrollTop = threadListElement.scrollHeight
       }
+
+      if (getCommentFor == 'reply') {
+        return new Promise((resolve) => {
+          resolve(responseData.data)
+        })
+      }
     }
   }
 
   useEffect(() => {
     getComments()
-  }, [])
+  }, [authToken])
 
   return (
     <>

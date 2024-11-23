@@ -9,17 +9,15 @@ import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import {
   avatarFallbackHandler,
-  baseURL,
   debounce,
   findDifferences,
   visibleLightColors,
 } from '@/lib/utils'
-import { Empty, Input, Skeleton, Tooltip } from 'antd'
+import { Empty, Skeleton, Tooltip } from 'antd'
 import { socket } from '@/socket'
 import { usePathContext } from '@/context/pathContext'
 import { sharedStatus } from '@/lib/types/notes'
 import Comments from '@/components/comments/Comments'
-import ShareWith from '@/components/share/Share'
 import { useUserContext } from '@/context/usersContext'
 import Search from '@/components/search/search'
 
@@ -45,7 +43,7 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [notesOwner, setNotesOwner] = useState('')
 
   const [content, setContent] = useState<JSONContent>()
-
+  const [initialCommentsData, setInitialCommentsData] = useState<Thread[]>([])
   const setIsConnected = useState(false)[1]
   const setTransport = useState('N/A')[1]
 
@@ -66,23 +64,42 @@ const Page = ({ params }: { params: { id: number } }) => {
   const getNotes = async (authToken: string | undefined) => {
     if (authToken) {
       try {
-        const response = await fetch(`${baseURL}/notes/${params.id}`, {
+        const response = await fetch(`/api/notes?id=${params.id}`, {
           method: 'GET',
           headers: {
-            Authorization: `Bearer ${authToken}`,
+            Authorization: `${authToken}`,
           },
         })
 
         if (response.ok) {
-          const responseData = await response.json()
-          setIsOwner(responseData.owner === data?.user?.email)
+          const results = await response.json()
+          console.log('results : ', results)
+
+          const responseData = results.data
+          setIsOwner(responseData.owner.email === data?.user?.email)
           const notesData = responseData.data && JSON.parse(responseData.data)
           console.log('notesData : ', notesData)
           setNotesTitle(responseData.title)
-          setNotesOwner(responseData.owner)
+          setNotesOwner(responseData.owner.email)
 
-          console.log('@shared_statuses : ', responseData.shared_statuses)
-          setNotesSharedWithData(responseData.shared_statuses)
+          console.log('@shared_statuses : ', responseData.sharedStatuses)
+          setNotesSharedWithData(responseData.sharedStatuses)
+
+          // const commentsParsed = responseData.comments.map((c: any) => ({
+          //   id: c.id,
+          //   user: {
+          //     id: c.user.id,
+          //     email: c.user.email,
+          //     name: c.user.username,
+          //   },
+          //   note: c.noteId,
+          //   text: c.text,
+          //   created_at: c.createdAt,
+          //   user_name: c.user.username,
+          // }))
+
+          // console.log('PARSED COMMENTS : ', commentsParsed)
+          setInitialCommentsData(responseData.comments)
 
           addPage({
             title: responseData.title,
@@ -193,15 +210,15 @@ const Page = ({ params }: { params: { id: number } }) => {
   const saveNotes = useCallback(
     debounce(async (title: string, body: JSONContent) => {
       console.log('authToken : ', authToken)
-      const response = await fetch(`${baseURL}/notes/${notesId}/`, {
+      const response = await fetch(`/api/notes?id=${notesId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `${authToken}`,
         },
         body: JSON.stringify({
           title: title,
-          data: JSON.stringify(body),
+          content: JSON.stringify(body),
         }),
       })
 
@@ -279,15 +296,19 @@ const Page = ({ params }: { params: { id: number } }) => {
                   />
                   <div className="flex flex-row gap-2 items-center">
                     <Search />
-                    <Comments notesId={notesId} authToken={authToken} />
-                    {isOwner && (
+                    <Comments
+                      notesId={notesId}
+                      authToken={authToken}
+                      // initialThreadData={initialCommentsData}
+                    />
+                    {/* {isOwner && (
                       <ShareWith
                         notesId={notesId}
                         notesTitle={notesTitle}
                         authToken={authToken}
                         isOwner
                       />
-                    )}
+                    )} */}
                   </div>
                 </div>
                 <div className="py-2 flex flex-row justify-between">

@@ -4,7 +4,7 @@ import AddNoteDialog from '@/components/common/AddNoteDialog'
 import Note from '@/components/common/Note'
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { Button } from '@/components/ui/button'
-import { baseURL, cn, extractText } from '@/lib/utils'
+import { cn, extractText } from '@/lib/utils'
 import { Grid2X2, List, PenBoxIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
@@ -20,18 +20,19 @@ const fetchNotes = async (url: string, authToken: string) => {
   try {
     const response = await fetch(url, {
       method: 'GET',
-      headers: { Authorization: `Bearer ${authToken}` },
+      headers: { Authorization: `${authToken}` },
     })
     if (response.ok) {
-      const data = await response.json()
+      const results = await response.json()
+      const data = results.data
       return data.map((note: any) => ({
         id: note.id,
         title: note.title,
         content: note.data ? extractText(JSON.parse(note.data)) || '' : '',
         userId: 'na',
-        createdAt: new Date(note.created_at),
-        updatedAt: new Date(note.updated_at),
-        ownerEmail: note.owner,
+        createdAt: note.createdAt,
+        updatedAt: note.updatedAt,
+        ownerEmail: note.owner.email,
         visibility: note.visibility,
         likes: note.likes,
       }))
@@ -65,10 +66,11 @@ const Notes = () => {
     if (!silent) {
       setLoading(true)
     }
+
     if (authToken) {
       try {
         const parsedResponse: NoteProps[] = await fetchNotes(
-          `${baseURL}/notes/`,
+          `/api/notes`,
           authToken,
         )
         console.log('@getNotesList : ', parsedResponse)
@@ -85,11 +87,10 @@ const Notes = () => {
       } catch (error) {
         console.log(error)
         toast.error('Error Fetching your notes, Please Refresh.')
-      } finally {
-        setTimeout(() => {
-          setLoading(false)
-        }, 1000)
       }
+      // finally {
+      //   setLoading(false)
+      // }
     } else {
       setLoading(false)
     }
@@ -105,7 +106,7 @@ const Notes = () => {
     if (authToken) {
       try {
         const parsedResponse: NoteProps[] = await fetchNotes(
-          `${baseURL}/notes/get-featured-notes/`,
+          `/api/notes?type=featured`,
           authToken,
         )
         console.log('@getFeaturedNotes : ', parsedResponse)
@@ -118,11 +119,10 @@ const Notes = () => {
       } catch (error) {
         console.log(error)
         toast.error('Error Fetching your notes, Please Refresh.')
-      } finally {
-        setTimeout(() => {
-          setLoading(false)
-        }, 1000)
       }
+      // finally {
+      //   setLoading(false)
+      // }
     } else {
       setLoading(false)
     }
@@ -139,7 +139,7 @@ const Notes = () => {
     if (authToken) {
       try {
         const parsedResponse: NoteProps[] = await fetchNotes(
-          `${baseURL}/notes/get-shared-notes/`,
+          `/api/notes?type=shared`,
           authToken,
         )
         console.log('@getSharedNotes : ', parsedResponse)
@@ -152,11 +152,10 @@ const Notes = () => {
       } catch (error) {
         console.log(error)
         toast.error('Error Fetching your notes, Please Refresh.')
-      } finally {
-        setTimeout(() => {
-          setLoading(false)
-        }, 1000)
       }
+      //  finally {
+      //   setLoading(false)
+      // }
     } else {
       setLoading(false)
     }
@@ -164,9 +163,13 @@ const Notes = () => {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      getNotesList(data.accessToken)
-      getFeaturedNotes(data.accessToken)
-      getSharedNotes(data.accessToken)
+      Promise.all([
+        getNotesList(data.accessToken),
+        getFeaturedNotes(data.accessToken),
+        getSharedNotes(data.accessToken),
+      ]).finally(() => {
+        setLoading(false)
+      })
     }
   }, [status])
 
@@ -193,9 +196,8 @@ const Notes = () => {
             className="w-fit bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold max-sm:text-xs"
             size={'sm'}
           >
-            {' '}
-            <PenBoxIcon className="h-4 w-4 mr-2 max-sm:mr-0" />{' '}
-            <span className="max-sm:hidden text-sm">Create new</span>{' '}
+            <PenBoxIcon className="h-4 w-4 mr-2 max-sm:mr-0" />
+            <span className="max-sm:hidden text-sm">Create new</span>
           </Button>
         </div>
         <div className="mt-2 mb-4 flex flex-row items-center gap-2 h-fit">
