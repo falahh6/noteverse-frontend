@@ -40,9 +40,17 @@ export interface SchemaChildNode {
 
 export interface sharedStatus {
   id: number
-  shared_by?: string
-  shared_with?: string
-  permissions: 'view' | 'edit' | 'owner'
+  shared_by?: {
+    id: number
+    email: string
+    username: string
+  }
+  shared_with?: {
+    id: number
+    email: string
+    username: string
+  }
+  permissions: 'View' | 'Edit' | 'owner'
   shared_at?: Date
   note?: number
 }

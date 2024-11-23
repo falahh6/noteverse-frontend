@@ -96,7 +96,6 @@ export const GET = async (request: NextRequest) => {
       const nestedComments: CommentWithReplies[] = []
 
       comments.forEach((comment) => {
-        console.log('comment', comment)
         if (comment.parentCommentId) {
           commentMap[comment.parentCommentId].replies.push(comment)
         } else {
