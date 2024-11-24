@@ -2,6 +2,8 @@ import prisma from '@/lib/prisma'
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcrypt'
+import GoogleProvider from 'next-auth/providers/google'
+import cryptoo from 'crypto'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -46,16 +48,50 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CID || '',
+      clientSecret: process.env.GOOGLE_CS || '',
+    }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-        token.accessToken = user.accessToken
-        token.refreshToken = user.refreshToken
-        token.isEmailVerified = user.isEmailVerified
-        token.verificationToken = user.verificationToken
+    async jwt({ token, user, profile, account }) {
+      if (account?.provider === 'google') {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: profile?.email! },
+        })
+
+        if (existingUser) {
+          token.id = existingUser.id
+          token.accessToken = existingUser.authToken
+          token.isEmailVerified = existingUser.emailVerified
+          token.verificationToken = existingUser.verificationToken
+        } else {
+          const newUser = await prisma.user.create({
+            data: {
+              email: profile?.email!,
+              username: profile?.name!,
+              password: '', // Google users won't have a password
+              authToken: cryptoo.randomBytes(64).toString('hex'),
+              verificationToken: '',
+              emailVerified: true,
+            },
+          })
+
+          token.id = newUser.id
+          token.accessToken = newUser.authToken
+          token.isEmailVerified = newUser.emailVerified
+          token.verificationToken = newUser.verificationToken
+        }
+      } else {
+        if (user) {
+          token.id = user.id
+          token.accessToken = user.accessToken
+          token.refreshToken = user.refreshToken
+          token.isEmailVerified = user.isEmailVerified
+          token.verificationToken = user.verificationToken
+        }
       }
+
       return token
     },
     async session({ session, token }) {
