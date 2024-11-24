@@ -45,7 +45,13 @@ async function fetchNotes(
       where: { sharedStatuses: { some: { sharedWith: { id: userId } } } },
       include: {
         sharedStatuses: true,
-        owner: true,
+        owner: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+          },
+        },
         likes: true,
         comments: true,
       },
@@ -55,25 +61,41 @@ async function fetchNotes(
       where: { visibility: 'Public' },
       include: {
         sharedStatuses: true,
-        owner: true,
+        owner: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+          },
+        },
         likes: true,
         comments: true,
       },
     })
   } else if (id) {
     return prisma.note.findFirst({
-      where: { id: parseInt(id), ownerId: userId },
+      where: {
+        id: parseInt(id),
+        OR: [
+          { ownerId: userId },
+          { sharedStatuses: { some: { sharedWithId: userId } } },
+        ],
+      },
       include: {
         sharedStatuses: true,
-        owner: true,
-        likes: true,
-        comments: true,
+        owner: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+          },
+        },
       },
     })
   }
   return prisma.note.findMany({
     where: { ownerId: userId },
-    include: { sharedStatuses: true, owner: true, likes: true, comments: true },
+    include: { sharedStatuses: true, owner: true, likes: true },
   })
 }
 
@@ -121,7 +143,10 @@ export const PATCH = async (request: NextRequest) => {
         },
         where: {
           id: parseInt(id),
-          ownerId: response.id,
+          OR: [
+            { ownerId: response.id },
+            { sharedStatuses: { some: { sharedWithId: response.id } } },
+          ],
         },
       })
 

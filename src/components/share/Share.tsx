@@ -1,17 +1,10 @@
 'use client'
 
-import {
-  ArrowLeft,
-  Check,
-  Globe,
-  Link2,
-  Loader,
-  Share,
-  UserRound,
-} from 'lucide-react'
+import { ArrowLeft, Check, Globe, Link2, Loader, UserRound } from 'lucide-react'
 import { Button } from '../ui/button'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
+import useCustomEffect from '@/hooks/use-effect'
 
 import {
   Select,
@@ -21,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import { baseURL, getAppUrl } from '@/lib/utils'
+import { getAppUrl } from '@/lib/utils'
 
 import {
   Dialog,
@@ -38,30 +31,37 @@ import { Input } from '../ui/Input'
 import { toast } from 'sonner'
 import { sharedStatus } from '@/lib/types/notes'
 import { Icons } from '../icons'
+import { Tooltip } from 'antd'
 
 const ShareWith = ({
   authToken,
   notesTitle,
   isOwner,
   notesId,
-  // sharedStatuses,
+  getNotes,
+  visibility,
 }: {
   authToken: string
   notesTitle: string
   isOwner: boolean
   notesId: number
-  // sharedStatuses: sharedStatus[]
+  getNotes: (authToken: string) => void
+  visibility: 'Public' | 'Private' | 'Shared'
 }) => {
-  const { data, status } = useSession()
+  const { data } = useSession()
   const { users, loading: loadingToGetUsers } = useUserContext()
   const [Users, setUsers] = useState<User[] | undefined>([])
   const [viewList, setViewList] = useState(false)
-  const [shareAccess, setShareAccess] = useState('view')
+  const [shareAccess, setShareAccess] = useState('View')
   const [sharedStatuses, setSharedStatuses] = useState<sharedStatus[]>([])
 
   useEffect(() => {
-    setUsers(users)
-  }, [])
+    setUsers(users?.filter((u) => u.email !== data?.user.email))
+    console.log(
+      'FILTERED USERS: ',
+      users?.filter((u) => u.email !== data?.user.email),
+    )
+  }, [users])
 
   const [selectedUser, setSelectedUser] = useState<
     | {
@@ -73,100 +73,128 @@ const ShareWith = ({
   >()
 
   const [sending, setSending] = useState(false)
-  const [actionLoading, setActionLoading] = useState(false)
+  const [actionLoading, setActionLoading] = useState<number | null>(null)
   const [publishLoading, setPublishLoading] = useState(false)
 
   const getSharedStatuses = async () => {
-    const response = await fetch(`${baseURL}/sharedstatuses/${notesId}/`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${authToken}`,
+    const response = await fetch(
+      `/api/notes/shared-statuses?notes_id=${notesId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `${authToken}`,
+        },
       },
-    })
+    )
 
     if (response.ok) {
       const results = await response.json()
+      console.log('results (shared statuse): ', results.data)
+
+      const sharedStatuses = results.data?.map((status: any) => ({
+        id: status.id,
+        permissions: status.permissions,
+        shared_with: status.sharedWith,
+        shared_by: status.sharedBy,
+        note: status.noteId,
+      }))
+
+      console.log('sharedStatuses PPP: ', sharedStatuses)
+
       setSharedStatuses([
         { id: 'na', permissions: 'owner', shared_with: data?.user.email },
-        ...results,
+        ...sharedStatuses,
       ])
-      console.log(results)
     }
   }
 
   const removeSharedStatus = async (id: number) => {
-    setActionLoading(true)
+    setActionLoading(id)
 
     try {
-      const response = await fetch(`${baseURL}/sharedstatuses/${id}/`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${authToken}`,
+      const response = await fetch(
+        `/api/notes/shared-statuses?status_id=${id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `${authToken}`,
+          },
         },
-      })
+      )
 
-      if (response.status === 204) {
-        getSharedStatuses()
+      if (response.status === 200) {
+        getSharedStatuses().then(() => {
+          setActionLoading(null)
+        })
+      } else {
+        setActionLoading(null)
       }
     } catch (error) {
-    } finally {
-      setActionLoading(false)
+      console.error('Error removing shared status: ', error)
+      setActionLoading(null)
     }
   }
 
   const updateSharedStatus = async (id: number, permission: string) => {
-    setActionLoading(true)
+    setActionLoading(id)
     try {
-      const response = await fetch(`${baseURL}/sharedstatuses/${id}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
+      const response = await fetch(
+        `/api/notes/shared-statuses?status_id=${id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `${authToken}`,
+          },
+          body: JSON.stringify({
+            permissions: permission,
+          }),
         },
-        body: JSON.stringify({
-          permissions: permission,
-        }),
-      })
+      )
 
       if (response.ok) {
         const results = await response.json()
         console.log(results)
-        getSharedStatuses()
+        getSharedStatuses().finally(() => {
+          setActionLoading(null)
+        })
+      } else {
+        setActionLoading(null)
       }
     } catch (error) {
-    } finally {
-      setActionLoading(false)
+      console.error('Error updating shared status: ', error)
+      setActionLoading(null)
     }
   }
 
   const handleUsersListUpdate = () => {
     const excludeEmails = new Set(
-      sharedStatuses.map((entry) => entry.shared_with).filter(Boolean),
+      sharedStatuses.map((entry) => entry.shared_with?.email).filter(Boolean),
     )
 
-    const updatedStatuses = users?.filter((u) => !excludeEmails.has(u.email))
+    const updatedStatuses = users?.filter(
+      (u) => !excludeEmails.has(u.email) && u.email !== data?.user.email,
+    )
     setUsers(updatedStatuses)
   }
 
   const shareNotesHandler = async () => {
     setSending(true)
     try {
-      const response = await fetch(`${baseURL}/sharedstatuses/`, {
+      const response = await fetch(`/api/notes/shared-statuses`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `${authToken}`,
         },
         body: JSON.stringify({
-          shared_by: data?.user.email,
-          shared_with: selectedUser?.email,
-          shared_with_id: selectedUser?.id,
+          sharedWith: selectedUser,
           permissions: selectedUser?.permission,
-          note: notesId,
+          notes_id: notesId,
         }),
       })
 
       if (response.ok) {
+        console.log('response : ', response)
         setSelectedUser(undefined)
         toast.success(`Successfully sent the invite to ${selectedUser?.email}`)
         getSharedStatuses()
@@ -180,21 +208,21 @@ const ShareWith = ({
     }
   }
 
-  const hanldleNotesPublish = async () => {
+  const hanldleNotesPublish = async (visibility: 'Private' | 'Public') => {
     setPublishLoading(true)
     try {
-      const response = await fetch(`${baseURL}/notes/${notesId}/`, {
-        method: 'PATCH',
+      const response = await fetch(`/api/notes/publish?notes_id=${notesId}`, {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `${authToken}`,
         },
         body: JSON.stringify({
-          visibility: 'public',
+          visibility: visibility,
         }),
       })
 
       if (response.ok) {
+        getNotes(authToken)
         toast.success(`Successfully published the notes.`)
       } else {
         toast.error('Error while publishing the notes. Please try again.')
@@ -202,6 +230,7 @@ const ShareWith = ({
     } catch (error) {
       toast.error('Error while publishing the notes. Please try again.')
     } finally {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
       setPublishLoading(false)
     }
   }
@@ -230,7 +259,7 @@ const ShareWith = ({
     handleUsersListUpdate()
   }, [sharedStatuses, loadingToGetUsers])
 
-  useEffect(() => {
+  useCustomEffect(() => {
     getSharedStatuses()
   }, [])
 
@@ -284,12 +313,12 @@ const ShareWith = ({
                       </SelectTrigger>
                       <SelectContent className="text-xs">
                         <SelectItem
-                          value="view"
+                          value="View"
                           className="text-xs flex flex-row items-baseline"
                         >
                           Viewer
                         </SelectItem>
-                        <SelectItem value="edit" className="text-xs">
+                        <SelectItem value="Edit" className="text-xs">
                           Editor
                         </SelectItem>
                       </SelectContent>
@@ -318,7 +347,8 @@ const ShareWith = ({
                       if (val.length > 0) {
                         const matchedUsers = users?.filter(
                           (user) =>
-                            user.email.includes(val) || user.name.includes(val),
+                            user.email.includes(val) ||
+                            user.username.includes(val),
                         )
                         console.log(matchedUsers)
                         if (matchedUsers) {
@@ -346,7 +376,7 @@ const ShareWith = ({
                           >
                             <UserRound className="h-4 w-4 mr-2" />
                             <div>
-                              <p>{user.name}</p>
+                              <p>{user.username}</p>
                               <p>{user.email}</p>
                             </div>
                           </div>
@@ -370,13 +400,9 @@ const ShareWith = ({
                           ) : (
                             <div>
                               <p className=" text-sm font-semibold">
-                                {
-                                  users?.filter(
-                                    (user) => user.email === status.shared_with,
-                                  )[0]?.name
-                                }
+                                {status.shared_with?.username}
                               </p>
-                              <p>{status.shared_with}</p>
+                              <p>{status.shared_with?.email}</p>
                             </div>
                           )}
                           <div>
@@ -398,9 +424,10 @@ const ShareWith = ({
                                     updateSharedStatus(status.id, val)
                                   }
                                 }}
+                                disabled={actionLoading === status.id}
                               >
                                 <SelectTrigger className="w-fit ring-0 outline-none p-1 px-2 h-fit focus:ring-0">
-                                  {actionLoading ? (
+                                  {actionLoading === status.id ? (
                                     <Loader className="h-4 animate-spin w-4 mr-2" />
                                   ) : (
                                     <SelectValue placeholder="View" />
@@ -408,12 +435,12 @@ const ShareWith = ({
                                 </SelectTrigger>
                                 <SelectContent className="text-xs">
                                   <SelectItem
-                                    value="view"
+                                    value="View"
                                     className="text-xs flex flex-row items-baseline"
                                   >
                                     Viewer
                                   </SelectItem>
-                                  <SelectItem value="edit" className="text-xs">
+                                  <SelectItem value="Edit" className="text-xs">
                                     Editor
                                   </SelectItem>
                                   <SelectItem
@@ -436,19 +463,43 @@ const ShareWith = ({
                     <p className="text-base font-semibold">Publish</p>
                     <div className="flex flex-row justify-between items-center my-2 hover:bg-gray-100 p-2 rounded-md">
                       <div className="flex flex-row gap-2 ">
-                        <Globe className="h-5 w-5 " /> Publish to the Featured
-                        tab.{' '}
+                        <Globe className="h-5 w-5 " />
+                        {visibility === 'Private'
+                          ? 'Publish to the Featured tab.'
+                          : 'Published to the Featured tab.'}
                       </div>
-                      <Button
-                        className="bg-blue-200 hover:bg-blue-100 border border-transparent hover:border-blue-300 text-blue-500 p-0.5 px-4"
-                        size={'sm'}
-                        disabled={publishLoading}
-                        onClick={() => {
-                          hanldleNotesPublish()
-                        }}
-                      >
-                        Publish
-                      </Button>
+                      {visibility === 'Private' && (
+                        <Button
+                          className="bg-blue-200 hover:bg-blue-100 border border-transparent hover:border-blue-300 text-blue-500 p-0.5 px-4"
+                          size={'sm'}
+                          disabled={publishLoading}
+                          onClick={() => {
+                            hanldleNotesPublish('Public')
+                          }}
+                        >
+                          {publishLoading && (
+                            <Loader className="h-4 w-4 animate-spin mr-1" />
+                          )}{' '}
+                          Publish
+                        </Button>
+                      )}
+                      {visibility === 'Public' && (
+                        <Tooltip title="Make it Private">
+                          <Button
+                            className="bg-green-200 hover:bg-green-100 border border-transparent hover:border-green-300 text-green-500 p-0.5 px-4"
+                            size={'sm'}
+                            disabled={publishLoading}
+                            onClick={() => {
+                              hanldleNotesPublish('Private')
+                            }}
+                          >
+                            {publishLoading && (
+                              <Loader className="h-4 w-4 animate-spin" />
+                            )}{' '}
+                            Published
+                          </Button>
+                        </Tooltip>
+                      )}
                     </div>
                   </div>
                 )}

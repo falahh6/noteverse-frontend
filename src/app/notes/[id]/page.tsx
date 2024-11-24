@@ -20,6 +20,7 @@ import { sharedStatus } from '@/lib/types/notes'
 import Comments from '@/components/comments/Comments'
 import { useUserContext } from '@/context/usersContext'
 import Search from '@/components/search/search'
+import ShareWith from '@/components/share/Share'
 
 const Page = ({ params }: { params: { id: number } }) => {
   const { data, status } = useSession()
@@ -33,17 +34,17 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   const { addPage } = usePathContext()
 
-  const [notesSharedWithData, setNotesSharedWithData] = useState<
-    sharedStatus[]
-  >([])
+  const [notesSharedWithData, setNotesSharedWithData] = useState<any[]>([])
   const [isOwner, setIsOwner] = useState(false)
 
   const [notesData, setNotesData] = useState<JSONContent>()
   const [notesTitle, setNotesTitle] = useState<string>('')
   const [notesOwner, setNotesOwner] = useState('')
+  const [notesVisibility, setNotesVisibility] = useState<
+    'Public' | 'Private' | 'Shared'
+  >('Private')
 
   const [content, setContent] = useState<JSONContent>()
-  const [initialCommentsData, setInitialCommentsData] = useState<Thread[]>([])
   const setIsConnected = useState(false)[1]
   const setTransport = useState('N/A')[1]
 
@@ -84,22 +85,7 @@ const Page = ({ params }: { params: { id: number } }) => {
 
           console.log('@shared_statuses : ', responseData.sharedStatuses)
           setNotesSharedWithData(responseData.sharedStatuses)
-
-          // const commentsParsed = responseData.comments.map((c: any) => ({
-          //   id: c.id,
-          //   user: {
-          //     id: c.user.id,
-          //     email: c.user.email,
-          //     name: c.user.username,
-          //   },
-          //   note: c.noteId,
-          //   text: c.text,
-          //   created_at: c.createdAt,
-          //   user_name: c.user.username,
-          // }))
-
-          // console.log('PARSED COMMENTS : ', commentsParsed)
-          setInitialCommentsData(responseData.comments)
+          setNotesVisibility(responseData.visibility)
 
           addPage({
             title: responseData.title,
@@ -286,7 +272,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                       notesSharedWithData.filter(
                         (d) =>
                           d.shared_with === data?.user.email &&
-                          d.permissions === 'edit',
+                          d.permissions === 'Edit',
                       ).length === 0 && !isOwner
                     }
                     onChange={(e) => {
@@ -301,21 +287,23 @@ const Page = ({ params }: { params: { id: number } }) => {
                       authToken={authToken}
                       // initialThreadData={initialCommentsData}
                     />
-                    {/* {isOwner && (
+                    {isOwner && (
                       <ShareWith
                         notesId={notesId}
                         notesTitle={notesTitle}
                         authToken={authToken}
                         isOwner
+                        getNotes={getNotes}
+                        visibility={notesVisibility}
                       />
-                    )} */}
+                    )}
                   </div>
                 </div>
                 <div className="py-2 flex flex-row justify-between">
                   <div className="bg-gray-200 p-2 px-2 rounded-xl text-xs">
                     <p className="text-xs">
                       Owner :{' '}
-                      {users?.filter((u) => u.email === notesOwner)[0].name}
+                      {users?.filter((u) => u.email === notesOwner)[0].username}
                       {'  '}
                       <span className="font-semibold text-blue-500">{`(${notesOwner})`}</span>{' '}
                       {notesOwner === data?.user.email && 'You'}
@@ -358,8 +346,8 @@ const Page = ({ params }: { params: { id: number } }) => {
                   canEdit={
                     notesSharedWithData.filter(
                       (d) =>
-                        d.shared_with === data?.user.email &&
-                        d.permissions === 'edit',
+                        d.sharedWithId === data?.user.id &&
+                        d.permissions === 'Edit',
                     ).length > 0 || isOwner
                   }
                 />

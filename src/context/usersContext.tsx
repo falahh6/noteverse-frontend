@@ -12,7 +12,7 @@ import { baseURL } from '@/lib/utils'
 
 export type User = {
   id: string
-  name: string
+  username: string
   email: string
   // Add other user properties here
 }
@@ -27,21 +27,20 @@ const UserContext = createContext<UsersContextType | undefined>(undefined)
 export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [users, setUsers] = useState<User[] | undefined>(undefined)
   const [loading, setLoading] = useState(true)
-  const { data: session } = useSession()
-  let called: boolean
+  const { data, status } = useSession()
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (session?.accessToken && !called) {
+      if (data?.accessToken) {
         try {
-          const response = await fetch(`${baseURL}/users/`, {
+          const response = await fetch(`/api/users`, {
             headers: {
-              Authorization: `Bearer ${session.accessToken}`,
+              Authorization: `${data.accessToken}`,
             },
           })
           if (response.ok) {
             const userData = await response.json()
-            setUsers(userData)
+            setUsers(userData.data)
           }
         } catch (error) {
           console.error('Failed to fetch user:', error)
@@ -53,8 +52,10 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    // fetchUser()
-  }, [session])
+    if (status === 'authenticated') {
+      fetchUser()
+    }
+  }, [data, status])
 
   return (
     <UserContext.Provider value={{ users, loading }}>
