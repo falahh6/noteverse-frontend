@@ -79,6 +79,7 @@ async function fetchNotes(
         OR: [
           { ownerId: userId },
           { sharedStatuses: { some: { sharedWithId: userId } } },
+          { visibility: 'Public' },
         ],
       },
       include: {
