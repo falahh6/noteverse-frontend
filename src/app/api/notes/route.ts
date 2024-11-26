@@ -79,6 +79,7 @@ async function fetchNotes(
         OR: [
           { ownerId: userId },
           { sharedStatuses: { some: { sharedWithId: userId } } },
+          { visibility: 'Public' },
         ],
       },
       include: {
@@ -172,6 +173,18 @@ export const DELETE = async (request: NextRequest) => {
 
   if (response && 'id' in response) {
     if (id) {
+      await prisma.comment.deleteMany({
+        where: {
+          noteId: parseInt(id),
+        },
+      })
+
+      await prisma.sharedStatus.deleteMany({
+        where: {
+          noteId: parseInt(id),
+        },
+      })
+
       const note = await prisma.note.delete({
         where: {
           id: parseInt(id),

@@ -12,6 +12,7 @@ import { signIn, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import * as yup from 'yup'
 import { toast } from 'sonner'
+import { Icons } from '@/components/icons'
 
 const loginSchema = yup.object().shape({
   email: yup
@@ -132,29 +133,45 @@ const Page = () => {
             )}
             <BottomGradient />
           </button>
-
-          <div>
-            {emailVerificationToken && (
-              <>
-                <Link
-                  className="text-blue-500 text-xs"
-                  href={'/verify?vid=' + emailVerificationToken}
-                >
-                  PRESS HERE TO VERIFY
-                </Link>
-              </>
-            )}
-          </div>
-
-          <div className="mt-4 w-full flex items-center justify-center">
-            <p className="text-sm font-semibold text-gray-600">
-              Don&apos;t have an account?{' '}
-              <span className="text-blue-500 hover:underline transition-all duration-300 ease-in-out">
-                <Link href={'/signup'}>Create!</Link>
-              </span>
-            </p>
-          </div>
         </form>
+        <div className="flex flex-row justify-center items-center">
+          <div
+            className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to
+-transparent my-4 h-[1px] w-full"
+          />
+          <span className="text-xs">or</span>
+          <div
+            className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to
+-transparent my-4 h-[1px] w-full"
+          />
+        </div>
+        <button
+          className="border relative group/btn flex space-x-2 w-full items-center justify-center px-4 w-fu
+ll text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_
+0px_1px_1px_var(--neutral-800)]"
+          onClick={() => signIn('google')}
+        >
+          <Icons.google
+            width={20}
+            height={20}
+            className="text-neutral-800 dark:text-neutral-300"
+          />
+          <span className="text-neutral-700 dark:text-neutral-300 text-sm">
+            Continue with Google
+          </span>
+          <BottomGradient />
+        </button>
+        <div className="mt-4 w-full flex items-center justify-center">
+          <p className="text-sm font-semibold text-gray-600">
+            Already have an account?{' '}
+            <span
+              className="text-blue-500  transition-[text-decoration-line] duration-300 ease-in-
+out hover:underline"
+            >
+              <Link href={'/signin'}>Login!</Link>
+            </span>
+          </p>
+        </div>
       </div>
     </MaxWidthWrapper>
   )

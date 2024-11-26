@@ -21,6 +21,7 @@ import Comments from '@/components/comments/Comments'
 import { useUserContext } from '@/context/usersContext'
 import Search from '@/components/search/search'
 import ShareWith from '@/components/share/Share'
+import { Dot, Loader } from 'lucide-react'
 
 const Page = ({ params }: { params: { id: number } }) => {
   const { data, status } = useSession()
@@ -43,6 +44,8 @@ const Page = ({ params }: { params: { id: number } }) => {
   const [notesVisibility, setNotesVisibility] = useState<
     'Public' | 'Private' | 'Shared'
   >('Private')
+
+  const [notesSaving, setNotesSaving] = useState(false)
 
   const [content, setContent] = useState<JSONContent>()
   const setIsConnected = useState(false)[1]
@@ -195,6 +198,7 @@ const Page = ({ params }: { params: { id: number } }) => {
 
   const saveNotes = useCallback(
     debounce(async (title: string, body: JSONContent) => {
+      setNotesSaving(true)
       console.log('authToken : ', authToken)
       const response = await fetch(`/api/notes?id=${notesId}`, {
         method: 'PATCH',
@@ -211,6 +215,10 @@ const Page = ({ params }: { params: { id: number } }) => {
       if (response.ok) {
         const responseData = await response.json()
         console.log('Note saved:', responseData)
+      }
+
+      if (response) {
+        setNotesSaving(false)
       }
     }, 1000),
     [authToken],
@@ -309,7 +317,22 @@ const Page = ({ params }: { params: { id: number } }) => {
                       {notesOwner === data?.user.email && 'You'}
                     </p>
                   </div>
-                  <div className="flex flex-row  gap-1">
+                  <div className="flex flex-row gap-1 items-center">
+                    {notesSaving ? (
+                      <div className="bg-gray-100 text-gray-500 rounded-lg border border-gray-200 h-fit p-1 px-2 flex flex-row gap-1 items-center">
+                        <Loader className="h-4 w-4 animate-spin" />{' '}
+                        <p className="text-xs font-medium ">Saving</p>
+                      </div>
+                    ) : (
+                      <div className="bg-green-50 text-green-500 rounded-lg border border-green-200 h-fit p-1 px-2 flex flex-row gap-1 items-center">
+                        <p className="text-xs font-medium ">Saved</p>
+                      </div>
+                    )}
+                    {connectedUsers.length > 1 && (
+                      <>
+                        <Dot className="h-5 w-5 text-gray-400" />
+                      </>
+                    )}
                     {connectedUsers
                       .filter((u) => u.userId !== data?.user.id && u.position)
                       .map((item) => (
@@ -323,7 +346,7 @@ const Page = ({ params }: { params: { id: number } }) => {
                           }}
                         >
                           <div
-                            className={`text-xs bg-gray-200 rounded-full p-2`}
+                            className={`text-xs bg-gray-200 rounded-full p-2 h-6 w-6 flex items-center justify-center`}
                             style={{ backgroundColor: item.color }}
                           >
                             {avatarFallbackHandler(item.userName)}
