@@ -89,12 +89,12 @@ export default function Note({
             console.log('deleted n fetched')
           })
           .finally(() => {
-            setDeleteLoading(true)
+            setDeleteLoading(false)
             toast.warning('Deleted your notes.')
           })
       } else {
         toast.error('Error deleting your notes, Please try again.')
-        setDeleteLoading(true)
+        setDeleteLoading(false)
       }
     }
   }
