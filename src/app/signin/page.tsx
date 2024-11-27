@@ -32,8 +32,6 @@ interface IFormInput {
 
 const Page = () => {
   const [error, setError] = useState<{ type: string; message: string }>()
-  const [emailVerificationToken, setEmailVerificationToken] =
-    useState<string>('')
 
   const { status } = useSession()
 
@@ -163,12 +161,9 @@ ll text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-9
         </button>
         <div className="mt-4 w-full flex items-center justify-center">
           <p className="text-sm font-semibold text-gray-600">
-            Already have an account?{' '}
-            <span
-              className="text-blue-500  transition-[text-decoration-line] duration-300 ease-in-
-out hover:underline"
-            >
-              <Link href={'/signin'}>Login!</Link>
+            Don&apos;t have an account?{' '}
+            <span className="text-blue-500 hover:underline transition-all duration-300 ease-in-out">
+              <Link href={'/signup'}>Create!</Link>
             </span>
           </p>
         </div>

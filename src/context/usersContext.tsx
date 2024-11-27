@@ -8,13 +8,11 @@ import {
   useState,
 } from 'react'
 import { useSession } from 'next-auth/react'
-import { baseURL } from '@/lib/utils'
 
 export type User = {
   id: string
   username: string
   email: string
-  // Add other user properties here
 }
 
 type UsersContextType = {

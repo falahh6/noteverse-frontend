@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { createContext, ReactNode, useContext, useState } from 'react'
 
 type Page = {

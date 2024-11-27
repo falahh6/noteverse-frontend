@@ -13,7 +13,6 @@ import * as yup from 'yup'
 import { toast } from 'sonner'
 import { signIn, useSession } from 'next-auth/react'
 import { SendVerificationEmail } from '@/lib/api'
-import { Button } from '@/components/ui/button'
 import { Icons } from '@/components/icons'
 
 interface IFormInput {
@@ -36,7 +35,7 @@ const Page = () => {
       .min(8, 'Password must be at least 8 characters long'),
   })
 
-  const [resErorrs, setResErrors] = useState<string>('')
+  const [resErrors, setResErrors] = useState<string>('')
 
   const { status } = useSession()
 
@@ -164,9 +163,9 @@ const Page = () => {
             )}
           </LabelInputContainer>
 
-          {resErorrs && (
+          {resErrors && (
             <div className="bg-red-100 text-red-500 p-2 rounded-md mb-4 text-xs">
-              {resErorrs}
+              {resErrors}
             </div>
           )}
 
@@ -185,15 +184,6 @@ const Page = () => {
             )}
             <BottomGradient />
           </button>
-
-          {/* <div className="mt-4 w-full flex items-center justify-center">
-            <p className="text-sm font-semibold text-gray-600">
-              Already have an account?{' '}
-              <span className="text-blue-500  transition-[text-decoration-line] duration-300 ease-in-out hover:underline">
-                <Link href={'/signin'}>Login!</Link>
-              </span>
-            </p>
-          </div> */}
         </form>
         <div className="flex flex-row justify-center items-center">
           <div

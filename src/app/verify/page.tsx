@@ -2,7 +2,6 @@
 
 import MaxWidthWrapper from '@/components/layout/MaxwidthWrapper'
 import { CheckCircle, Loader } from 'lucide-react'
-import { signIn } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -12,7 +11,7 @@ const Page = () => {
   const params = useSearchParams()
   const vid = params.get('vid')
 
-  const [error, setError] = useState('')
+  const [error] = useState('')
 
   const [verified, setVerified] = useState(false)
 

@@ -11,8 +11,6 @@ import {
 } from 'lucide-react'
 import { EditorBubbleItem, JSONContent, useEditor } from 'novel'
 import type { SelectorItem } from './node-selector'
-import { toast } from 'sonner'
-import TextCapture from '../actions/text-capture'
 import { useState } from 'react'
 
 export const TextButtons = () => {
@@ -71,39 +69,6 @@ export const TextButtons = () => {
           </Button>
         </EditorBubbleItem>
       ))}
-      {/* <EditorBubbleItem
-        key={'text-capture'}
-        onSelect={(editor) => {
-          const getSelectedJSONContent = (editor: any) => {
-            const { from, to } = editor.state.selection
-            const selectedContent = editor.state.doc.cut(from, to)
-
-            const jsonContent = selectedContent.toJSON()
-
-            if (!Array.isArray(jsonContent)) {
-              return {
-                type: 'doc',
-                content: [jsonContent],
-              }
-            }
-
-            return {
-              type: 'doc',
-              content: jsonContent,
-            }
-          }
-
-          const selectedJSONContent = getSelectedJSONContent(editor)
-          toast.success(JSON.stringify(selectedJSONContent))
-          setSelectedText(selectedJSONContent)
-          setOpen(true)
-        }}
-      >
-        <Button size="sm" className="rounded-none" variant="ghost">
-          Capture
-        </Button>
-      </EditorBubbleItem>
-       <TextCapture open={open} setOpen={setOpen} selectedText={selectedText} /> */}
     </div>
   )
 }

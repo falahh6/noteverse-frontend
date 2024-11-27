@@ -6,11 +6,6 @@ import { useEffect, useState } from 'react'
 
 const { Search } = Input
 
-/*
-    Search functionality via query params
-    handle the tab changes and url 
-*/
-
 const SearchNotes = () => {
   const router = useRouter()
   const pathname = usePathname()

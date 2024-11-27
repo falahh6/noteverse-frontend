@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { ThumbsUpIcon, MessageSquareIcon } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import { motion } from 'framer-motion' // Import framer-motion for animation
+import { motion } from 'framer-motion'
 
 const CommentCard = ({ user, comment, x, y }: any) => {
   const [isHovered, setIsHovered] = useState(false)

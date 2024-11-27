@@ -47,9 +47,7 @@ const Comments = ({
       }
 
       if (getCommentFor == 'reply') {
-        return new Promise((resolve) => {
-          resolve(responseData.data)
-        })
+        return Promise.resolve(responseData.data)
       }
     }
   }

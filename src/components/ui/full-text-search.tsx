@@ -1,9 +1,8 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, FileText, Hash, Play, Pause } from 'lucide-react'
+import { Search, FileText, Hash } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
 
 const FloatingElement = ({
   children,
@@ -111,38 +110,6 @@ export default function FullTextSearchBackground() {
               >
                 <div className="text-lg">123</div>
               </FloatingElement>
-
-              {/* Colorful shapes */}
-              {/* <ColorfulShape
-                color="bg-red-300/50"
-                size="w-24 h-24"
-                delay={0.5}
-                isAnimating={isAnimating}
-              />
-              <ColorfulShape
-                color="bg-green-300/50"
-                size="w-20 h-20"
-                delay={1.5}
-                isAnimating={isAnimating}
-              />
-              <ColorfulShape
-                color="bg-blue-300/50"
-                size="w-16 h-16"
-                delay={2.5}
-                isAnimating={isAnimating}
-              />
-              <ColorfulShape
-                color="bg-yellow-300/50"
-                size="w-12 h-12"
-                delay={3.5}
-                isAnimating={isAnimating}
-              />
-              <ColorfulShape
-                color="bg-purple-300/50"
-                size="w-10 h-10"
-                delay={4.5}
-                isAnimating={isAnimating}
-              /> */}
             </>
           )}
         </AnimatePresence>

@@ -39,9 +39,9 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             email: user.email,
             name: user.username,
-            accessToken: user.authToken || undefined, // Ensure accessToken is string or undefined
+            accessToken: user.authToken ?? undefined, // Ensure accessToken is string or undefined
             isEmailVerified: user.emailVerified,
-            verificationToken: user.verificationToken || undefined,
+            verificationToken: user.verificationToken ?? undefined,
           }
         } catch (error) {
           throw new Error('Authorization error: ' + error)
@@ -49,8 +49,8 @@ export const authOptions: NextAuthOptions = {
       },
     }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CID || '',
-      clientSecret: process.env.GOOGLE_CS || '',
+      clientId: process.env.GOOGLE_CID ?? '',
+      clientSecret: process.env.GOOGLE_CS ?? '',
     }),
   ],
   callbacks: {

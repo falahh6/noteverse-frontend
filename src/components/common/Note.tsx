@@ -18,7 +18,7 @@ import {
 import { getNotesFnType, NoteProps } from '@/lib/types/notes'
 import { Popconfirm, Tooltip } from 'antd'
 import { toast } from 'sonner'
-import { baseURL, formatDate, getAppUrl } from '@/lib/utils'
+import { formatDate, getAppUrl } from '@/lib/utils'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
@@ -170,103 +170,98 @@ export default function Note({
   }
 
   return (
-    <>
-      <Card
-        className={`flex cursor-pointer flex-col justify-between transition-shadow hover:shadow-md`} //${type !== 'your-notes' && 'pb-3'}
-      >
-        <Link href={`/notes/${note.id}`}>
-          <CardHeader className="pb-2 max-sm:p-4">
-            <CardTitle className="text-lg">
-              {truncateNotesTitle(note.title, listView === 'grid' ? 35 : 100)}
-            </CardTitle>
-            <CardDescription className="text-sm">
-              {formatDate(createdUpdatedAtTimestamp)}
-              {wasUpdated && ' (updated)'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="py-2 max-sm:py-0 max-sm:px-4 text-sm">
-            <p className="whitespace-pre-line">
-              {trucateNotesContent(
-                note.content,
-                listView === 'grid' ? 100 : 200,
-              )}
-            </p>
-          </CardContent>
-        </Link>
-        <div className="p-2 px-6 pb-3 w-full text-center bg-gradient-to-t from-gray-100 via-gray-50 to-white rounded-bl-sm rounded-br-sm">
-          <div
-            className={`flex flex-row ${listView === 'grid' ? 'justify-between' : 'justify-start gap-4'} items-center gap-2`}
-          >
-            <div className="flex flex-row bg-gray-100 justify-center items-center  rounded-2xl border">
-              <Tooltip
-                title={
-                  noteLikes?.find((d) => d.email === data?.user.email) ? (
-                    <p className="text-xs">Down vote</p>
-                  ) : (
-                    <p className="text-xs">Up vote</p>
+    <Card
+      className={`flex cursor-pointer flex-col justify-between transition-shadow hover:shadow-md`} //${type !== 'your-notes' && 'pb-3'}
+    >
+      <Link href={`/notes/${note.id}`}>
+        <CardHeader className="pb-2 max-sm:p-4">
+          <CardTitle className="text-lg">
+            {truncateNotesTitle(note.title, listView === 'grid' ? 35 : 100)}
+          </CardTitle>
+          <CardDescription className="text-sm">
+            {formatDate(createdUpdatedAtTimestamp)}
+            {wasUpdated && ' (updated)'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="py-2 max-sm:py-0 max-sm:px-4 text-sm">
+          <p className="whitespace-pre-line">
+            {trucateNotesContent(note.content, listView === 'grid' ? 100 : 200)}
+          </p>
+        </CardContent>
+      </Link>
+      <div className="p-2 px-6 pb-3 w-full text-center bg-gradient-to-t from-gray-100 via-gray-50 to-white rounded-bl-sm rounded-br-sm">
+        <div
+          className={`flex flex-row ${listView === 'grid' ? 'justify-between' : 'justify-start gap-4'} items-center gap-2`}
+        >
+          <div className="flex flex-row bg-gray-100 justify-center items-center  rounded-2xl border">
+            <Tooltip
+              title={
+                noteLikes?.find((d) => d.email === data?.user.email) ? (
+                  <p className="text-xs">Down vote</p>
+                ) : (
+                  <p className="text-xs">Up vote</p>
+                )
+              }
+            >
+              <button
+                onClick={() =>
+                  voteHandler(
+                    noteLikes?.find((d) => d.email === data?.user.email)
+                      ? 'remove'
+                      : 'add',
                   )
                 }
+                className="rounded-full hover:bg-gray-200 p-1 group disabled:cursor-wait"
+                disabled={voteLoading}
               >
-                <button
-                  onClick={() =>
-                    voteHandler(
-                      noteLikes?.find((d) => d.email === data?.user.email)
-                        ? 'remove'
-                        : 'add',
-                    )
+                <ArrowBigUp
+                  strokeWidth={1}
+                  fill={
+                    noteLikes?.find((d) => d.email === data?.user.email)
+                      ? '#60a5fa'
+                      : '#00000000'
                   }
-                  className="rounded-full hover:bg-gray-200 p-1 group disabled:cursor-wait"
-                  disabled={voteLoading}
-                >
-                  <ArrowBigUp
-                    strokeWidth={1}
-                    fill={
-                      noteLikes?.find((d) => d.email === data?.user.email)
-                        ? '#60a5fa'
-                        : '#00000000'
-                    }
-                    className="text-gray-700 inline h-6 w-6 group-hover:text-blue-400"
-                  />{' '}
-                </button>
-              </Tooltip>
-              <span className="text-xs font-bold text-gray-600 pr-3">
-                {noteLikes.length}
-              </span>
-            </div>
-            {type === 'your-notes' && (
-              <div className="flex flex-row justify-between gap-2">
-                <Link href={`/notes/${note.id}`} target="_blank">
-                  <ExternalLink className="h-6 w-6 text-gray-500 p-1 hover:bg-gray-200 rounded-md" />
-                </Link>
-                {isCopied ? (
-                  <Check className="h-6 w-6 text-blue-600 p-1 hover:bg-gray-200 rounded-md" />
-                ) : (
-                  <Copy
-                    onClick={copyHandler}
-                    className="h-6 w-6 text-blue-600 p-1 hover:bg-gray-200 rounded-md"
-                  />
-                )}
-                <Popconfirm
-                  placement="top"
-                  title={<b>Are you sure want to delete this notes?</b>}
-                  onConfirm={() => {
-                    handleDeleteNotes(note.id)
-                  }}
-                  okText="Yes"
-                  cancelText="No"
-                  disabled={deleteLoading}
-                >
-                  {deleteLoading ? (
-                    <Loader className="h-6 w-6 p-1 animate-spin" />
-                  ) : (
-                    <Trash2 className="h-6 w-6 text-red-500 p-1 hover:bg-gray-200 rounded-md" />
-                  )}
-                </Popconfirm>
-              </div>
-            )}
+                  className="text-gray-700 inline h-6 w-6 group-hover:text-blue-400"
+                />{' '}
+              </button>
+            </Tooltip>
+            <span className="text-xs font-bold text-gray-600 pr-3">
+              {noteLikes.length}
+            </span>
           </div>
+          {type === 'your-notes' && (
+            <div className="flex flex-row justify-between gap-2">
+              <Link href={`/notes/${note.id}`} target="_blank">
+                <ExternalLink className="h-6 w-6 text-gray-500 p-1 hover:bg-gray-200 rounded-md" />
+              </Link>
+              {isCopied ? (
+                <Check className="h-6 w-6 text-blue-600 p-1 hover:bg-gray-200 rounded-md" />
+              ) : (
+                <Copy
+                  onClick={copyHandler}
+                  className="h-6 w-6 text-blue-600 p-1 hover:bg-gray-200 rounded-md"
+                />
+              )}
+              <Popconfirm
+                placement="top"
+                title={<b>Are you sure want to delete this notes?</b>}
+                onConfirm={() => {
+                  handleDeleteNotes(note.id)
+                }}
+                okText="Yes"
+                cancelText="No"
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? (
+                  <Loader className="h-6 w-6 p-1 animate-spin" />
+                ) : (
+                  <Trash2 className="h-6 w-6 text-red-500 p-1 hover:bg-gray-200 rounded-md" />
+                )}
+              </Popconfirm>
+            </div>
+          )}
         </div>
-      </Card>
-    </>
+      </div>
+    </Card>
   )
 }

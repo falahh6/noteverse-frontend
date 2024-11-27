@@ -1,13 +1,6 @@
 import FullTextSearchBackground from '@/components/ui/full-text-search'
 import { InputIcon } from '@radix-ui/react-icons'
-import {
-  CalendarIcon,
-  FileTextIcon,
-  GlobeIcon,
-  ShareIcon,
-  ThumbsUpIcon,
-} from 'lucide-react'
-import StaticVersionHistoryBackground from '@/components/ui/version-history-background'
+import { FileTextIcon, GlobeIcon, ShareIcon, ThumbsUpIcon } from 'lucide-react'
 import FileSharingBackground from '@/components/ui/file-sharing-background'
 import UpvoteCommentsBackground from '@/components/ui/upvote-comments-background'
 import MultilingualSupportBackground from '@/components/ui/multilingual-support-background'
@@ -22,6 +15,7 @@ export const features = [
     cta: 'Learn more',
     background: (
       <img
+        alt="collaborative"
         src="/collaborative.svg"
         className="absolute -right-5 top-20 max-sm:top-5 opacity-60 h-[160px]"
       />

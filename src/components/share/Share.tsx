@@ -296,36 +296,34 @@ const ShareWith = ({
           </DialogTitle>
           <DialogDescription>
             {selectedUser ? (
-              <>
-                <div className="my-4  px-4">
-                  <div className="text-base max-sm:text-sm flex flex-row gap-2 items-center">
-                    <p>Invite</p>
-                    <span className="font-bold">
-                      {' '}
-                      {selectedUser.email}{' '}
-                    </span> as{' '}
-                    <Select
-                      value={shareAccess}
-                      onValueChange={(val) => setShareAccess(val)}
-                    >
-                      <SelectTrigger className="w-fit ring-0 outline-none p-1 px-2 h-fit focus:ring-0">
-                        <SelectValue placeholder="Viewer" />
-                      </SelectTrigger>
-                      <SelectContent className="text-xs">
-                        <SelectItem
-                          value="View"
-                          className="text-xs flex flex-row items-baseline"
-                        >
-                          Viewer
-                        </SelectItem>
-                        <SelectItem value="Edit" className="text-xs">
-                          Editor
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <div className="my-4  px-4">
+                <div className="text-base max-sm:text-sm flex flex-row gap-2 items-center">
+                  <p>Invite</p>
+                  <span className="font-bold">
+                    {' '}
+                    {selectedUser.email}{' '}
+                  </span> as{' '}
+                  <Select
+                    value={shareAccess}
+                    onValueChange={(val) => setShareAccess(val)}
+                  >
+                    <SelectTrigger className="w-fit ring-0 outline-none p-1 px-2 h-fit focus:ring-0">
+                      <SelectValue placeholder="Viewer" />
+                    </SelectTrigger>
+                    <SelectContent className="text-xs">
+                      <SelectItem
+                        value="View"
+                        className="text-xs flex flex-row items-baseline"
+                      >
+                        Viewer
+                      </SelectItem>
+                      <SelectItem value="Edit" className="text-xs">
+                        Editor
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </>
+              </div>
             ) : (
               <>
                 <div className="my-4">
@@ -361,26 +359,28 @@ const ShareWith = ({
                   />
                   {viewList && (
                     <div className="absolute w-full bg-gray-100 max-w-[90%] max-sm:max-w-[86%] m-1 ml-0.5 rounded-md max-h-[25vh] overflow-scroll no-scrollbar shadow-md border z-50">
-                      {Users &&
-                        Users.map((user) => (
-                          <div
-                            onClick={() => {
-                              setSelectedUser({
-                                email: user.email,
-                                permission: shareAccess,
-                                id: user.id,
-                              })
-                              setViewList(false)
-                            }}
-                            className="hover:bg-gray-200 w-full p-2 rounded-md flex flex-row items-center hover:cursor-pointer"
-                          >
-                            <UserRound className="h-4 w-4 mr-2" />
-                            <div>
-                              <p>{user.username}</p>
-                              <p>{user.email}</p>
-                            </div>
+                      {Users?.map((user) => (
+                        <div
+                          role="button"
+                          key={user.id}
+                          tabIndex={0}
+                          onClick={() => {
+                            setSelectedUser({
+                              email: user.email,
+                              permission: shareAccess,
+                              id: user.id,
+                            })
+                            setViewList(false)
+                          }}
+                          className="hover:bg-gray-200 w-full p-2 rounded-md flex flex-row items-center hover:cursor-pointer"
+                        >
+                          <UserRound className="h-4 w-4 mr-2" />
+                          <div>
+                            <p>{user.username}</p>
+                            <p>{user.email}</p>
                           </div>
-                        ))}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>

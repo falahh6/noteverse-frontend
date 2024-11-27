@@ -4,7 +4,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { EditorContent, EditorRoot, JSONContent } from 'novel'
 import { Dispatch, SetStateAction } from 'react'

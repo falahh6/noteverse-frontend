@@ -16,7 +16,6 @@ import {
 import { Empty, Skeleton, Tooltip } from 'antd'
 import { socket } from '@/socket'
 import { usePathContext } from '@/context/pathContext'
-import { sharedStatus } from '@/lib/types/notes'
 import Comments from '@/components/comments/Comments'
 import { useUserContext } from '@/context/usersContext'
 import Search from '@/components/search/search'
@@ -318,25 +317,28 @@ const Page = ({ params }: { params: { id: number } }) => {
                     </p>
                   </div>
                   <div className="flex flex-row gap-1 items-center">
-                    {notesSaving ? (
-                      <div className="bg-gray-100 text-gray-500 rounded-lg border border-gray-200 h-fit p-1 px-2 flex flex-row gap-1 items-center">
-                        <Loader className="h-4 w-4 animate-spin" />{' '}
-                        <p className="text-xs font-medium ">Saving</p>
-                      </div>
-                    ) : (
-                      <div className="bg-green-50 text-green-500 rounded-lg border border-green-200 h-fit p-1 px-2 flex flex-row gap-1 items-center">
-                        <p className="text-xs font-medium ">Saved</p>
-                      </div>
+                    {isOwner && (
+                      <>
+                        {notesSaving ? (
+                          <div className="bg-gray-100 text-gray-500 rounded-lg border border-gray-200 h-fit p-1 px-2 flex flex-row gap-1 items-center">
+                            <Loader className="h-4 w-4 animate-spin" />{' '}
+                            <p className="text-xs font-medium ">Saving</p>
+                          </div>
+                        ) : (
+                          <div className="bg-green-50 text-green-500 rounded-lg border border-green-200 h-fit p-1 px-2 flex flex-row gap-1 items-center">
+                            <p className="text-xs font-medium ">Saved</p>
+                          </div>
+                        )}
+                      </>
                     )}
                     {connectedUsers.length > 1 && (
-                      <>
-                        <Dot className="h-5 w-5 text-gray-400" />
-                      </>
+                      <Dot className="h-5 w-5 text-gray-400" />
                     )}
                     {connectedUsers
                       .filter((u) => u.userId !== data?.user.id && u.position)
                       .map((item) => (
                         <Tooltip
+                          key={item.userId}
                           title={item.userName}
                           color={item.color}
                           style={{
