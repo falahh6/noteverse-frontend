@@ -1,4 +1,4 @@
-# NoteVerse Frontend
+# Noteverse Frontend
 
 NoteVerse is a modern, real-time collaborative note-sharing platform built with Next.js and novel.sh. The platform enables users to create, share, and edit notes collaboratively while engaging through social features like likes, upvotes, and comments.
 
@@ -15,7 +15,7 @@ NoteVerse is a modern, real-time collaborative note-sharing platform built with 
 
 ## 📋 Prerequisites
 
-- [Bun](https://bun.sh/) >= 1.0.0
+- npm or any other
 - Node.js >= 18.x
 
 ## 🛠 Installation
@@ -28,20 +28,20 @@ git clone https://github.com/your-username/noteverse-frontend.git
 cd noteverse-frontend
 
 # Install dependencies using Bun
-bun install
+npm install
 ```
 
 ## 🚦 Development
 
 ```bash
 # Start the development server
-bun dev
+npm dev
 
 # Build for production
-bun run build
+npm run build
 
 # Start production server
-bun start
+npm start
 ```
 
 ## 🔧 Tech Stack
