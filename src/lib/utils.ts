@@ -1,7 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
 import { Metadata } from 'next'
 import { twMerge } from 'tailwind-merge'
-import { SchemaChildNode } from './types/notes'
 import { useMemo } from 'react'
 import { JSONContent } from 'novel'
 
@@ -75,7 +74,7 @@ export function extractText(data: any): string {
     let textResult = ''
 
     if (node.type === 'text' && node.text) {
-      textResult += node.text
+      textResult += node.text + '\n'
     }
 
     if (node.content && Array.isArray(node.content)) {
@@ -92,7 +91,7 @@ export function extractText(data: any): string {
 
     for (const node of nodes) {
       if (node.text) {
-        textResult += node.text
+        textResult += node.text + '\n'
       }
       if (node.children && node.children.length > 0) {
         textResult += extractFromType2(node.children)
@@ -204,7 +203,6 @@ export function findDifferences(
   obj2: JSONContent | undefined,
 ): string | null {
   if (obj1 == undefined || obj2 == undefined) return null
-  // Helper function for deep equality
   function deepEqual(item1: any, item2: any): boolean {
     if (item1 === item2) return true
 
@@ -231,16 +229,14 @@ export function findDifferences(
     return true
   }
 
-  // Check if both objects have content arrays
   if (Array.isArray(obj1?.content) && Array.isArray(obj2?.content)) {
     for (let i = 0; i < obj2.content.length; i++) {
       const item1 = obj1.content[i]
       const item2 = obj2.content[i]
 
-      // If the items are not deeply equal, return the differing text
       if (!deepEqual(item1, item2)) {
         if (item2?.content?.[0]?.text) {
-          return item2.content[0].text // Return the differing text
+          return item2.content[0].text
         }
         return 'Difference found, but no text content'
       }
@@ -248,4 +244,12 @@ export function findDifferences(
   }
 
   return null
+}
+
+export function hideConsoleLogs() {
+  if (process.env.NODE_ENV === 'production') {
+    console.log = () => {}
+    console.warn = () => {}
+    console.error = () => {}
+  }
 }

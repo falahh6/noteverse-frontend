@@ -183,8 +183,8 @@ export default function Note({
             {wasUpdated && ' (updated)'}
           </CardDescription>
         </CardHeader>
-        <CardContent className="py-2 max-sm:py-0 max-sm:px-4 text-sm">
-          <p className="whitespace-pre-line">
+        <CardContent className="py-2 max-sm:py-0 max-sm:px-4 text-sm max-h-24">
+          <p className="whitespace-pre-line overflow-clip">
             {trucateNotesContent(note.content, listView === 'grid' ? 100 : 200)}
           </p>
         </CardContent>

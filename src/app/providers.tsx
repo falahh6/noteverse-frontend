@@ -9,8 +9,11 @@ import { EditorProvider } from '@/context/editorContext'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ThemeProvider } from '@/components/ui/ThemeProvider'
 import { AuthProvider } from './api/auth/providers'
+import { hideConsoleLogs } from '@/lib/utils'
 
 const Providers = ({ children }: { children: ReactNode }) => {
+  hideConsoleLogs()
+
   return (
     <AuthProvider>
       <ProgressBarProvider>

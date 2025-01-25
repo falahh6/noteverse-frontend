@@ -98,7 +98,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as number
       }
-      console.log('Session:', token)
+
       session.accessToken = token.accessToken as string
       session.refreshToken = token.refreshToken as string
       session.isEmailVerified = token.isEmailVerified as boolean

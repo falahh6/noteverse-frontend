@@ -76,7 +76,7 @@ const Notes = () => {
         console.log('@getNotesList : ', parsedResponse)
 
         setYourNotes(
-          parsedResponse.filter(
+          sortNotesByDate(parsedResponse).filter(
             (note) => note.ownerEmail === data?.user?.email,
           ),
         )
@@ -111,10 +111,10 @@ const Notes = () => {
         )
         console.log('@getFeaturedNotes : ', parsedResponse)
 
-        setFeaturedNotes(parsedResponse)
+        setFeaturedNotes(sortNotesByDate(parsedResponse))
 
         if (silent) {
-          return parsedResponse
+          return sortNotesByDate(parsedResponse)
         }
       } catch (error) {
         console.log(error)
@@ -144,10 +144,10 @@ const Notes = () => {
         )
         console.log('@getSharedNotes : ', parsedResponse)
 
-        setSharedNotes(parsedResponse)
+        setSharedNotes(sortNotesByDate(parsedResponse))
 
         if (silent) {
-          return parsedResponse
+          return sortNotesByDate(parsedResponse)
         }
       } catch (error) {
         console.log(error)
@@ -176,10 +176,19 @@ const Notes = () => {
   const filterNotes = (notes: NoteProps[]) => {
     if (!searchQuery) return notes
 
+    console.log('NOTES : ', notes)
+
     const lowerCaseQuery = searchQuery.toLowerCase()
 
     return notes.filter((note) =>
       note.title.toLowerCase().includes(lowerCaseQuery),
+    )
+  }
+
+  const sortNotesByDate = (notes: NoteProps[]) => {
+    return notes.sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     )
   }
 
